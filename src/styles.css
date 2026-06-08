@@ -594,6 +594,34 @@ body {
 .task-row:hover .task-delete { opacity: 1; }
 .task-delete:hover { background: #fdf0f0; color: #e05252; }
 
+/* ── Ring progress ── */
+.task-ring {
+  flex-shrink: 0;
+  display: block;
+}
+
+/* ── Add step button (row) ── */
+.task-add-step {
+  width: 24px;
+  height: 24px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: #ccc;
+  font-size: 13px;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s;
+  flex-shrink: 0;
+  opacity: 0;
+}
+
+.task-row:hover .task-add-step { opacity: 1; }
+.task-add-step:hover { background: #f5f6fc; color: #667eea; }
+
 /* ── Add child button ── */
 .task-add-child {
   width: 24px;
@@ -615,6 +643,127 @@ body {
 
 .task-row:hover .task-add-child { opacity: 1; }
 .task-add-child:hover { background: #f0f3ff; color: #667eea; }
+
+/* ── Work Steps Section ── */
+.task-steps {
+  margin: 2px 0 4px 36px;
+  padding: 4px 6px 4px 10px;
+  border-left: 2px solid #eeedf8;
+}
+
+.steps-header {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  user-select: none;
+  padding-bottom: 2px;
+}
+
+.steps-toggle {
+  font-size: 7px;
+  color: #c8cce0;
+  width: 10px;
+  flex-shrink: 0;
+  cursor: pointer;
+  line-height: 1;
+}
+
+.steps-toggle:hover { color: #888; }
+
+.steps-label {
+  font-size: 11px;
+  color: #bbbdd0;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.steps-label:hover { color: #888; }
+
+.steps-add-btn {
+  width: 16px;
+  height: 16px;
+  border: 1px solid #dde0ea;
+  border-radius: 3px;
+  background: transparent;
+  color: #bbb;
+  font-size: 14px;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  transition: all 0.12s;
+  margin-left: 2px;
+}
+
+.steps-add-btn:hover { color: #667eea; border-color: #c8ceef; background: #f0f3ff; }
+
+.steps-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.step-item {
+  display: flex;
+  align-items: baseline;
+  gap: 5px;
+  padding: 2px 0;
+}
+
+.step-num {
+  color: #d0d3e8;
+  font-size: 10px;
+  flex-shrink: 0;
+  min-width: 14px;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.step-text {
+  flex: 1;
+  font-size: 12px;
+  color: #888;
+  line-height: 1.4;
+  word-break: break-word;
+  outline: none;
+  min-width: 0;
+}
+
+.step-text[contenteditable="true"]:focus {
+  background: #f5f6fc;
+  border-radius: 3px;
+  padding: 0 4px;
+}
+
+.step-meta {
+  font-size: 10px;
+  color: #d0d3e8;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.step-del {
+  width: 16px;
+  height: 16px;
+  border: none;
+  border-radius: 3px;
+  background: transparent;
+  color: #d5d8e8;
+  font-size: 13px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  opacity: 0;
+  padding: 0;
+  transition: all 0.12s;
+}
+
+.step-item:hover .step-del { opacity: 1; }
+.step-del:hover { background: #fdf0f0; color: #e05252; }
 
 /* ── Collapsed child preview ── */
 .children-preview {

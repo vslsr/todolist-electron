@@ -60,25 +60,37 @@ function countActive(list) {
   return list.reduce((n, t) => n + (t.completed ? 0 : 1) + countActive(t.children), 0);
 }
 
+function calcProgress(todo) {
+  if (!todo.children || todo.children.length === 0) {
+    return todo.completed ? 100 : 0;
+  }
+  const sum = todo.children.reduce((acc, c) => acc + calcProgress(c), 0);
+  return Math.round(sum / todo.children.length);
+}
+
 // ── Migrate / create ───────────────────────────────────────────────────────
 
 function migrate(t) {
   return {
     ...t,
-    children:  (t.children  || []).map(migrate),
-    collapsed: t.collapsed ?? false,
+    children:       (t.children || []).map(migrate),
+    collapsed:      t.collapsed ?? false,
+    steps:          (t.steps || []).map(s => ({ id: s.id, text: s.text || '', createdAt: s.createdAt || '' })),
+    stepsCollapsed: t.stepsCollapsed ?? false,
   };
 }
 
 function createTodo(text = '', priority = 'normal') {
   return {
-    id:        `${Date.now()}${Math.random().toString(36).slice(2, 6)}`,
-    text:      text.trim(),
-    completed: false,
+    id:             `${Date.now()}${Math.random().toString(36).slice(2, 6)}`,
+    text:           text.trim(),
+    completed:      false,
     priority,
-    createdAt: new Date().toLocaleDateString('zh-CN', { month: 'short', day: 'numeric' }),
-    children:  [],
-    collapsed: false,
+    createdAt:      new Date().toLocaleDateString('zh-CN', { month: 'short', day: 'numeric' }),
+    children:       [],
+    collapsed:      false,
+    steps:          [],
+    stepsCollapsed: false,
   };
 }
 
@@ -154,6 +166,49 @@ function toggleCollapsed(id) {
   if (t) { t.collapsed = !t.collapsed; saveTodos(); render(); }
 }
 
+function addStep(todoId) {
+  const t = findById(todoId);
+  if (!t) return;
+  const step = {
+    id:        `s${Date.now()}${Math.random().toString(36).slice(2, 5)}`,
+    text:      '',
+    createdAt: new Date().toLocaleDateString('zh-CN', { month: 'short', day: 'numeric' }),
+  };
+  t.steps.push(step);
+  t.stepsCollapsed = false;
+  saveTodos();
+  render();
+  const el = document.querySelector(`[data-step-id="${step.id}"] .step-text`);
+  if (el) {
+    el.focus();
+    const r = document.createRange();
+    r.selectNodeContents(el);
+    r.collapse(false);
+    window.getSelection().removeAllRanges();
+    window.getSelection().addRange(r);
+  }
+}
+
+function deleteStep(todoId, stepId) {
+  const t = findById(todoId);
+  if (!t) return;
+  t.steps = t.steps.filter(s => s.id !== stepId);
+  saveTodos();
+  render();
+}
+
+function updateStep(todoId, stepId, text) {
+  const t = findById(todoId);
+  if (!t) return;
+  const s = t.steps.find(s => s.id === stepId);
+  if (s) { s.text = text.trim(); saveTodos(); }
+}
+
+function toggleStepsCollapsed(todoId) {
+  const t = findById(todoId);
+  if (t) { t.stepsCollapsed = !t.stepsCollapsed; saveTodos(); render(); }
+}
+
 function clearCompleted() {
   function clean(list) {
     return list
@@ -213,6 +268,52 @@ function render() {
     empty.classList.add('hidden');
     filtered.forEach(t => list.appendChild(createTaskEl(t)));
   }
+}
+
+const RING_SIZE = 28, RING_R = 10, RING_SW = 3;
+const RING_CIRC = 2 * Math.PI * RING_R;
+
+function createRingEl(pct) {
+  const c = RING_SIZE / 2;
+  const offset = RING_CIRC * (1 - pct / 100);
+  const color  = pct === 100 ? '#5a9e35' : '#667eea';
+  const ns     = 'http://www.w3.org/2000/svg';
+
+  const svg = document.createElementNS(ns, 'svg');
+  svg.setAttribute('width',   RING_SIZE);
+  svg.setAttribute('height',  RING_SIZE);
+  svg.setAttribute('viewBox', `0 0 ${RING_SIZE} ${RING_SIZE}`);
+  svg.classList.add('task-ring');
+
+  const bg = document.createElementNS(ns, 'circle');
+  bg.setAttribute('cx', c); bg.setAttribute('cy', c); bg.setAttribute('r', RING_R);
+  bg.setAttribute('fill', 'none');
+  bg.setAttribute('stroke', '#eef0f4');
+  bg.setAttribute('stroke-width', RING_SW);
+
+  const fg = document.createElementNS(ns, 'circle');
+  fg.setAttribute('cx', c); fg.setAttribute('cy', c); fg.setAttribute('r', RING_R);
+  fg.setAttribute('fill', 'none');
+  fg.setAttribute('stroke', pct === 0 ? 'none' : color);
+  fg.setAttribute('stroke-width', RING_SW);
+  fg.setAttribute('stroke-dasharray', RING_CIRC.toFixed(2));
+  fg.setAttribute('stroke-dashoffset', offset.toFixed(2));
+  fg.setAttribute('stroke-linecap', 'round');
+  fg.setAttribute('transform', `rotate(-90 ${c} ${c})`);
+
+  const txt = document.createElementNS(ns, 'text');
+  txt.setAttribute('x', c);
+  txt.setAttribute('y', c + 2.5);
+  txt.setAttribute('text-anchor', 'middle');
+  txt.setAttribute('dominant-baseline', 'middle');
+  txt.setAttribute('font-size', '7');
+  txt.setAttribute('font-weight', '600');
+  txt.setAttribute('font-family', 'Segoe UI, system-ui, sans-serif');
+  txt.setAttribute('fill', pct === 0 ? '#ccc' : color);
+  txt.textContent = `${pct}%`;
+
+  svg.append(bg, fg, txt);
+  return svg;
 }
 
 function createTaskEl(todo) {
@@ -320,6 +421,16 @@ function createTaskEl(todo) {
   meta.className   = 'task-meta';
   meta.textContent = todo.createdAt;
 
+  // Ring progress
+  const ring = createRingEl(calcProgress(todo));
+
+  // Add step button
+  const addStepBtn = document.createElement('button');
+  addStepBtn.className = 'task-add-step';
+  addStepBtn.innerHTML = '≡';
+  addStepBtn.title     = '添加工作步骤';
+  addStepBtn.addEventListener('click', (e) => { e.stopPropagation(); addStep(todo.id); });
+
   // Add child button
   const addChild = document.createElement('button');
   addChild.className = 'task-add-child';
@@ -334,8 +445,86 @@ function createTaskEl(todo) {
   del.title     = '删除';
   del.addEventListener('click', (e) => { e.stopPropagation(); deleteTodo(todo.id); });
 
-  row.append(handle, toggle, badge, checkbox, textEl, meta, addChild, del);
+  row.append(handle, toggle, badge, checkbox, textEl, meta, ring, addStepBtn, addChild, del);
   li.appendChild(row);
+
+  // ── Steps section ─────────────────────────────────────────
+  if (todo.steps && todo.steps.length > 0) {
+    const stepsSection = document.createElement('div');
+    stepsSection.className = 'task-steps';
+
+    const stepsHeader = document.createElement('div');
+    stepsHeader.className = 'steps-header';
+
+    const stepsTgl = document.createElement('span');
+    stepsTgl.className   = 'steps-toggle';
+    stepsTgl.textContent = todo.stepsCollapsed ? '▶' : '▼';
+    stepsTgl.addEventListener('click', () => toggleStepsCollapsed(todo.id));
+
+    const stepsLbl = document.createElement('span');
+    stepsLbl.className   = 'steps-label';
+    stepsLbl.textContent = `工作步骤 (${todo.steps.length})`;
+    stepsLbl.addEventListener('click', () => toggleStepsCollapsed(todo.id));
+
+    const stepsAddBtn = document.createElement('button');
+    stepsAddBtn.className = 'steps-add-btn';
+    stepsAddBtn.innerHTML = '+';
+    stepsAddBtn.title     = '添加步骤';
+    stepsAddBtn.addEventListener('click', (e) => { e.stopPropagation(); addStep(todo.id); });
+
+    stepsHeader.append(stepsTgl, stepsLbl, stepsAddBtn);
+    stepsSection.appendChild(stepsHeader);
+
+    if (!todo.stepsCollapsed) {
+      const stepsList = document.createElement('ol');
+      stepsList.className = 'steps-list';
+
+      todo.steps.forEach((step, idx) => {
+        const stepItem = document.createElement('li');
+        stepItem.className    = 'step-item';
+        stepItem.dataset.stepId = step.id;
+
+        const stepNum = document.createElement('span');
+        stepNum.className   = 'step-num';
+        stepNum.textContent = `${idx + 1}.`;
+
+        const stepText = document.createElement('span');
+        stepText.className       = 'step-text';
+        stepText.textContent     = step.text;
+        stepText.contentEditable = 'true';
+        stepText.spellcheck      = false;
+        stepText.addEventListener('blur', () => {
+          const typed = stepText.textContent.trim();
+          if (!typed && step.text === '') {
+            deleteStep(todo.id, step.id);
+          } else {
+            updateStep(todo.id, step.id, stepText.textContent);
+          }
+        });
+        stepText.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter')  { e.preventDefault(); stepText.blur(); }
+          if (e.key === 'Escape') { stepText.textContent = step.text; stepText.blur(); }
+        });
+
+        const stepMeta = document.createElement('span');
+        stepMeta.className   = 'step-meta';
+        stepMeta.textContent = step.createdAt;
+
+        const stepDel = document.createElement('button');
+        stepDel.className = 'step-del';
+        stepDel.innerHTML = '×';
+        stepDel.title     = '删除步骤';
+        stepDel.addEventListener('click', (e) => { e.stopPropagation(); deleteStep(todo.id, step.id); });
+
+        stepItem.append(stepNum, stepText, stepMeta, stepDel);
+        stepsList.appendChild(stepItem);
+      });
+
+      stepsSection.appendChild(stepsList);
+    }
+
+    li.appendChild(stepsSection);
+  }
 
   // ── Collapsed preview ─────────────────────────────────────
   if (hasChildren && todo.collapsed) {
