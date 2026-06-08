@@ -14,9 +14,15 @@
         "createdAt": "6月8日",
         "children": [],
         "collapsed": false,
-        "steps": [],
-        "stepsCollapsed": false,
-        "status": "completed"
+        "steps": [
+          {
+            "id": "s17809109077650uj",
+            "text": "策划添加边界盒体",
+            "createdAt": "6月8日"
+          }
+        ],
+        "stepsCollapsed": true,
+        "status": "in-progress"
       },
       {
         "id": "17808907610892xe3",
@@ -26,9 +32,15 @@
         "createdAt": "6月8日",
         "children": [],
         "collapsed": false,
-        "steps": [],
-        "stepsCollapsed": false,
-        "status": "pending"
+        "steps": [
+          {
+            "id": "s1780910902623rnh",
+            "text": "待测试",
+            "createdAt": "6月8日"
+          }
+        ],
+        "stepsCollapsed": true,
+        "status": "in-progress"
       },
       {
         "id": "1780890867601ol9q",
@@ -40,7 +52,7 @@
         "collapsed": false,
         "steps": [],
         "stepsCollapsed": false,
-        "status": "pending"
+        "status": "completed"
       }
     ],
     "collapsed": false,
@@ -50,7 +62,7 @@
   },
   {
     "id": "1780885404804yoox",
-    "text": "AD44开发任务",
+    "text": "AD44开发任务 - 资源接入",
     "completed": false,
     "priority": "normal",
     "createdAt": "6月8日",
@@ -72,11 +84,6 @@
           {
             "id": "s1780890689432bnb",
             "text": "添加日志",
-            "createdAt": "6月8日"
-          },
-          {
-            "id": "s17808909186251xm",
-            "text": "卡在没有长按提示",
             "createdAt": "6月8日"
           }
         ],
@@ -109,24 +116,12 @@
           },
           {
             "id": "s1780903334487cnl",
-            "text": "音效Notify的添加方式和",
+            "text": "音效Notify的添加方式",
             "createdAt": "6月8日"
           }
         ],
-        "stepsCollapsed": false,
+        "stepsCollapsed": true,
         "status": "in-progress"
-      },
-      {
-        "id": "1780885484156fyr0",
-        "text": "A-T01-P-02-03\t普通阀门交互阶段\t对应阀门图标随进度逐渐变灰",
-        "completed": false,
-        "priority": "normal",
-        "createdAt": "6月8日",
-        "children": [],
-        "collapsed": false,
-        "steps": [],
-        "stepsCollapsed": false,
-        "status": "completed"
       },
       {
         "id": "1780885492163d8lr",
@@ -139,6 +134,33 @@
         "steps": [],
         "stepsCollapsed": false,
         "status": "completed"
+      },
+      {
+        "id": "1780907195646gy0f",
+        "text": "TGAD44 地图 玩家使用Suicide命令后会崩溃",
+        "status": "in-progress",
+        "priority": "normal",
+        "createdAt": "6月8日",
+        "children": [],
+        "collapsed": false,
+        "steps": [
+          {
+            "id": "s1780907520670f8h",
+            "text": "Suicide 命令的执行链路",
+            "createdAt": "6月8日"
+          },
+          {
+            "id": "s1780908092853rlm",
+            "text": "观察日志中的信息 (没有有价值的内容)",
+            "createdAt": "6月8日"
+          },
+          {
+            "id": "s1780909301734dzl",
+            "text": "观察正常地图的区别 (可能是复活点的问题)",
+            "createdAt": "6月8日"
+          }
+        ],
+        "stepsCollapsed": true
       }
     ],
     "collapsed": false,
@@ -164,9 +186,20 @@
         "steps": [],
         "stepsCollapsed": false,
         "status": "pending"
+      },
+      {
+        "id": "17809124743104upv",
+        "text": "多人模式下，Client无法建造和放置建筑",
+        "status": "pending",
+        "priority": "low",
+        "createdAt": "6月8日",
+        "children": [],
+        "collapsed": false,
+        "steps": [],
+        "stepsCollapsed": false
       }
     ],
-    "collapsed": true,
+    "collapsed": false,
     "steps": [],
     "stepsCollapsed": false,
     "status": "pending"
