@@ -70,7 +70,7 @@ function migrate(t) {
   };
 }
 
-function createTodo(text, priority = 'normal') {
+function createTodo(text = '', priority = 'normal') {
   return {
     id:        `${Date.now()}${Math.random().toString(36).slice(2, 6)}`,
     text:      text.trim(),
@@ -122,6 +122,26 @@ function deleteTodoInplace(id, list) {
 function deleteTodo(id) {
   deleteTodoInplace(id, todos);
   saveTodos(); render();
+}
+
+function addChildTodo(parentId) {
+  const parent = findById(parentId);
+  if (!parent) return;
+  const child = createTodo('', parent.priority);
+  parent.children.push(child);
+  parent.collapsed = false;
+  saveTodos();
+  render();
+  // Focus the new child's text so user can type immediately
+  const el = document.querySelector(`[data-id="${child.id}"] .task-text`);
+  if (el) {
+    el.focus();
+    const range = document.createRange();
+    range.selectNodeContents(el);
+    range.collapse(false);
+    window.getSelection().removeAllRanges();
+    window.getSelection().addRange(range);
+  }
 }
 
 function updateTodoText(id, newText) {
@@ -282,7 +302,14 @@ function createTaskEl(todo) {
   textEl.textContent     = todo.text;
   textEl.contentEditable = 'true';
   textEl.spellcheck      = false;
-  textEl.addEventListener('blur',    () => updateTodoText(todo.id, textEl.textContent));
+  textEl.addEventListener('blur', () => {
+    const typed = textEl.textContent.trim();
+    if (!typed && todo.text === '') {
+      deleteTodo(todo.id); // auto-inserted empty child left blank → remove
+    } else {
+      updateTodoText(todo.id, textEl.textContent);
+    }
+  });
   textEl.addEventListener('keydown', (e) => {
     if (e.key === 'Enter')  { e.preventDefault(); textEl.blur(); }
     if (e.key === 'Escape') { textEl.textContent = todo.text; textEl.blur(); }
@@ -293,6 +320,13 @@ function createTaskEl(todo) {
   meta.className   = 'task-meta';
   meta.textContent = todo.createdAt;
 
+  // Add child button
+  const addChild = document.createElement('button');
+  addChild.className = 'task-add-child';
+  addChild.innerHTML = '+';
+  addChild.title     = '添加子任务';
+  addChild.addEventListener('click', (e) => { e.stopPropagation(); addChildTodo(todo.id); });
+
   // Delete button
   const del = document.createElement('button');
   del.className = 'task-delete';
@@ -300,7 +334,7 @@ function createTaskEl(todo) {
   del.title     = '删除';
   del.addEventListener('click', (e) => { e.stopPropagation(); deleteTodo(todo.id); });
 
-  row.append(handle, toggle, badge, checkbox, textEl, meta, del);
+  row.append(handle, toggle, badge, checkbox, textEl, meta, addChild, del);
   li.appendChild(row);
 
   // ── Collapsed preview ─────────────────────────────────────
