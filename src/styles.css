@@ -434,9 +434,19 @@ body {
   border-color: #eef0f4;
 }
 
+.task-item.in-progress > .task-row {
+  background: #f4f5ff;
+  border-color: #d8def9;
+}
+
 .task-item.completed .task-text {
   text-decoration: line-through;
   color: #aaa;
+}
+
+.task-item.in-progress .task-text {
+  color: #2e3a9a;
+  font-weight: 600;
 }
 
 /* Dragging */
@@ -536,6 +546,21 @@ body {
 }
 
 .task-checkbox:hover { border-color: #667eea; }
+
+.task-checkbox.in-progress {
+  background: linear-gradient(135deg, #eef2ff 0%, #dfe7ff 100%);
+  border-color: #667eea;
+}
+
+.task-checkbox.in-progress::after {
+  content: '';
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #fff;
+  display: block;
+  box-shadow: inset 0 0 0 1px rgba(102,126,234,0.35);
+}
 
 .task-checkbox.checked {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);

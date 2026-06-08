@@ -9,6 +9,7 @@ let dragId = null;
 const PRIORITY_WEIGHT = { high: 0, normal: 1, low: 2 };
 const SORT_STATES = [null, 'asc', 'desc'];
 const SORT_LABELS = { null: '优先级 ↕', asc: '高 → 低 ↓', desc: '低 → 高 ↑' };
+const STATUS_STATES = ['pending', 'in-progress', 'completed'];
 
 // ── Recursive helpers ──────────────────────────────────────────────────────
 
@@ -57,12 +58,12 @@ function isDescendant(parentId, childId) {
 const PRIORITY_OPTIONS = [['normal', '普通'], ['high', '重要'], ['low', '低优']];
 
 function countActive(list) {
-  return list.reduce((n, t) => n + (t.completed ? 0 : 1) + countActive(t.children), 0);
+  return list.reduce((n, t) => n + (t.status === 'completed' ? 0 : 1) + countActive(t.children), 0);
 }
 
 function calcProgress(todo) {
   if (!todo.children || todo.children.length === 0) {
-    return todo.completed ? 100 : 0;
+    return todo.status === 'completed' ? 100 : 0;
   }
   const sum = todo.children.reduce((acc, c) => acc + calcProgress(c), 0);
   return Math.round(sum / todo.children.length);
@@ -73,6 +74,7 @@ function calcProgress(todo) {
 function migrate(t) {
   return {
     ...t,
+    status:         t.status || (t.completed ? 'completed' : 'pending'),
     children:       (t.children || []).map(migrate),
     collapsed:      t.collapsed ?? false,
     steps:          (t.steps || []).map(s => ({ id: s.id, text: s.text || '', createdAt: s.createdAt || '' })),
@@ -84,7 +86,7 @@ function createTodo(text = '', priority = 'normal') {
   return {
     id:             `${Date.now()}${Math.random().toString(36).slice(2, 6)}`,
     text:           text.trim(),
-    completed:      false,
+    status:         'pending',
     priority,
     createdAt:      new Date().toLocaleDateString('zh-CN', { month: 'short', day: 'numeric' }),
     children:       [],
@@ -120,7 +122,12 @@ function addTodo() {
 
 function toggleTodo(id) {
   const t = findById(id);
-  if (t) { t.completed = !t.completed; saveTodos(); render(); }
+  if (!t) return;
+  t.status =
+    t.status === 'pending'     ? 'in-progress' :
+    t.status === 'in-progress' ? 'completed'   :
+    'pending';
+  saveTodos(); render();
 }
 
 function deleteTodoInplace(id, list) {
@@ -212,7 +219,7 @@ function toggleStepsCollapsed(todoId) {
 function clearCompleted() {
   function clean(list) {
     return list
-      .filter(t => !t.completed)
+      .filter(t => t.status !== 'completed')
       .map(t => ({ ...t, children: clean(t.children) }));
   }
   todos = clean(todos);
@@ -221,8 +228,9 @@ function clearCompleted() {
 
 function getFiltered() {
   let result =
-    currentFilter === 'active'    ? todos.filter(t => !t.completed) :
-    currentFilter === 'completed' ? todos.filter(t => t.completed)  : [...todos];
+    currentFilter === 'active'      ? todos.filter(t => t.status !== 'completed') :
+    currentFilter === 'in-progress' ? todos.filter(t => t.status === 'in-progress') :
+    currentFilter === 'completed'   ? todos.filter(t => t.status === 'completed')  : [...todos];
 
   if (sortOrder) {
     result = result.slice().sort((a, b) => {
@@ -318,7 +326,7 @@ function createRingEl(pct) {
 
 function createTaskEl(todo) {
   const li = document.createElement('li');
-  li.className = `task-item priority-${todo.priority}${todo.completed ? ' completed' : ''}`;
+  li.className = `task-item priority-${todo.priority}${todo.status === 'completed' ? ' completed' : todo.status === 'in-progress' ? ' in-progress' : ''}`;
   li.dataset.id = todo.id;
   li.draggable  = true;
 
@@ -394,7 +402,7 @@ function createTaskEl(todo) {
 
   // Checkbox
   const checkbox = document.createElement('div');
-  checkbox.className = `task-checkbox${todo.completed ? ' checked' : ''}`;
+  checkbox.className = `task-checkbox${todo.status === 'completed' ? ' checked' : todo.status === 'in-progress' ? ' in-progress' : ''}`;
   checkbox.addEventListener('click', (e) => { e.stopPropagation(); toggleTodo(todo.id); });
 
   // Text (inline-editable)

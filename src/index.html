@@ -4,13 +4,13 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'" />
-  <title>TODO List</title>
+  <title>工作项目列表</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
   <div class="app">
     <header class="header">
-      <h1 class="title">TODO List</h1>
+      <h1 class="title">工作项目列表</h1>
       <div class="stats">
         <span id="stats-text">0 项待完成</span>
       </div>
@@ -72,6 +72,7 @@
     <div class="filter-bar">
       <button class="filter-btn active" data-filter="all">全部</button>
       <button class="filter-btn" data-filter="active">未完成</button>
+      <button class="filter-btn" data-filter="in-progress">进行中</button>
       <button class="filter-btn" data-filter="completed">已完成</button>
       <div class="filter-divider"></div>
       <button id="sort-btn" class="filter-btn">优先级 ↕</button>
