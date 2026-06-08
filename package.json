@@ -25,6 +25,9 @@
   "build": {
     "appId": "com.todolist.app",
     "productName": "TODO List",
+    "directories": {
+      "output": "build-output"
+    },
     "win": {
       "target": "nsis",
       "icon": "assets/icon.ico"

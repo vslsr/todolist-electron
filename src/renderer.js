@@ -416,4 +416,226 @@ function showToast(msg, isError = false) {
   toastTimer = setTimeout(() => el.classList.add('hidden'), 2500);
 }
 
+// ── Reminder ───────────────────────────────────────────────────────────────
+
+const rEl = {
+  work:    () => document.getElementById('r-work'),
+  brk:     () => document.getElementById('r-break'),
+  mode:    () => document.getElementById('r-mode'),
+  toggle:  () => document.getElementById('r-toggle'),
+  display: () => document.getElementById('r-display'),
+  time:    () => document.getElementById('r-time'),
+  phase:   () => document.getElementById('r-phase'),
+  track:   () => document.getElementById('r-track'),
+  fill:    () => document.getElementById('r-fill'),
+};
+
+let rSettings = { workMin: 25, breakMin: 5, loop: true };
+let rState    = { running: false, phase: 'work', remaining: 0, total: 0, timer: null };
+
+async function loadReminderSettings() {
+  const saved = await window.electronAPI.store.get('reminderSettings');
+  if (saved) {
+    rSettings = { ...rSettings, ...saved };
+    rEl.work().value  = rSettings.workMin;
+    rEl.brk().value   = rSettings.breakMin;
+    rEl.mode().value  = rSettings.loop ? 'loop' : 'once';
+  }
+}
+
+function saveReminderSettings() {
+  window.electronAPI.store.set('reminderSettings', rSettings);
+}
+
+function rFmt(sec) {
+  return `${String(Math.floor(sec / 60)).padStart(2, '0')}:${String(sec % 60).padStart(2, '0')}`;
+}
+
+function rNotify(title, body) {
+  if (!window.Notification) return;
+  const send = () => new Notification(title, { body, silent: false });
+  Notification.permission === 'granted'
+    ? send()
+    : Notification.requestPermission().then(p => p === 'granted' && send());
+}
+
+function rUpdateUI() {
+  const { running, phase, remaining, total } = rState;
+  const btn = rEl.toggle();
+
+  if (running) {
+    btn.textContent = '■ 停止';
+    btn.classList.add('r-btn--running');
+    rEl.display().classList.remove('hidden');
+    rEl.track().classList.remove('hidden');
+
+    rEl.time().textContent = rFmt(remaining);
+
+    const isWork = phase === 'work';
+    rEl.phase().textContent = isWork ? '工作中' : '休息中';
+    rEl.phase().className   = `r-phase ${isWork ? 'r-phase--work' : 'r-phase--break'}`;
+    rEl.fill().className    = `r-fill ${isWork ? 'r-fill--work' : 'r-fill--break'}`;
+    rEl.fill().style.width  = `${((total - remaining) / total) * 100}%`;
+
+    // Lock inputs while running
+    rEl.work().disabled = rEl.brk().disabled = rEl.mode().disabled = true;
+    document.getElementById('r-preset-sel').disabled = true;
+    document.getElementById('r-preset-add').disabled = true;
+    document.getElementById('r-preset-del').disabled = true;
+  } else {
+    btn.textContent = '▶ 开始';
+    btn.classList.remove('r-btn--running');
+    rEl.display().classList.add('hidden');
+    rEl.track().classList.add('hidden');
+    rEl.work().disabled = rEl.brk().disabled = rEl.mode().disabled = false;
+    document.getElementById('r-preset-sel').disabled = false;
+    document.getElementById('r-preset-add').disabled = false;
+    const hasSel = !!document.getElementById('r-preset-sel').value;
+    document.getElementById('r-preset-del').disabled = !hasSel;
+  }
+}
+
+function rTick() {
+  rState.remaining--;
+  if (rState.remaining <= 0) {
+    if (rState.phase === 'work') {
+      rNotify('休息一下 ☕', `专注结束，休息 ${rSettings.breakMin} 分钟`);
+      if (rSettings.loop) {
+        rState.phase     = 'break';
+        rState.remaining = rState.total = rSettings.breakMin * 60;
+      } else { rStop(); return; }
+    } else {
+      rNotify('继续工作 💪', `休息结束，开始专注 ${rSettings.workMin} 分钟`);
+      if (rSettings.loop) {
+        rState.phase     = 'work';
+        rState.remaining = rState.total = rSettings.workMin * 60;
+      } else { rStop(); return; }
+    }
+  }
+  rUpdateUI();
+}
+
+function rStart() {
+  rSettings.workMin  = Math.max(1, parseInt(rEl.work().value)  || 25);
+  rSettings.breakMin = Math.max(1, parseInt(rEl.brk().value)   || 5);
+  rSettings.loop     = rEl.mode().value === 'loop';
+  saveReminderSettings();
+
+  rState.running   = true;
+  rState.phase     = 'work';
+  rState.remaining = rState.total = rSettings.workMin * 60;
+  rState.timer     = setInterval(rTick, 1000);
+  rUpdateUI();
+}
+
+function rStop() {
+  clearInterval(rState.timer);
+  rState.running = false;
+  rUpdateUI();
+}
+
+rEl.toggle().addEventListener('click', () => rState.running ? rStop() : rStart());
+
+// ── Reminder presets ────────────────────────────────────────────────────────
+
+let rPresets = [];
+
+function rRenderPresets(selectIndex = null) {
+  const sel = document.getElementById('r-preset-sel');
+  const prevVal = selectIndex !== null ? String(selectIndex) : sel.value;
+  sel.innerHTML = '<option value="" disabled>选择预设…</option>';
+  rPresets.forEach((p, i) => {
+    const opt = document.createElement('option');
+    opt.value = i;
+    opt.textContent = `${p.name}  (工${p.workMin}/休${p.breakMin}分 ${p.loop ? '循环' : '单次'})`;
+    sel.appendChild(opt);
+  });
+  if (prevVal !== '' && rPresets[parseInt(prevVal)]) sel.value = prevVal;
+  document.getElementById('r-preset-del').disabled = !sel.value;
+}
+
+async function loadReminderPresets() {
+  const saved = await window.electronAPI.store.get('reminderPresets');
+  rPresets = saved || [];
+  rRenderPresets();
+}
+
+function saveReminderPresets() {
+  window.electronAPI.store.set('reminderPresets', rPresets);
+}
+
+// If a preset is selected and the user edits inputs → update that preset in-place
+function rSyncSelectedPreset() {
+  const sel = document.getElementById('r-preset-sel');
+  const idx = parseInt(sel.value);
+  if (isNaN(idx) || !rPresets[idx]) return;
+  rPresets[idx].workMin  = Math.max(1, parseInt(rEl.work().value) || 25);
+  rPresets[idx].breakMin = Math.max(1, parseInt(rEl.brk().value)  || 5);
+  rPresets[idx].loop     = rEl.mode().value === 'loop';
+  saveReminderPresets();
+  rRenderPresets(idx); // refresh label to show updated values
+}
+
+rEl.work().addEventListener('change', rSyncSelectedPreset);
+rEl.brk().addEventListener('change',  rSyncSelectedPreset);
+rEl.mode().addEventListener('change', rSyncSelectedPreset);
+
+// Apply preset to inputs
+document.getElementById('r-preset-sel').addEventListener('change', e => {
+  const idx = parseInt(e.target.value);
+  if (isNaN(idx) || !rPresets[idx]) return;
+  const p = rPresets[idx];
+  rEl.work().value = p.workMin;
+  rEl.brk().value  = p.breakMin;
+  rEl.mode().value = p.loop ? 'loop' : 'once';
+  document.getElementById('r-preset-del').disabled = false;
+});
+
+// Show name input
+document.getElementById('r-preset-add').addEventListener('click', () => {
+  const wrap = document.getElementById('r-name-wrap');
+  wrap.classList.remove('hidden');
+  const input = document.getElementById('r-preset-name');
+  input.value = '';
+  input.focus();
+});
+
+// Confirm save
+function rConfirmSave() {
+  const name = document.getElementById('r-preset-name').value.trim();
+  if (!name) { document.getElementById('r-preset-name').focus(); return; }
+  rPresets.push({
+    name,
+    workMin:  Math.max(1, parseInt(rEl.work().value) || 25),
+    breakMin: Math.max(1, parseInt(rEl.brk().value)  || 5),
+    loop:     rEl.mode().value === 'loop',
+  });
+  saveReminderPresets();
+  rRenderPresets(rPresets.length - 1);
+  document.getElementById('r-name-wrap').classList.add('hidden');
+}
+
+document.getElementById('r-name-ok').addEventListener('click', rConfirmSave);
+document.getElementById('r-preset-name').addEventListener('keydown', e => {
+  if (e.key === 'Enter')  rConfirmSave();
+  if (e.key === 'Escape') document.getElementById('r-name-wrap').classList.add('hidden');
+});
+
+// Cancel
+document.getElementById('r-name-cancel').addEventListener('click', () => {
+  document.getElementById('r-name-wrap').classList.add('hidden');
+});
+
+// Delete selected preset
+document.getElementById('r-preset-del').addEventListener('click', () => {
+  const sel = document.getElementById('r-preset-sel');
+  const idx = parseInt(sel.value);
+  if (isNaN(idx) || !rPresets[idx]) return;
+  rPresets.splice(idx, 1);
+  saveReminderPresets();
+  rRenderPresets();
+});
+
+loadReminderSettings();
+loadReminderPresets();
 loadTodos();

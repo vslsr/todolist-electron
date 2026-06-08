@@ -34,6 +34,41 @@
       </div>
     </div>
 
+    <div class="reminder-bar">
+      <div class="reminder-row">
+        <span class="reminder-title">⏰ 久坐提醒</span>
+        <div class="reminder-sep"></div>
+        <label class="r-label">工作 <input id="r-work" type="number" class="r-num" min="1" max="180" value="25"> 分</label>
+        <label class="r-label">休息 <input id="r-break" type="number" class="r-num" min="1" max="60" value="5"> 分</label>
+        <select id="r-mode" class="r-mode-select">
+          <option value="loop">循环</option>
+          <option value="once">单次</option>
+        </select>
+        <div class="reminder-sep"></div>
+        <div class="r-presets">
+          <select id="r-preset-sel" class="r-preset-select" title="选择预设">
+            <option value="" disabled selected>选择预设…</option>
+          </select>
+          <button id="r-preset-add" class="r-preset-btn r-preset-btn--add" title="将当前设置保存为预设">+</button>
+          <button id="r-preset-del" class="r-preset-btn r-preset-btn--del" title="删除选中预设" disabled>×</button>
+        </div>
+        <div id="r-name-wrap" class="r-name-wrap hidden">
+          <input id="r-preset-name" type="text" class="r-name-input" placeholder="输入预设名称…" maxlength="20" />
+          <button id="r-name-ok"     class="r-preset-btn r-preset-btn--ok">✓</button>
+          <button id="r-name-cancel" class="r-preset-btn r-preset-btn--cancel">✕</button>
+        </div>
+        <div class="reminder-sep"></div>
+        <button id="r-toggle" class="r-btn">▶ 开始</button>
+        <div id="r-display" class="r-display hidden">
+          <span id="r-time" class="r-time">25:00</span>
+          <span id="r-phase" class="r-phase r-phase--work">工作中</span>
+        </div>
+      </div>
+      <div id="r-track" class="r-track hidden">
+        <div id="r-fill" class="r-fill r-fill--work"></div>
+      </div>
+    </div>
+
     <div class="filter-bar">
       <button class="filter-btn active" data-filter="all">全部</button>
       <button class="filter-btn" data-filter="active">未完成</button>

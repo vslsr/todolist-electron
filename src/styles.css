@@ -175,6 +175,207 @@ body {
   border: 1px solid #c8ceef;
 }
 
+/* ── Reminder Bar ─────────────────────────────────────── */
+.reminder-bar {
+  padding: 10px 24px 8px;
+  background: #f7f8fc;
+  border-bottom: 1px solid #eef0f4;
+  flex-shrink: 0;
+}
+
+.reminder-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.reminder-title {
+  font-size: 12px;
+  font-weight: 700;
+  color: #667eea;
+  white-space: nowrap;
+  letter-spacing: 0.3px;
+}
+
+.reminder-sep {
+  width: 1px;
+  height: 14px;
+  background: #dde0ea;
+  flex-shrink: 0;
+}
+
+.r-label {
+  font-size: 12px;
+  color: #666;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
+}
+
+.r-num {
+  width: 46px;
+  padding: 3px 6px;
+  border: 1.5px solid #e0e4ed;
+  border-radius: 6px;
+  font-size: 13px;
+  font-family: inherit;
+  text-align: center;
+  outline: none;
+  background: #fff;
+  transition: border-color 0.15s;
+}
+
+.r-num:focus    { border-color: #667eea; }
+.r-num:disabled { background: #f4f5f8; color: #aaa; }
+
+.r-mode-select {
+  padding: 4px 8px;
+  border: 1.5px solid #e0e4ed;
+  border-radius: 6px;
+  font-size: 12px;
+  font-family: inherit;
+  background: #fff;
+  cursor: pointer;
+  outline: none;
+  color: #555;
+}
+
+.r-mode-select:disabled { background: #f4f5f8; color: #aaa; cursor: default; }
+
+/* Preset controls */
+.r-presets {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.r-preset-select {
+  padding: 3px 6px;
+  border: 1.5px solid #e0e4ed;
+  border-radius: 6px;
+  font-size: 12px;
+  font-family: inherit;
+  background: #fff;
+  cursor: pointer;
+  outline: none;
+  color: #555;
+  max-width: 160px;
+}
+
+.r-preset-select:disabled { background: #f4f5f8; color: #aaa; cursor: default; }
+
+.r-preset-btn {
+  width: 22px;
+  height: 22px;
+  border: 1.5px solid #e0e4ed;
+  border-radius: 5px;
+  background: #fff;
+  font-size: 13px;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  transition: all 0.12s;
+  flex-shrink: 0;
+}
+
+.r-preset-btn:disabled { opacity: 0.35; cursor: default; }
+
+.r-preset-btn--add          { color: #667eea; border-color: #c8ceef; }
+.r-preset-btn--add:hover:not(:disabled) { background: #f0f2ff; }
+
+.r-preset-btn--del          { color: #e05252; border-color: #f5c0c0; }
+.r-preset-btn--del:hover:not(:disabled) { background: #fdf0f0; }
+
+.r-preset-btn--ok           { color: #5a9e35; border-color: #b5dda0; }
+.r-preset-btn--ok:hover     { background: #f2faf0; }
+
+.r-preset-btn--cancel       { color: #999; border-color: #ddd; }
+.r-preset-btn--cancel:hover { background: #f5f5f5; }
+
+/* Inline name input */
+.r-name-wrap {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.r-name-input {
+  padding: 3px 8px;
+  border: 1.5px solid #667eea;
+  border-radius: 6px;
+  font-size: 12px;
+  font-family: inherit;
+  outline: none;
+  width: 130px;
+  box-shadow: 0 0 0 2px rgba(102,126,234,0.12);
+}
+
+.r-btn {
+  padding: 5px 14px;
+  border: none;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  background: #667eea;
+  color: #fff;
+  transition: opacity 0.15s, background 0.15s;
+  white-space: nowrap;
+}
+
+.r-btn:hover       { opacity: 0.88; }
+.r-btn--running    { background: #e05252; }
+
+/* Countdown display */
+.r-display {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.r-time {
+  font-size: 20px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 1.5px;
+  color: #2d2d4e;
+}
+
+.r-phase {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 10px;
+}
+
+.r-phase--work  { background: #eff1fd; color: #667eea; }
+.r-phase--break { background: #f2faf0; color: #5a9e35; }
+
+/* Progress track */
+.r-track {
+  margin-top: 7px;
+  height: 3px;
+  background: #e8eaf2;
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.r-fill {
+  height: 100%;
+  border-radius: 2px;
+  width: 0%;
+  transition: width 0.95s linear;
+}
+
+.r-fill--work  { background: linear-gradient(90deg, #667eea, #764ba2); }
+.r-fill--break { background: linear-gradient(90deg, #8bc34a, #5a9e35); }
+
 /* Task List Container */
 .task-list-container {
   flex: 1;

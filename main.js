@@ -34,6 +34,7 @@ function createWindow() {
 }
 
 app.whenReady().then(() => {
+  app.setAppUserModelId('com.todolist.app'); // required for Windows 10 system notifications
   createWindow();
 
   app.on('activate', () => {
