@@ -718,6 +718,7 @@ const rEl = {
   brk:     () => document.getElementById('r-break'),
   mode:    () => document.getElementById('r-mode'),
   toggle:  () => document.getElementById('r-toggle'),
+  pause:   () => document.getElementById('r-pause'),
   display: () => document.getElementById('r-display'),
   time:    () => document.getElementById('r-time'),
   phase:   () => document.getElementById('r-phase'),
@@ -726,7 +727,7 @@ const rEl = {
 };
 
 let rSettings = { workMin: 25, breakMin: 5, loop: true };
-let rState    = { running: false, phase: 'work', remaining: 0, total: 0, timer: null };
+let rState    = { running: false, paused: false, phase: 'work', remaining: 0, total: 0, timer: null };
 
 async function loadReminderSettings() {
   const saved = await window.electronAPI.store.get('reminderSettings');
@@ -755,8 +756,9 @@ function rNotify(title, body) {
 }
 
 function rUpdateUI() {
-  const { running, phase, remaining, total } = rState;
-  const btn = rEl.toggle();
+  const { running, paused, phase, remaining, total } = rState;
+  const btn      = rEl.toggle();
+  const pauseBtn = rEl.pause();
 
   if (running) {
     btn.textContent = '■ 停止';
@@ -767,10 +769,24 @@ function rUpdateUI() {
     rEl.time().textContent = rFmt(remaining);
 
     const isWork = phase === 'work';
-    rEl.phase().textContent = isWork ? '工作中' : '休息中';
-    rEl.phase().className   = `r-phase ${isWork ? 'r-phase--work' : 'r-phase--break'}`;
+    rEl.phase().textContent = isWork
+      ? (paused ? '工作中 · 已暂停' : '工作中')
+      : (paused ? '休息中 · 已暂停' : '休息中');
+    rEl.phase().className   = `r-phase ${isWork ? 'r-phase--work' : 'r-phase--break'}${paused ? ' r-phase--paused' : ''}`;
     rEl.fill().className    = `r-fill ${isWork ? 'r-fill--work' : 'r-fill--break'}`;
     rEl.fill().style.width  = `${((total - remaining) / total) * 100}%`;
+
+    // Pause / resume button
+    pauseBtn.classList.remove('hidden');
+    if (paused) {
+      pauseBtn.textContent = '▶ 继续';
+      pauseBtn.classList.add('r-btn--resume');
+      pauseBtn.classList.remove('r-btn--pause');
+    } else {
+      pauseBtn.textContent = '⏸ 暂停';
+      pauseBtn.classList.remove('r-btn--resume');
+      pauseBtn.classList.add('r-btn--pause');
+    }
 
     // Lock inputs while running
     rEl.work().disabled = rEl.brk().disabled = rEl.mode().disabled = true;
@@ -782,6 +798,8 @@ function rUpdateUI() {
     btn.classList.remove('r-btn--running');
     rEl.display().classList.add('hidden');
     rEl.track().classList.add('hidden');
+    pauseBtn.classList.add('hidden');
+    pauseBtn.classList.remove('r-btn--pause', 'r-btn--resume');
     rEl.work().disabled = rEl.brk().disabled = rEl.mode().disabled = false;
     document.getElementById('r-preset-sel').disabled = false;
     document.getElementById('r-preset-add').disabled = false;
@@ -823,13 +841,28 @@ function rStart() {
   rUpdateUI();
 }
 
+function rPause() {
+  clearInterval(rState.timer);
+  rState.timer  = null;
+  rState.paused = true;
+  rUpdateUI();
+}
+
+function rResume() {
+  rState.paused = false;
+  rState.timer  = setInterval(rTick, 1000);
+  rUpdateUI();
+}
+
 function rStop() {
   clearInterval(rState.timer);
   rState.running = false;
+  rState.paused  = false;
   rUpdateUI();
 }
 
 rEl.toggle().addEventListener('click', () => rState.running ? rStop() : rStart());
+rEl.pause().addEventListener('click',  () => rState.paused  ? rResume() : rPause());
 
 // ── Reminder presets ────────────────────────────────────────────────────────
 

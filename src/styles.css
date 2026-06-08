@@ -329,8 +329,11 @@ body {
   white-space: nowrap;
 }
 
-.r-btn:hover       { opacity: 0.88; }
+.r-btn:hover       { opacity: 0.85; }
 .r-btn--running    { background: #e05252; }
+.r-btn--pause      { background: transparent; border: 1.5px solid #9aa3bf; color: #6b7497; }
+.r-btn--pause:hover { background: #f0f1f8; opacity: 1; }
+.r-btn--resume     { background: #52a878; }
 
 /* Countdown display */
 .r-display {
@@ -354,8 +357,9 @@ body {
   border-radius: 10px;
 }
 
-.r-phase--work  { background: #eff1fd; color: #667eea; }
-.r-phase--break { background: #f2faf0; color: #5a9e35; }
+.r-phase--work   { background: #eff1fd; color: #667eea; }
+.r-phase--break  { background: #f2faf0; color: #5a9e35; }
+.r-phase--paused { opacity: 0.55; }
 
 /* Progress track */
 .r-track {
