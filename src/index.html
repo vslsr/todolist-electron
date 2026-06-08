@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'" />
+  <title>TODO List</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="app">
+    <header class="header">
+      <h1 class="title">TODO List</h1>
+      <div class="stats">
+        <span id="stats-text">0 项待完成</span>
+      </div>
+    </header>
+
+    <div class="input-area">
+      <div class="input-row">
+        <input
+          type="text"
+          id="new-task-input"
+          class="task-input"
+          placeholder="添加新任务... (按 Enter 确认)"
+          maxlength="200"
+        />
+        <select id="priority-select" class="priority-select">
+          <option value="normal">普通</option>
+          <option value="high">重要</option>
+          <option value="low">低优</option>
+        </select>
+        <button id="add-btn" class="btn btn-primary">添加</button>
+      </div>
+    </div>
+
+    <div class="filter-bar">
+      <button class="filter-btn active" data-filter="all">全部</button>
+      <button class="filter-btn" data-filter="active">未完成</button>
+      <button class="filter-btn" data-filter="completed">已完成</button>
+      <div class="filter-divider"></div>
+      <button id="sort-btn" class="filter-btn">优先级 ↕</button>
+      <div class="spacer"></div>
+      <button id="import-btn" class="btn btn-ghost-icon" title="从 JSON 文件导入">导入</button>
+      <button id="export-btn" class="btn btn-ghost-icon" title="导出为 JSON 文件">导出</button>
+      <button id="clear-completed-btn" class="btn btn-danger-ghost">清除已完成</button>
+    </div>
+
+    <div id="toast" class="toast hidden"></div>
+
+    <main class="task-list-container">
+      <ul id="task-list" class="task-list"></ul>
+      <div id="empty-state" class="empty-state hidden">
+        <div class="empty-icon">✓</div>
+        <p>没有任务，享受空闲时光吧！</p>
+      </div>
+    </main>
+  </div>
+
+  <script src="renderer.js"></script>
+</body>
+</html>
