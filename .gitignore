@@ -5,6 +5,7 @@ node_modules/
 dist/
 release/
 build-output/
+build-out2/
 
 # Logs
 *.log
