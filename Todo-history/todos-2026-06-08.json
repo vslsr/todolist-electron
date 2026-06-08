@@ -1,0 +1,190 @@
+[
+  {
+    "id": "1780885417836b5mo",
+    "text": "怀旧服bug修复",
+    "completed": false,
+    "priority": "high",
+    "createdAt": "6月8日",
+    "children": [
+      {
+        "id": "1780890772960acte",
+        "text": "【外团反馈】【时光流金-樱之谷】【必现】C区第二个守关，可以用腾风战甲钩锁跳关（上海代宝修复）",
+        "completed": false,
+        "priority": "high",
+        "createdAt": "6月8日",
+        "children": [],
+        "collapsed": false,
+        "steps": [
+          {
+            "id": "s1780893996570oda",
+            "text": "查看腾风战甲如何使用和调出",
+            "createdAt": "6月8日"
+          },
+          {
+            "id": "s178089760832149m",
+            "text": "开通视频权限，查看复现方式",
+            "createdAt": "6月8日"
+          },
+          {
+            "id": "s1780898716233s1e",
+            "text": "查看是否有空气墙 修改Object层的碰撞",
+            "createdAt": "6月8日"
+          },
+          {
+            "id": "s1780898729249cdh",
+            "text": "确认是否要程序进行场景Cook",
+            "createdAt": "6月8日"
+          }
+        ],
+        "stepsCollapsed": false,
+        "status": "pending"
+      },
+      {
+        "id": "17808907610892xe3",
+        "text": "【外团反馈】【赛季】【时光流金-樱之谷】【偶现】【测试服2未复现】转至C区BOSS第二形态场景后不显示武器模型，开枪也没反应，需要主动切枪才恢复正常(代宝修复)",
+        "completed": false,
+        "priority": "high",
+        "createdAt": "6月8日",
+        "children": [],
+        "collapsed": false,
+        "steps": [],
+        "stepsCollapsed": false,
+        "status": "pending"
+      },
+      {
+        "id": "1780890867601ol9q",
+        "text": "【外团反馈】【时光流金-樱之谷】【必现】各区TAB页面显示2个宝箱掉落（上海代宝修复）",
+        "completed": false,
+        "priority": "high",
+        "createdAt": "6月8日",
+        "children": [],
+        "collapsed": false,
+        "steps": [],
+        "stepsCollapsed": false,
+        "status": "pending"
+      }
+    ],
+    "collapsed": false,
+    "steps": [],
+    "stepsCollapsed": false,
+    "status": "pending"
+  },
+  {
+    "id": "1780885404804yoox",
+    "text": "AD44开发任务",
+    "completed": false,
+    "priority": "normal",
+    "createdAt": "6月8日",
+    "children": [
+      {
+        "id": "1780885455131gwxn",
+        "text": "A-T01-P-02-01\t普通阀门交互阶段\t显示阀门上方白点与“长按E键关闭阀门”提示",
+        "completed": true,
+        "priority": "normal",
+        "createdAt": "6月8日",
+        "children": [],
+        "collapsed": false,
+        "steps": [
+          {
+            "id": "s1780890681745qt9",
+            "text": "开发完成",
+            "createdAt": "6月8日"
+          },
+          {
+            "id": "s1780890689432bnb",
+            "text": "添加日志",
+            "createdAt": "6月8日"
+          },
+          {
+            "id": "s17808909186251xm",
+            "text": "卡在没有长按提示",
+            "createdAt": "6月8日"
+          }
+        ],
+        "stepsCollapsed": true,
+        "status": "completed"
+      },
+      {
+        "id": "17808854715478gw8",
+        "text": "A-T01-P-02-02\t普通阀门交互阶段\t播放阀门转动动画与循环音效",
+        "completed": false,
+        "priority": "normal",
+        "createdAt": "6月8日",
+        "children": [],
+        "collapsed": false,
+        "steps": [
+          {
+            "id": "s1780898265889sxp",
+            "text": "播放动画在客户端进行，通过进度进行计算",
+            "createdAt": "6月8日"
+          },
+          {
+            "id": "s1780898287913fnn",
+            "text": "循环音效：查找播放音效的方法",
+            "createdAt": "6月8日"
+          },
+          {
+            "id": "s17808983125699ck",
+            "text": "查找音效播放的替代资源",
+            "createdAt": "6月8日"
+          }
+        ],
+        "stepsCollapsed": false,
+        "status": "in-progress"
+      },
+      {
+        "id": "1780885484156fyr0",
+        "text": "A-T01-P-02-03\t普通阀门交互阶段\t对应阀门图标随进度逐渐变灰",
+        "completed": false,
+        "priority": "normal",
+        "createdAt": "6月8日",
+        "children": [],
+        "collapsed": false,
+        "steps": [],
+        "stepsCollapsed": false,
+        "status": "completed"
+      },
+      {
+        "id": "1780885492163d8lr",
+        "text": "A-T01-P-03-02\t单阀门完成反馈\tHUD 提示“关闭剩余阀门”",
+        "completed": false,
+        "priority": "normal",
+        "createdAt": "6月8日",
+        "children": [],
+        "collapsed": false,
+        "steps": [],
+        "stepsCollapsed": false,
+        "status": "completed"
+      }
+    ],
+    "collapsed": false,
+    "steps": [],
+    "stepsCollapsed": false,
+    "status": "pending"
+  },
+  {
+    "id": "1780885445572f4zn",
+    "text": "Lyra学习",
+    "completed": false,
+    "priority": "low",
+    "createdAt": "6月8日",
+    "children": [
+      {
+        "id": "1780893948441zfw2",
+        "text": "添加删除建筑功能",
+        "completed": false,
+        "priority": "low",
+        "createdAt": "6月8日",
+        "children": [],
+        "collapsed": false,
+        "steps": [],
+        "stepsCollapsed": false,
+        "status": "pending"
+      }
+    ],
+    "collapsed": true,
+    "steps": [],
+    "stepsCollapsed": false,
+    "status": "pending"
+  }
+]

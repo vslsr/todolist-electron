@@ -72,10 +72,22 @@ function calcProgress(todo) {
 
 // ── Migrate / create ───────────────────────────────────────────────────────
 
+const VALID_STATUS = new Set(['pending', 'in-progress', 'completed']);
+
+function normalizeStatus(t) {
+  const s = t.status;
+  if (VALID_STATUS.has(s))           return s;             // already correct
+  if (s === 'done')                  return 'completed';   // old alias
+  if (s === 'doing')                 return 'in-progress'; // old alias
+  if (s === 'todo')                  return 'pending';     // old alias
+  // Fall back to the legacy boolean field
+  return t.completed ? 'completed' : 'pending';
+}
+
 function migrate(t) {
   return {
     ...t,
-    status:         t.status || (t.completed ? 'completed' : 'pending'),
+    status:         normalizeStatus(t),
     children:       (t.children || []).map(migrate),
     collapsed:      t.collapsed ?? false,
     steps:          (t.steps || []).map(s => ({ id: s.id, text: s.text || '', createdAt: s.createdAt || '' })),
@@ -227,11 +239,38 @@ function clearCompleted() {
   saveTodos(); render();
 }
 
+// Recursively keep a node if it or any descendant satisfies predicate.
+// Returns a shallow-copied node with filtered children, or null if nothing matches.
+// Matched paths are auto-expanded so the matching children are always visible.
+function filterTree(todo, predicate) {
+  const filteredChildren = (todo.children || [])
+    .map(c => filterTree(c, predicate))
+    .filter(Boolean);
+
+  if (predicate(todo) || filteredChildren.length > 0) {
+    return {
+      ...todo,
+      children:  filteredChildren,
+      collapsed: filteredChildren.length > 0 ? false : todo.collapsed,
+    };
+  }
+  return null;
+}
+
 function getFiltered() {
-  let result =
-    currentFilter === 'active'      ? todos.filter(t => t.status !== 'completed') :
-    currentFilter === 'in-progress' ? todos.filter(t => t.status === 'in-progress') :
-    currentFilter === 'completed'   ? todos.filter(t => t.status === 'completed')  : [...todos];
+  let result;
+  if (currentFilter === 'all') {
+    result = [...todos];
+  } else {
+    const predicate =
+      currentFilter === 'active'      ? t => t.status !== 'completed'   :
+      currentFilter === 'in-progress' ? t => t.status === 'in-progress' :
+      currentFilter === 'completed'   ? t => t.status === 'completed'   : null;
+
+    result = predicate
+      ? todos.map(t => filterTree(t, predicate)).filter(Boolean)
+      : [...todos];
+  }
 
   if (sortOrder) {
     result = result.slice().sort((a, b) => {
@@ -274,7 +313,7 @@ function generateExportText(list, depth = 0) {
 
     if (t.steps && t.steps.length > 0) {
       t.steps.forEach((s, i) => {
-        if (s.text) lines.push(`${pad}    步骤 ${i + 1}. ${s.text}`);
+        if (s.text) lines.push(`${pad}    备注 ${i + 1}. ${s.text}`);
       });
     }
     if (t.children && t.children.length > 0) {
@@ -295,15 +334,16 @@ function render() {
   const mainEl  = document.getElementById('task-list-main');
   const textEl  = document.getElementById('text-export-panel');
 
-  if (viewMode === 'text') {
+  if (viewMode === 'text' && mainEl && textEl) {
     mainEl.classList.add('hidden');
     textEl.classList.remove('hidden');
-    document.getElementById('export-textarea').value = generateExportText(todos);
+    const ta = document.getElementById('export-textarea');
+    if (ta) ta.value = generateExportText(todos);
     return;
   }
 
-  mainEl.classList.remove('hidden');
-  textEl.classList.add('hidden');
+  if (mainEl) mainEl.classList.remove('hidden');
+  if (textEl) textEl.classList.add('hidden');
 
   const list  = document.getElementById('task-list');
   const empty = document.getElementById('empty-state');
@@ -476,7 +516,7 @@ function createTaskEl(todo) {
   const addStepBtn = document.createElement('button');
   addStepBtn.className = 'task-add-step';
   addStepBtn.innerHTML = '≡';
-  addStepBtn.title     = '添加工作步骤';
+  addStepBtn.title     = '添加工作备注';
   addStepBtn.addEventListener('click', (e) => { e.stopPropagation(); addStep(todo.id); });
 
   // Add child button
@@ -511,13 +551,13 @@ function createTaskEl(todo) {
 
     const stepsLbl = document.createElement('span');
     stepsLbl.className   = 'steps-label';
-    stepsLbl.textContent = `工作步骤 (${todo.steps.length})`;
+    stepsLbl.textContent = `工作备注 (${todo.steps.length})`;
     stepsLbl.addEventListener('click', () => toggleStepsCollapsed(todo.id));
 
     const stepsAddBtn = document.createElement('button');
     stepsAddBtn.className = 'steps-add-btn';
     stepsAddBtn.innerHTML = '+';
-    stepsAddBtn.title     = '添加步骤';
+    stepsAddBtn.title     = '添加备注';
     stepsAddBtn.addEventListener('click', (e) => { e.stopPropagation(); addStep(todo.id); });
 
     stepsHeader.append(stepsTgl, stepsLbl, stepsAddBtn);
@@ -561,7 +601,7 @@ function createTaskEl(todo) {
         const stepDel = document.createElement('button');
         stepDel.className = 'step-del';
         stepDel.innerHTML = '×';
-        stepDel.title     = '删除步骤';
+        stepDel.title     = '删除备注';
         stepDel.addEventListener('click', (e) => { e.stopPropagation(); deleteStep(todo.id, step.id); });
 
         stepItem.append(stepNum, stepText, stepMeta, stepDel);
