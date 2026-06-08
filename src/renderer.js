@@ -408,15 +408,17 @@ function createTaskEl(todo) {
   const li = document.createElement('li');
   li.className = `task-item priority-${todo.priority}${todo.status === 'completed' ? ' completed' : todo.status === 'in-progress' ? ' in-progress' : ''}`;
   li.dataset.id = todo.id;
-  li.draggable  = true;
+  li.draggable = false;   // only enable while pressing the handle
 
   li.addEventListener('dragstart', (e) => {
+    if (!li.draggable) { e.preventDefault(); return; }
     e.stopPropagation();
     dragId = todo.id;
     e.dataTransfer.effectAllowed = 'move';
     setTimeout(() => li.classList.add('dragging'), 0);
   });
   li.addEventListener('dragend', () => {
+    li.draggable = false;
     li.classList.remove('dragging');
     clearIndicators();
     dragId = null;
@@ -447,11 +449,15 @@ function createTaskEl(todo) {
     if (dragged) { todos = insertAt(dragged, todo.id, zone, next); saveTodos(); render(); }
   });
 
-  // Drag handle
+  // Drag handle — only pressing this dot activates drag
   const handle = document.createElement('div');
   handle.className = 'drag-handle';
   handle.innerHTML = '⠿';
   handle.title     = '拖动排序 / 拖入分组';
+  handle.addEventListener('mousedown', () => { li.draggable = true; });
+  handle.addEventListener('mouseup',   () => { li.draggable = false; });
+  // also cancel if mouse leaves handle before drag starts
+  handle.addEventListener('mouseleave', () => { if (!dragId) li.draggable = false; });
 
   // Collapse toggle — invisible placeholder when no children
   const hasChildren = todo.children.length > 0;
