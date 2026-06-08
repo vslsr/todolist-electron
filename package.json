@@ -26,7 +26,7 @@
     "appId": "com.todolist.app",
     "productName": "TODO List",
     "directories": {
-      "output": "build-output"
+      "output": "../build/win"
     },
     "win": {
       "target": "nsis",
