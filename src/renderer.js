@@ -5,6 +5,7 @@ let todos = [];
 let currentFilter = 'all';
 let sortOrder = null; // null | 'asc' | 'desc'
 let dragId = null;
+let viewMode = 'list'; // 'list' | 'text'
 
 const PRIORITY_WEIGHT = { high: 0, normal: 1, low: 2 };
 const SORT_STATES = [null, 'asc', 'desc'];
@@ -63,7 +64,7 @@ function countActive(list) {
 
 function calcProgress(todo) {
   if (!todo.children || todo.children.length === 0) {
-    return todo.status === 'completed' ? 100 : 0;
+    return todo.status === 'completed' ? 100 : todo.status === 'in-progress' ? 50 : 0;
   }
   const sum = todo.children.reduce((acc, c) => acc + calcProgress(c), 0);
   return Math.round(sum / todo.children.length);
@@ -257,16 +258,55 @@ function getZone(e, rowEl) {
   return 'inside';
 }
 
+// ── Text export ────────────────────────────────────────────────────────────
+
+const STATUS_SYM  = { pending: '[ ]', 'in-progress': '[→]', completed: '[✓]' };
+const PRIORITY_CN = { high: '重要', normal: '普通', low: '低优' };
+
+function generateExportText(list, depth = 0) {
+  if (!list || list.length === 0) return '';
+  const pad = '    '.repeat(depth);
+  return list.map(t => {
+    const sym  = STATUS_SYM[t.status]    ?? '[ ]';
+    const pri  = PRIORITY_CN[t.priority] ?? t.priority;
+    const pct  = calcProgress(t);
+    const lines = [`${pad}${sym} ${t.text} (${pri}) ${pct}%`];
+
+    if (t.steps && t.steps.length > 0) {
+      t.steps.forEach((s, i) => {
+        if (s.text) lines.push(`${pad}    步骤 ${i + 1}. ${s.text}`);
+      });
+    }
+    if (t.children && t.children.length > 0) {
+      const child = generateExportText(t.children, depth + 1);
+      if (child) lines.push(child);
+    }
+    return lines.join('\n');
+  }).join('\n');
+}
+
 // ── Render ─────────────────────────────────────────────────────────────────
 
 function render() {
-  const list  = document.getElementById('task-list');
-  const empty = document.getElementById('empty-state');
   const stats = document.getElementById('stats-text');
-
   const active = countActive(todos);
   stats.textContent = active === 0 ? '全部完成 ✓' : `${active} 项待完成`;
 
+  const mainEl  = document.getElementById('task-list-main');
+  const textEl  = document.getElementById('text-export-panel');
+
+  if (viewMode === 'text') {
+    mainEl.classList.add('hidden');
+    textEl.classList.remove('hidden');
+    document.getElementById('export-textarea').value = generateExportText(todos);
+    return;
+  }
+
+  mainEl.classList.remove('hidden');
+  textEl.classList.add('hidden');
+
+  const list  = document.getElementById('task-list');
+  const empty = document.getElementById('empty-state');
   list.innerHTML = '';
   const filtered = getFiltered();
 
@@ -569,10 +609,28 @@ document.getElementById('clear-completed-btn').addEventListener('click', clearCo
 document.querySelectorAll('.filter-btn[data-filter]').forEach(btn => {
   btn.addEventListener('click', () => {
     document.querySelectorAll('.filter-btn[data-filter]').forEach(b => b.classList.remove('active'));
+    document.getElementById('text-tab-btn').classList.remove('active');
     btn.classList.add('active');
     currentFilter = btn.dataset.filter;
+    viewMode = 'list';
     render();
   });
+});
+
+// Text export tab
+document.getElementById('text-tab-btn').addEventListener('click', () => {
+  document.querySelectorAll('.filter-btn[data-filter]').forEach(b => b.classList.remove('active'));
+  document.getElementById('text-tab-btn').classList.add('active');
+  viewMode = 'text';
+  render();
+});
+
+// Copy text export
+document.getElementById('copy-text-btn').addEventListener('click', () => {
+  const ta = document.getElementById('export-textarea');
+  navigator.clipboard.writeText(ta.value)
+    .then(() => showToast('已复制到剪贴板'))
+    .catch(() => { ta.select(); document.execCommand('copy'); showToast('已复制到剪贴板'); });
 });
 
 const sortBtn = document.getElementById('sort-btn');
