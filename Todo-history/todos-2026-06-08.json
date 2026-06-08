@@ -14,30 +14,9 @@
         "createdAt": "6月8日",
         "children": [],
         "collapsed": false,
-        "steps": [
-          {
-            "id": "s1780893996570oda",
-            "text": "查看腾风战甲如何使用和调出",
-            "createdAt": "6月8日"
-          },
-          {
-            "id": "s178089760832149m",
-            "text": "开通视频权限，查看复现方式",
-            "createdAt": "6月8日"
-          },
-          {
-            "id": "s1780898716233s1e",
-            "text": "查看是否有空气墙 修改Object层的碰撞",
-            "createdAt": "6月8日"
-          },
-          {
-            "id": "s1780898729249cdh",
-            "text": "确认是否要程序进行场景Cook",
-            "createdAt": "6月8日"
-          }
-        ],
+        "steps": [],
         "stepsCollapsed": false,
-        "status": "pending"
+        "status": "completed"
       },
       {
         "id": "17808907610892xe3",
@@ -126,6 +105,11 @@
           {
             "id": "s17808983125699ck",
             "text": "查找音效播放的替代资源",
+            "createdAt": "6月8日"
+          },
+          {
+            "id": "s1780903334487cnl",
+            "text": "音效Notify的添加方式和",
             "createdAt": "6月8日"
           }
         ],
