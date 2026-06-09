@@ -1,5 +1,10 @@
 'use strict';
 
+// Switch Windows console to UTF-8 before any output
+if (process.platform === 'win32') {
+  try { require('child_process').execSync('chcp 65001', { shell: true, stdio: 'pipe' }); } catch {}
+}
+
 const { WebSocketServer } = require('ws');
 const http = require('http');
 
