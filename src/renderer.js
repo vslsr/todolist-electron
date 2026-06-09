@@ -119,6 +119,7 @@ async function loadTodos() {
 
 async function saveTodos() {
   await window.electronAPI.store.set(STORE_KEY, todos);
+  wsSendTodos();   // push latest list to group server
 }
 
 // ── CRUD ───────────────────────────────────────────────────────────────────
@@ -1002,3 +1003,260 @@ document.getElementById('r-preset-del').addEventListener('click', () => {
 
 loadReminderSettings().then(() => loadReminderPresets());
 loadTodos();
+
+// ── Group / WebSocket client ────────────────────────────────────────────────
+
+let wsClient     = null;
+let wsMyId       = null;
+let wsConnected  = false;
+let groupUsers   = [];
+let groupVisible = false;
+
+const gEl = {
+  panel:      () => document.getElementById('group-panel'),
+  name:       () => document.getElementById('g-name'),
+  url:        () => document.getElementById('g-url'),
+  connectBtn: () => document.getElementById('g-connect'),
+  statusDot:  () => document.getElementById('g-status-dot'),
+  statusText: () => document.getElementById('g-status-text'),
+  userList:   () => document.getElementById('g-user-list'),
+  userCount:  () => document.getElementById('g-user-count'),
+};
+
+// -- Send helpers -----------------------------------------------------
+
+// Send todo list to server (called from saveTodos & on connect)
+function wsSendTodos() {
+  if (!wsClient || wsClient.readyState !== WebSocket.OPEN) return;
+  wsClient.send(JSON.stringify({ type: 'todos', todos }));
+}
+
+// Send current reminder state to server ----------------------------
+
+function wsSendStatus() {
+  if (!wsClient || wsClient.readyState !== WebSocket.OPEN) return;
+  wsClient.send(JSON.stringify({
+    type:      'status',
+    running:   rState.running,
+    paused:    rState.paused,
+    phase:     rState.phase,
+    remaining: rState.remaining,
+    workMin:   rSettings.workMin,
+  }));
+}
+
+// Periodic broadcast every 5 s so peers see live countdown
+setInterval(() => { if (rState.running && !rState.paused) wsSendStatus(); }, 5000);
+
+// -- Wrap rStart/rStop/rPause/rResume to auto-notify on state change ---
+// (button handlers do dynamic name lookup, so patching the names is enough)
+
+const _gOrigStart  = rStart;
+const _gOrigStop   = rStop;
+const _gOrigPause  = rPause;
+const _gOrigResume = rResume;
+rStart  = function rStart()  { _gOrigStart();  wsSendStatus(); };
+rStop   = function rStop()   { _gOrigStop();   wsSendStatus(); };
+rPause  = function rPause()  { _gOrigPause();  wsSendStatus(); };
+rResume = function rResume() { _gOrigResume(); wsSendStatus(); };
+
+// -- Connection status indicator --------------------------------------
+
+function gSetStatus(state, text) {
+  gEl.statusDot().className = `g-status-dot g-status-dot--${state}`;
+  gEl.statusText().textContent = text;
+}
+
+// -- Connect to server ------------------------------------------------
+
+function gConnect() {
+  const url  = gEl.url().value.trim();
+  const name = gEl.name().value.trim() || '匿名';
+  if (!url) { gSetStatus('err', '请填写地址'); return; }
+
+  if (wsClient) { wsClient.close(); wsClient = null; }
+  gSetStatus('connecting', '连接中…');
+  gEl.connectBtn().disabled = true;
+
+  let ws;
+  try { ws = new WebSocket(url); }
+  catch {
+    gSetStatus('err', '地址格式错误');
+    gEl.connectBtn().disabled = false;
+    return;
+  }
+  wsClient = ws;
+
+  ws.addEventListener('open', () => {
+    wsConnected = true;
+    gSetStatus('on', '已连接');
+    gEl.connectBtn().textContent = '断开';
+    gEl.connectBtn().classList.add('g-connect-btn--disconnect');
+    gEl.connectBtn().disabled = false;
+    ws.send(JSON.stringify({ type: 'join', name }));
+    wsSendStatus();
+    wsSendTodos();
+    saveGroupSettings();
+  });
+
+  ws.addEventListener('message', (e) => {
+    try {
+      const msg = JSON.parse(e.data);
+      if (msg.type === 'welcome')         { wsMyId = msg.id; }
+      else if (msg.type === 'users')      { groupUsers = msg.list; renderGroupUsers(); }
+      else if (msg.type === 'userTodos')  { showUserTodosOverlay(msg.name, msg.todos); }
+    } catch { /* ignore bad JSON */ }
+  });
+
+  ws.addEventListener('close', () => {
+    wsConnected = false;
+    wsMyId      = null;
+    groupUsers  = [];
+    wsClient    = null;
+    gSetStatus('off', '已断开');
+    gEl.connectBtn().textContent = '连接';
+    gEl.connectBtn().classList.remove('g-connect-btn--disconnect');
+    gEl.connectBtn().disabled = false;
+    renderGroupUsers();
+  });
+
+  ws.addEventListener('error', () => {
+    gSetStatus('err', '连接失败');
+    gEl.connectBtn().disabled = false;
+  });
+}
+
+function gDisconnect() {
+  if (wsClient) { wsClient.close(); }
+}
+
+// -- Render user list -------------------------------------------------
+
+function gEsc(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function renderGroupUsers() {
+  const ul = gEl.userList();
+  gEl.userCount().textContent = groupUsers.length;
+
+  if (groupUsers.length === 0) {
+    ul.innerHTML = '<li class="g-empty">暂无成员</li>';
+    return;
+  }
+
+  ul.innerHTML = '';
+  groupUsers.forEach(u => {
+    const isMe = u.id === wsMyId;
+
+    const stateKey   = !u.running ? 'idle'   : u.paused ? 'paused' : u.phase === 'break' ? 'break' : 'work';
+    const stateLabel = !u.running ? '未开始' : u.paused ? '已暂停' : u.phase === 'break' ? '休息中' : '工作中';
+    const timeLabel  = (u.running && !u.paused) ? rFmt(u.remaining) : '——';
+
+    const li = document.createElement('li');
+    li.className = `g-user-item${isMe ? ' g-user-item--me' : ''}`;
+    li.innerHTML = `
+      <span class="g-user-dot g-user-dot--${stateKey}"></span>
+      <span class="g-user-name">${gEsc(u.name)}${isMe ? '<span class="g-me-tag">我</span>' : ''}</span>
+      <span class="g-user-state g-user-state--${stateKey}">${stateLabel}</span>
+      <span class="g-user-time">${timeLabel}</span>
+      ${!isMe ? `<button class="g-view-btn" title="查看 Todo 列表">👁</button>` : '<span class="g-view-btn-ph"></span>'}`;
+
+    if (!isMe) {
+      li.querySelector('.g-view-btn').addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (wsClient && wsClient.readyState === WebSocket.OPEN) {
+          wsClient.send(JSON.stringify({ type: 'requestTodos', targetId: u.id }));
+        }
+      });
+    }
+    ul.appendChild(li);
+  });
+}
+
+// -- Read-only Todo overlay -------------------------------------------
+
+const STATUS_SYM_RO = { pending: '○', 'in-progress': '◑', completed: '●' };
+const PRIORITY_CN_RO = { high: '重要', normal: '普通', low: '低优' };
+
+function renderTodoTreeRO(list, depth) {
+  if (!list || list.length === 0) return '';
+  return list.map(t => {
+    const pct  = calcProgress(t);
+    const sym  = STATUS_SYM_RO[t.status] || '○';
+    const pri  = PRIORITY_CN_RO[t.priority] || '';
+    const indent = depth * 20;
+    const children = renderTodoTreeRO(t.children, depth + 1);
+    const steps = (t.steps || []).map(s =>
+      `<div class="ro-step" style="padding-left:${indent + 32}px">· ${gEsc(s.text)}</div>`
+    ).join('');
+    return `
+      <div class="ro-item ro-depth-${Math.min(depth, 3)}" style="padding-left:${indent + 8}px">
+        <span class="ro-sym ro-sym--${t.status}">${sym}</span>
+        <span class="ro-title${t.status === 'completed' ? ' ro-done' : ''}">${gEsc(t.text)}</span>
+        <span class="ro-meta">${pri}</span>
+        <span class="ro-pct">${Math.round(pct)}%</span>
+      </div>
+      ${steps}${children}`;
+  }).join('');
+}
+
+function showUserTodosOverlay(name, todoList) {
+  const overlay = document.getElementById('user-todos-overlay');
+  document.getElementById('user-todos-name').textContent = name + ' 的 Todo 列表';
+  const content = document.getElementById('user-todos-content');
+
+  if (!todoList || todoList.length === 0) {
+    content.innerHTML = '<div class="ro-empty">暂无任务</div>';
+  } else {
+    const migrated = todoList.map(migrate);
+    content.innerHTML = renderTodoTreeRO(migrated, 0);
+  }
+  overlay.classList.remove('hidden');
+}
+
+function hideUserTodosOverlay() {
+  document.getElementById('user-todos-overlay').classList.add('hidden');
+}
+
+// -- Event bindings ---------------------------------------------------
+
+document.getElementById('group-tab-btn').addEventListener('click', () => {
+  groupVisible = !groupVisible;
+  gEl.panel().classList.toggle('hidden', !groupVisible);
+  document.getElementById('group-tab-btn').classList.toggle('active', groupVisible);
+});
+
+gEl.connectBtn().addEventListener('click', () => {
+  if (wsConnected) gDisconnect(); else gConnect();
+});
+
+gEl.name().addEventListener('change', () => {
+  if (wsClient && wsClient.readyState === WebSocket.OPEN) {
+    wsClient.send(JSON.stringify({ type: 'join', name: gEl.name().value.trim() || '匿名' }));
+  }
+  saveGroupSettings();
+});
+
+gEl.url().addEventListener('change', saveGroupSettings);
+
+// -- Persist settings -------------------------------------------------
+
+async function loadGroupSettings() {
+  const saved = await window.electronAPI.store.get('groupSettings');
+  if (saved) {
+    if (saved.name) gEl.name().value = saved.name;
+    if (saved.url)  gEl.url().value  = saved.url;
+  }
+}
+
+function saveGroupSettings() {
+  window.electronAPI.store.set('groupSettings', {
+    name: gEl.name().value.trim(),
+    url:  gEl.url().value.trim(),
+  });
+}
+
+document.getElementById('user-todos-back').addEventListener('click', hideUserTodosOverlay);
+
+loadGroupSettings();
