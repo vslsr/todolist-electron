@@ -1,0 +1,176 @@
+[
+  {
+    "id": "1780885417836b5mo",
+    "text": "怀旧服bug修复",
+    "completed": false,
+    "priority": "high",
+    "createdAt": "6月8日",
+    "children": [
+      {
+        "id": "17808907610892xe3",
+        "text": "【外团反馈】【赛季】【时光流金-樱之谷】【偶现】【测试服2未复现】转至C区BOSS第二形态场景后不显示武器模型，开枪也没反应，需要主动切枪才恢复正常(代宝修复)",
+        "completed": false,
+        "priority": "normal",
+        "createdAt": "6月8日",
+        "children": [],
+        "collapsed": false,
+        "steps": [
+          {
+            "id": "s1780910902623rnh",
+            "text": "待测试",
+            "createdAt": "6月8日"
+          }
+        ],
+        "stepsCollapsed": true,
+        "status": "in-progress"
+      }
+    ],
+    "collapsed": false,
+    "steps": [],
+    "stepsCollapsed": false,
+    "status": "pending"
+  },
+  {
+    "id": "1780885404804yoox",
+    "text": "AD44开发任务",
+    "completed": false,
+    "priority": "normal",
+    "createdAt": "6月8日",
+    "children": [
+      {
+        "id": "17808854715478gw8",
+        "text": "A-T01-P-02-02\t普通阀门交互阶段\t播放阀门转动动画与循环音效",
+        "completed": false,
+        "priority": "normal",
+        "createdAt": "6月8日",
+        "children": [],
+        "collapsed": false,
+        "steps": [
+          {
+            "id": "s1780898265889sxp",
+            "text": "播放动画在客户端进行，通过进度进行计算",
+            "createdAt": "6月8日"
+          },
+          {
+            "id": "s1780898287913fnn",
+            "text": "循环音效：查找播放音效的方法",
+            "createdAt": "6月8日"
+          },
+          {
+            "id": "s17808983125699ck",
+            "text": "查找音效播放的替代资源",
+            "createdAt": "6月8日"
+          },
+          {
+            "id": "s1780903334487cnl",
+            "text": "音效Notify的添加方式",
+            "createdAt": "6月8日"
+          }
+        ],
+        "stepsCollapsed": true,
+        "status": "in-progress"
+      },
+      {
+        "id": "1780972203932l90a",
+        "text": "进入任务区直接开始任务的功能",
+        "status": "pending",
+        "priority": "normal",
+        "createdAt": "6月9日",
+        "children": [],
+        "collapsed": false,
+        "steps": [
+          {
+            "id": "s1780972240427k7f",
+            "text": "查看一下功能点和策划案是否需要",
+            "createdAt": "6月9日"
+          }
+        ],
+        "stepsCollapsed": true
+      },
+      {
+        "id": "1780973281586dw5d",
+        "text": "小地图显示的功能",
+        "status": "pending",
+        "priority": "normal",
+        "createdAt": "6月9日",
+        "children": [],
+        "collapsed": false,
+        "steps": [],
+        "stepsCollapsed": false
+      }
+    ],
+    "collapsed": false,
+    "steps": [],
+    "stepsCollapsed": false,
+    "status": "pending"
+  },
+  {
+    "id": "1780885445572f4zn",
+    "text": "Lyra学习",
+    "completed": false,
+    "priority": "low",
+    "createdAt": "6月8日",
+    "children": [
+      {
+        "id": "1780893948441zfw2",
+        "text": "添加删除建筑功能",
+        "completed": false,
+        "priority": "low",
+        "createdAt": "6月8日",
+        "children": [],
+        "collapsed": false,
+        "steps": [
+          {
+            "id": "s1780915224716w0i",
+            "text": "需要新增和配置输入",
+            "createdAt": "6月8日"
+          },
+          {
+            "id": "s1780968850204dg6",
+            "text": "待验证",
+            "createdAt": "6月9日"
+          }
+        ],
+        "stepsCollapsed": false,
+        "status": "pending"
+      },
+      {
+        "id": "17809688651004e3n",
+        "text": "学习基于GAS的建造系统 - 建筑放置流程",
+        "status": "in-progress",
+        "priority": "low",
+        "createdAt": "6月9日",
+        "children": [],
+        "collapsed": false,
+        "steps": [
+          {
+            "id": "s1780968934917mc3",
+            "text": "学习AI写的文档，并对照查看代码",
+            "createdAt": "6月9日"
+          },
+          {
+            "id": "s1780968961668rl9",
+            "text": "不清楚的地方让AI继续补充",
+            "createdAt": "6月9日"
+          }
+        ],
+        "stepsCollapsed": false
+      },
+      {
+        "id": "17809715367153cbc",
+        "text": "添加多个建筑和放置列表切换的功能",
+        "status": "pending",
+        "priority": "low",
+        "createdAt": "6月9日",
+        "children": [],
+        "collapsed": false,
+        "steps": [],
+        "stepsCollapsed": false
+      }
+    ],
+    "collapsed": false,
+    "steps": [],
+    "stepsCollapsed": false,
+    "status": "pending"
+  }
+]
