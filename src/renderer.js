@@ -732,7 +732,7 @@ const rEl = {
   fill:    () => document.getElementById('r-fill'),
 };
 
-let rSettings = { workMin: 25, breakMin: 5, loop: true };
+let rSettings = { workMin: 25, breakMin: 5, loop: true, selectedPreset: null };
 let rState    = { running: false, paused: false, phase: 'work', remaining: 0, total: 0, timer: null };
 
 async function loadReminderSettings() {
@@ -892,6 +892,17 @@ async function loadReminderPresets() {
   const saved = await window.electronAPI.store.get('reminderPresets');
   rPresets = saved || [];
   rRenderPresets();
+  // Restore previously selected preset and apply its times to inputs
+  const idx = rSettings.selectedPreset;
+  if (idx !== null && idx !== undefined && rPresets[idx]) {
+    const sel = document.getElementById('r-preset-sel');
+    sel.value = String(idx);
+    document.getElementById('r-preset-del').disabled = false;
+    const p = rPresets[idx];
+    rEl.work().value = p.workMin;
+    rEl.brk().value  = p.breakMin;
+    rEl.mode().value = p.loop ? 'loop' : 'once';
+  }
 }
 
 function saveReminderPresets() {
@@ -902,26 +913,43 @@ function saveReminderPresets() {
 function rSyncSelectedPreset() {
   const sel = document.getElementById('r-preset-sel');
   const idx = parseInt(sel.value);
-  if (isNaN(idx) || !rPresets[idx]) return;
-  rPresets[idx].workMin  = Math.max(1, parseInt(rEl.work().value) || 25);
-  rPresets[idx].breakMin = Math.max(1, parseInt(rEl.brk().value)  || 5);
-  rPresets[idx].loop     = rEl.mode().value === 'loop';
-  saveReminderPresets();
-  rRenderPresets(idx); // refresh label to show updated values
+  // Always persist current input values to rSettings
+  rSettings.workMin  = Math.max(1, parseInt(rEl.work().value) || 25);
+  rSettings.breakMin = Math.max(1, parseInt(rEl.brk().value)  || 5);
+  rSettings.loop     = rEl.mode().value === 'loop';
+  if (!isNaN(idx) && rPresets[idx]) {
+    // Also update the linked preset in-place
+    rPresets[idx].workMin  = rSettings.workMin;
+    rPresets[idx].breakMin = rSettings.breakMin;
+    rPresets[idx].loop     = rSettings.loop;
+    rSettings.selectedPreset = idx;
+    saveReminderPresets();
+    rRenderPresets(idx);
+  }
+  saveReminderSettings();
 }
 
 rEl.work().addEventListener('change', rSyncSelectedPreset);
 rEl.brk().addEventListener('change',  rSyncSelectedPreset);
 rEl.mode().addEventListener('change', rSyncSelectedPreset);
 
-// Apply preset to inputs
+// Apply preset to inputs and persist selection
 document.getElementById('r-preset-sel').addEventListener('change', e => {
   const idx = parseInt(e.target.value);
-  if (isNaN(idx) || !rPresets[idx]) return;
+  if (isNaN(idx) || !rPresets[idx]) {
+    rSettings.selectedPreset = null;
+    saveReminderSettings();
+    return;
+  }
   const p = rPresets[idx];
   rEl.work().value = p.workMin;
   rEl.brk().value  = p.breakMin;
   rEl.mode().value = p.loop ? 'loop' : 'once';
+  rSettings.workMin  = p.workMin;
+  rSettings.breakMin = p.breakMin;
+  rSettings.loop     = p.loop;
+  rSettings.selectedPreset = idx;
+  saveReminderSettings();
   document.getElementById('r-preset-del').disabled = false;
 });
 
@@ -966,10 +994,11 @@ document.getElementById('r-preset-del').addEventListener('click', () => {
   const idx = parseInt(sel.value);
   if (isNaN(idx) || !rPresets[idx]) return;
   rPresets.splice(idx, 1);
+  rSettings.selectedPreset = null;
+  saveReminderSettings();
   saveReminderPresets();
   rRenderPresets();
 });
 
-loadReminderSettings();
-loadReminderPresets();
+loadReminderSettings().then(() => loadReminderPresets());
 loadTodos();

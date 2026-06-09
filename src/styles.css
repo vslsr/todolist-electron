@@ -16,10 +16,8 @@ body {
   display: flex;
   flex-direction: column;
   height: 100vh;
-  max-width: 800px;
-  margin: 0 auto;
+  width: 100%;
   background: #fff;
-  box-shadow: 0 0 40px rgba(0,0,0,0.08);
 }
 
 /* Header */
