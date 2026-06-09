@@ -1,73 +1,5 @@
 [
   {
-    "id": "1780988311696f8ip",
-    "text": "TGAD1",
-    "status": "pending",
-    "priority": "normal",
-    "createdAt": "6月9日",
-    "children": [
-      {
-        "id": "17809883579658t3g",
-        "text": "2",
-        "status": "pending",
-        "priority": "normal",
-        "createdAt": "6月9日",
-        "children": [],
-        "collapsed": false,
-        "steps": [],
-        "stepsCollapsed": false,
-        "transferHistory": [],
-        "transferredTo": null,
-        "transferredFrom": null,
-        "uuid": "107b7e73-1248-458b-bf4d-56079bb3d839"
-      }
-    ],
-    "collapsed": false,
-    "steps": [
-      {
-        "id": "s17809888449653d7",
-        "text": "测试完毕",
-        "createdAt": "6月9日"
-      }
-    ],
-    "stepsCollapsed": false,
-    "transferHistory": [
-      {
-        "direction": "out",
-        "name": "骆思睿2",
-        "time": 1780988317061
-      },
-      {
-        "direction": "in",
-        "name": "骆思睿",
-        "time": 1780988317433
-      },
-      {
-        "direction": "out",
-        "name": "骆思睿",
-        "time": 1780988364109
-      },
-      {
-        "direction": "in",
-        "name": "骆思睿2",
-        "time": 1780988364110
-      },
-      {
-        "direction": "out",
-        "name": "骆思睿2",
-        "time": 1780988852045
-      },
-      {
-        "direction": "in",
-        "name": "骆思睿",
-        "time": 1780988852046
-      }
-    ],
-    "transferredTo": null,
-    "transferredFrom": "骆思睿",
-    "uuid": "9a471831-a5ed-411a-ad73-acff6a031f76"
-  },
-  {
     "id": "1780885417836b5mo",
     "text": "怀旧服bug修复",
     "completed": false,
@@ -89,22 +21,22 @@
             "createdAt": "6月8日"
           }
         ],
-        "stepsCollapsed": true,
+        "stepsCollapsed": false,
         "status": "completed",
         "transferHistory": [],
         "transferredTo": null,
         "transferredFrom": null,
-        "uuid": "05bbb847-cff2-4f0f-97c5-53326f95645a"
+        "uuid": "0e844e5d-512e-4ffb-9328-68ad4271fc6b"
       }
     ],
-    "collapsed": false,
+    "collapsed": true,
     "steps": [],
     "stepsCollapsed": false,
     "status": "pending",
     "transferHistory": [],
     "transferredTo": null,
     "transferredFrom": null,
-    "uuid": "95ddf4c4-211a-430f-9b9e-c7d57be9fa21"
+    "uuid": "640319ea-8c0d-4889-8362-ed22f0640d92"
   },
   {
     "id": "1780885404804yoox",
@@ -143,12 +75,12 @@
             "createdAt": "6月8日"
           }
         ],
-        "stepsCollapsed": false,
+        "stepsCollapsed": true,
         "status": "in-progress",
         "transferHistory": [],
         "transferredTo": null,
         "transferredFrom": null,
-        "uuid": "d4f072e4-c5d9-42b2-8341-40bd84ab87a5"
+        "uuid": "85b2ae56-c0c4-4ed5-993e-747719a9460e"
       },
       {
         "id": "1780972203932l90a",
@@ -169,7 +101,7 @@
         "transferHistory": [],
         "transferredTo": null,
         "transferredFrom": null,
-        "uuid": "fd79c0cd-d637-4579-9d8d-faf82f2f4f23"
+        "uuid": "8bb73d2d-1961-46ed-999b-1cdebed99f05"
       },
       {
         "id": "1780973281586dw5d",
@@ -184,7 +116,7 @@
         "transferHistory": [],
         "transferredTo": null,
         "transferredFrom": null,
-        "uuid": "a26738cd-fe6c-4eb0-904d-fb3baeb03318"
+        "uuid": "9d4c2e73-c910-4764-94ed-49e7c4d95f35"
       },
       {
         "id": "1780981293088u3kl",
@@ -199,7 +131,7 @@
         "transferHistory": [],
         "transferredTo": null,
         "transferredFrom": null,
-        "uuid": "e22167e0-dbb7-4d9b-a709-9b55447bdf70"
+        "uuid": "9e06ad03-97e8-42c4-9e1c-30af08a63685"
       },
       {
         "id": "1780981873842j565",
@@ -214,7 +146,7 @@
         "transferHistory": [],
         "transferredTo": null,
         "transferredFrom": null,
-        "uuid": "44dddbd5-5a37-46d9-b30b-e4aa20db1579"
+        "uuid": "2b5422ef-3163-488e-a33a-a09c61d18c0a"
       }
     ],
     "collapsed": false,
@@ -224,7 +156,7 @@
     "transferHistory": [],
     "transferredTo": null,
     "transferredFrom": null,
-    "uuid": "063efd62-fdfa-4f8a-9668-f7da767ec668"
+    "uuid": "6ce41196-0f26-41c1-81b0-2cb218a67f9e"
   },
   {
     "id": "1780885445572f4zn",
@@ -263,7 +195,7 @@
         "transferHistory": [],
         "transferredTo": null,
         "transferredFrom": null,
-        "uuid": "2089d9d7-97d9-4f74-930e-ad1e44ed5a55"
+        "uuid": "8aa05834-18fd-4b47-a1f0-81a3c23a873b"
       },
       {
         "id": "17809688651004e3n",
@@ -289,7 +221,7 @@
         "transferHistory": [],
         "transferredTo": null,
         "transferredFrom": null,
-        "uuid": "896e5df1-1f20-424d-b409-f2e7b027e11e"
+        "uuid": "f6de7e96-7245-42dc-b5a7-feb25c1a6224"
       },
       {
         "id": "17809715367153cbc",
@@ -304,7 +236,7 @@
         "transferHistory": [],
         "transferredTo": null,
         "transferredFrom": null,
-        "uuid": "0ab44c91-e541-4c87-aad0-ac84ac1e7d5f"
+        "uuid": "3f500c91-845a-429f-a8d1-1087cfc392bb"
       },
       {
         "id": "17809811481041n6v",
@@ -325,7 +257,7 @@
         "transferHistory": [],
         "transferredTo": null,
         "transferredFrom": null,
-        "uuid": "8e4e5d62-5e7a-4bdb-8e2c-857592a75e79"
+        "uuid": "5f2f0926-0ecf-4e2f-b20a-ba2ade04dfbe"
       }
     ],
     "collapsed": true,
@@ -335,6 +267,6 @@
     "transferHistory": [],
     "transferredTo": null,
     "transferredFrom": null,
-    "uuid": "c0a239cd-1121-4001-a986-c85547cd1d69"
+    "uuid": "0d59449f-cb66-49aa-9171-dd7967504a34"
   }
 ]
