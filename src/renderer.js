@@ -56,6 +56,87 @@ function isDescendant(parentId, childId) {
   return parent ? !!findById(childId, parent.children) : false;
 }
 
+// Returns ancestor path from root to direct parent of todoId.
+// Each entry carries the full node snapshot (uuid, text, priority, status, steps,
+// createdAt, transferHistory…) but NOT children, to avoid sending the whole subtree.
+// Returns null if todoId is not found anywhere.
+function getAncestorPath(todoId, list = todos, path = []) {
+  for (const t of list) {
+    if (t.id === todoId) return path;
+    const result = getAncestorPath(
+      todoId,
+      t.children,
+      [...path, {
+        uuid:            t.uuid,
+        text:            t.text,
+        priority:        t.priority,
+        status:          t.status,
+        steps:           t.steps,
+        createdAt:       t.createdAt,
+        stepsCollapsed:  t.stepsCollapsed,
+        transferHistory: t.transferHistory,
+        transferredTo:   t.transferredTo,
+        transferredFrom: t.transferredFrom,
+      }]
+    );
+    if (result !== null) return result;
+  }
+  return null;
+}
+
+// Walk/create the ancestor chain, return the children array where the item
+// should be inserted.
+// Strategy: match each ancestor by uuid first (anywhere in the full tree);
+// fall back to creating a new node at the current list level using the full
+// ancestor data that was shipped with the transfer.
+function ensureAncestorPath(ancestors, list) {
+  if (!ancestors || ancestors.length === 0) return list;
+  const [head, ...tail] = ancestors;
+
+  // 1. UUID match — the ancestor may already exist anywhere in the tree
+  let node = head.uuid ? findByUuid(head.uuid) : null;
+
+  // 2. Not found — create it at this level using the full shipped data
+  if (!node) {
+    node = migrate({
+      ...head,
+      id:       `${Date.now()}${Math.random().toString(36).slice(2, 6)}`,
+      children: [],
+    });
+    list.push(node);
+  }
+
+  return ensureAncestorPath(tail, node.children);
+}
+
+// Stable UUID — survives transfers unchanged (used for cross-user matching)
+function makeUuid() {
+  return (typeof crypto !== 'undefined' && crypto.randomUUID)
+    ? crypto.randomUUID()
+    : `${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}-${Math.random().toString(36).slice(2)}`;
+}
+
+// Recursively assign fresh local IDs to a todo subtree (avoids ID collision on receive).
+// uuid is intentionally NOT reassigned — it stays the same for cross-user matching.
+function reIdSubtree(t) {
+  return {
+    ...t,
+    id:       `${Date.now()}${Math.random().toString(36).slice(2, 6)}`,
+    // uuid preserved via ...t spread
+    children: (t.children || []).map(reIdSubtree),
+  };
+}
+
+// Search the full tree for a node by its stable uuid
+function findByUuid(uuid, list = todos) {
+  for (const t of list) {
+    if (t.uuid === uuid) return t;
+    const found = findByUuid(uuid, t.children);
+    if (found) return found;
+  }
+  return null;
+}
+
 const PRIORITY_OPTIONS = [['normal', '普通'], ['high', '重要'], ['low', '低优']];
 
 function countActive(list) {
@@ -87,25 +168,33 @@ function normalizeStatus(t) {
 function migrate(t) {
   return {
     ...t,
-    status:         normalizeStatus(t),
-    children:       (t.children || []).map(migrate),
-    collapsed:      t.collapsed ?? false,
-    steps:          (t.steps || []).map(s => ({ id: s.id, text: s.text || '', createdAt: s.createdAt || '' })),
-    stepsCollapsed: t.stepsCollapsed ?? false,
+    uuid:            t.uuid || makeUuid(),          // backfill for pre-uuid data
+    status:          normalizeStatus(t),
+    children:        (t.children || []).map(migrate),
+    collapsed:       t.collapsed ?? false,
+    steps:           (t.steps || []).map(s => ({ id: s.id, text: s.text || '', createdAt: s.createdAt || '' })),
+    stepsCollapsed:  t.stepsCollapsed  ?? false,
+    transferHistory: t.transferHistory || [],
+    transferredTo:   t.transferredTo   || null,   // { name, time } when sent out
+    transferredFrom: t.transferredFrom || null,   // name string when received
   };
 }
 
 function createTodo(text = '', priority = 'normal') {
   return {
-    id:             `${Date.now()}${Math.random().toString(36).slice(2, 6)}`,
-    text:           text.trim(),
-    status:         'pending',
+    id:              `${Date.now()}${Math.random().toString(36).slice(2, 6)}`,
+    uuid:            makeUuid(),   // stable cross-user identifier, never reassigned
+    text:            text.trim(),
+    status:          'pending',
     priority,
-    createdAt:      new Date().toLocaleDateString('zh-CN', { month: 'short', day: 'numeric' }),
-    children:       [],
-    collapsed:      false,
-    steps:          [],
-    stepsCollapsed: false,
+    createdAt:       new Date().toLocaleDateString('zh-CN', { month: 'short', day: 'numeric' }),
+    children:        [],
+    collapsed:       false,
+    steps:           [],
+    stepsCollapsed:  false,
+    transferHistory: [],
+    transferredTo:   null,
+    transferredFrom: null,
   };
 }
 
@@ -312,6 +401,13 @@ function generateExportText(list, depth = 0) {
     const pct  = calcProgress(t);
     const lines = [`${pad}${sym} ${t.text} (${pri}) ${pct}%`];
 
+    if (t.transferHistory && t.transferHistory.length > 0) {
+      t.transferHistory.forEach(h => {
+        const arrow = h.direction === 'out' ? '→' : '←';
+        const label = h.direction === 'out' ? '发给' : '来自';
+        lines.push(`${pad}    流转 ${arrow} ${label} ${h.name}`);
+      });
+    }
     if (t.steps && t.steps.length > 0) {
       t.steps.forEach((s, i) => {
         if (s.text) lines.push(`${pad}    备注 ${i + 1}. ${s.text}`);
@@ -407,9 +503,16 @@ function createRingEl(pct) {
 
 function createTaskEl(todo) {
   const li = document.createElement('li');
-  li.className = `task-item priority-${todo.priority}${todo.status === 'completed' ? ' completed' : todo.status === 'in-progress' ? ' in-progress' : ''}`;
+  li.className = [
+    `task-item priority-${todo.priority}`,
+    todo.status === 'completed'   ? 'completed'            : '',
+    todo.status === 'in-progress' ? 'in-progress'          : '',
+    todo.transferredTo            ? 'task-item--transferred': '',
+    todo.transferredFrom          ? 'task-item--received'   : '',
+  ].filter(Boolean).join(' ');
   li.dataset.id = todo.id;
   li.draggable = false;   // only enable while pressing the handle
+  const isTransferred = !!todo.transferredTo;   // read-only lock for transferred-out items
 
   li.addEventListener('dragstart', (e) => {
     if (!li.draggable) { e.preventDefault(); return; }
@@ -483,33 +586,37 @@ function createTaskEl(todo) {
   badge.addEventListener('mousedown', (e) => e.stopPropagation());
   badge.addEventListener('change', (e) => {
     e.stopPropagation();
+    if (isTransferred) return;
     const t = findById(todo.id);
     if (t) { t.priority = e.target.value; saveTodos(); render(); }
   });
+  if (isTransferred) badge.disabled = true;
 
   // Checkbox
   const checkbox = document.createElement('div');
   checkbox.className = `task-checkbox${todo.status === 'completed' ? ' checked' : todo.status === 'in-progress' ? ' in-progress' : ''}`;
-  checkbox.addEventListener('click', (e) => { e.stopPropagation(); toggleTodo(todo.id); });
+  checkbox.addEventListener('click', (e) => { e.stopPropagation(); if (!isTransferred) toggleTodo(todo.id); });
 
-  // Text (inline-editable)
+  // Text (inline-editable, locked for transferred-out items)
   const textEl = document.createElement('span');
   textEl.className       = 'task-text';
   textEl.textContent     = todo.text;
-  textEl.contentEditable = 'true';
+  textEl.contentEditable = isTransferred ? 'false' : 'true';
   textEl.spellcheck      = false;
-  textEl.addEventListener('blur', () => {
-    const typed = textEl.textContent.trim();
-    if (!typed && todo.text === '') {
-      deleteTodo(todo.id); // auto-inserted empty child left blank → remove
-    } else {
-      updateTodoText(todo.id, textEl.textContent);
-    }
-  });
-  textEl.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter')  { e.preventDefault(); textEl.blur(); }
-    if (e.key === 'Escape') { textEl.textContent = todo.text; textEl.blur(); }
-  });
+  if (!isTransferred) {
+    textEl.addEventListener('blur', () => {
+      const typed = textEl.textContent.trim();
+      if (!typed && todo.text === '') {
+        deleteTodo(todo.id); // auto-inserted empty child left blank → remove
+      } else {
+        updateTodoText(todo.id, textEl.textContent);
+      }
+    });
+    textEl.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter')  { e.preventDefault(); textEl.blur(); }
+      if (e.key === 'Escape') { textEl.textContent = todo.text; textEl.blur(); }
+    });
+  }
 
   // Date badge
   const meta = document.createElement('span');
@@ -526,6 +633,13 @@ function createTaskEl(todo) {
   addStepBtn.title     = '添加工作备注';
   addStepBtn.addEventListener('click', (e) => { e.stopPropagation(); addStep(todo.id); });
 
+  // Transfer (paper-plane) button
+  const transferBtn = document.createElement('button');
+  transferBtn.className = 'task-transfer-btn';
+  transferBtn.innerHTML = '✈';
+  transferBtn.title     = '流转给成员';
+  transferBtn.addEventListener('click', (e) => { e.stopPropagation(); showTransferDropdown(transferBtn, todo.id); });
+
   // Add child button
   const addChild = document.createElement('button');
   addChild.className = 'task-add-child';
@@ -540,8 +654,82 @@ function createTaskEl(todo) {
   del.title     = '删除';
   del.addEventListener('click', (e) => { e.stopPropagation(); deleteTodo(todo.id); });
 
-  row.append(handle, toggle, badge, checkbox, textEl, meta, ring, addStepBtn, addChild, del);
+  // Hide editing actions on transferred-out items (preview + delete only)
+  if (isTransferred) {
+    addStepBtn.style.display = 'none';
+    transferBtn.style.display = 'none';
+    addChild.style.display   = 'none';
+  }
+
+  // Transfer status badge (inline after text)
+  const rowItems = [handle, toggle, badge, checkbox, textEl];
+  if (todo.transferredTo) {
+    const tb = document.createElement('span');
+    tb.className   = 'transfer-status-badge transfer-status-badge--out';
+    tb.textContent = `✈ 已流转给 ${todo.transferredTo.name}`;
+    rowItems.push(tb);
+  } else if (todo.transferredFrom) {
+    const tb = document.createElement('span');
+    tb.className   = 'transfer-status-badge transfer-status-badge--in';
+    tb.textContent = `← 来自 ${todo.transferredFrom}`;
+    rowItems.push(tb);
+  }
+  rowItems.push(meta, ring, addStepBtn, transferBtn, addChild, del);
+  row.append(...rowItems);
   li.appendChild(row);
+
+  // ── Transfer history section ──────────────────────────────
+  if (todo.transferHistory && todo.transferHistory.length > 0) {
+    const thSection = document.createElement('div');
+    thSection.className = 'task-steps task-transfer-history';
+
+    const thHeader = document.createElement('div');
+    thHeader.className = 'steps-header';
+
+    const thTgl = document.createElement('span');
+    thTgl.className   = 'steps-toggle';
+    thTgl.textContent = '▼';
+
+    const thLbl = document.createElement('span');
+    thLbl.className   = 'steps-label transfer-history-label';
+    thLbl.textContent = `流转历史 (${todo.transferHistory.length})`;
+
+    let thCollapsed = false;
+    const thList = document.createElement('ol');
+    thList.className = 'steps-list';
+
+    todo.transferHistory.forEach((h, idx) => {
+      const item = document.createElement('li');
+      item.className = 'step-item';
+
+      const num = document.createElement('span');
+      num.className   = 'step-num';
+      num.textContent = `${idx + 1}.`;
+
+      const txt = document.createElement('span');
+      txt.className   = `step-text transfer-history-text transfer-history-text--${h.direction}`;
+      txt.textContent = `${h.direction === 'out' ? '→ 发给' : '← 来自'} ${h.name}`;
+
+      const timeMeta = document.createElement('span');
+      timeMeta.className   = 'step-meta';
+      timeMeta.textContent = new Date(h.time).toLocaleString('zh-CN', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+
+      item.append(num, txt, timeMeta);
+      thList.appendChild(item);
+    });
+
+    const toggleTH = () => {
+      thCollapsed = !thCollapsed;
+      thTgl.textContent = thCollapsed ? '▶' : '▼';
+      thList.style.display = thCollapsed ? 'none' : '';
+    };
+    thTgl.addEventListener('click', toggleTH);
+    thLbl.addEventListener('click', toggleTH);
+
+    thHeader.append(thTgl, thLbl);
+    thSection.append(thHeader, thList);
+    li.appendChild(thSection);
+  }
 
   // ── Steps section ─────────────────────────────────────────
   if (todo.steps && todo.steps.length > 0) {
@@ -566,6 +754,7 @@ function createTaskEl(todo) {
     stepsAddBtn.innerHTML = '+';
     stepsAddBtn.title     = '添加备注';
     stepsAddBtn.addEventListener('click', (e) => { e.stopPropagation(); addStep(todo.id); });
+    if (isTransferred) stepsAddBtn.style.display = 'none';
 
     stepsHeader.append(stepsTgl, stepsLbl, stepsAddBtn);
     stepsSection.appendChild(stepsHeader);
@@ -586,20 +775,22 @@ function createTaskEl(todo) {
         const stepText = document.createElement('span');
         stepText.className       = 'step-text';
         stepText.textContent     = step.text;
-        stepText.contentEditable = 'true';
+        stepText.contentEditable = isTransferred ? 'false' : 'true';
         stepText.spellcheck      = false;
-        stepText.addEventListener('blur', () => {
-          const typed = stepText.textContent.trim();
-          if (!typed && step.text === '') {
-            deleteStep(todo.id, step.id);
-          } else {
-            updateStep(todo.id, step.id, stepText.textContent);
-          }
-        });
-        stepText.addEventListener('keydown', (e) => {
-          if (e.key === 'Enter')  { e.preventDefault(); stepText.blur(); }
-          if (e.key === 'Escape') { stepText.textContent = step.text; stepText.blur(); }
-        });
+        if (!isTransferred) {
+          stepText.addEventListener('blur', () => {
+            const typed = stepText.textContent.trim();
+            if (!typed && step.text === '') {
+              deleteStep(todo.id, step.id);
+            } else {
+              updateStep(todo.id, step.id, stepText.textContent);
+            }
+          });
+          stepText.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter')  { e.preventDefault(); stepText.blur(); }
+            if (e.key === 'Escape') { stepText.textContent = step.text; stepText.blur(); }
+          });
+        }
 
         const stepMeta = document.createElement('span');
         stepMeta.className   = 'step-meta';
@@ -610,6 +801,7 @@ function createTaskEl(todo) {
         stepDel.innerHTML = '×';
         stepDel.title     = '删除备注';
         stepDel.addEventListener('click', (e) => { e.stopPropagation(); deleteStep(todo.id, step.id); });
+        if (isTransferred) stepDel.style.display = 'none';
 
         stepItem.append(stepNum, stepText, stepMeta, stepDel);
         stepsList.appendChild(stepItem);
@@ -1004,13 +1196,79 @@ document.getElementById('r-preset-del').addEventListener('click', () => {
 loadReminderSettings().then(() => loadReminderPresets());
 loadTodos();
 
+// ── Transfer (流转) ────────────────────────────────────────────────────────
+
+let _transferDropdown = null;
+
+function showTransferDropdown(anchorBtn, todoId) {
+  // close existing
+  if (_transferDropdown) { _transferDropdown.remove(); _transferDropdown = null; }
+
+  if (!wsConnected) { showToast('请先连接工作组服务器'); return; }
+  const members = (groupUsers || []).filter(u => u.id !== wsMyId);
+  if (members.length === 0) { showToast('当前没有其他在线成员'); return; }
+
+  const dropdown = document.createElement('div');
+  dropdown.className = 'transfer-dropdown';
+
+  const titleEl = document.createElement('div');
+  titleEl.className   = 'transfer-dropdown-title';
+  titleEl.textContent = '流转给…';
+  dropdown.appendChild(titleEl);
+
+  members.forEach(m => {
+    const item = document.createElement('div');
+    item.className   = 'transfer-dropdown-item';
+    item.textContent = m.name;
+    item.addEventListener('click', (e) => {
+      e.stopPropagation();
+      transferTodo(todoId, m.id, m.name);
+      dropdown.remove();
+      _transferDropdown = null;
+    });
+    dropdown.appendChild(item);
+  });
+
+  const rect = anchorBtn.getBoundingClientRect();
+  dropdown.style.cssText = `position:fixed;top:${rect.bottom + 4}px;left:${rect.left}px;z-index:500`;
+  document.body.appendChild(dropdown);
+  _transferDropdown = dropdown;
+
+  setTimeout(() => {
+    document.addEventListener('click', function _close() {
+      dropdown.remove();
+      _transferDropdown = null;
+      document.removeEventListener('click', _close);
+    });
+  }, 0);
+}
+
+function transferTodo(todoId, toUserId, toUserName) {
+  const todo = findById(todoId);
+  if (!todo) return;
+
+  const timeNow = Date.now();
+  todo.transferHistory = [...(todo.transferHistory || []),
+    { direction: 'out', name: toUserName, time: timeNow }];
+  todo.transferredTo = { name: toUserName, time: timeNow };
+
+  if (wsClient && wsClient.readyState === WebSocket.OPEN) {
+    const ancestors = getAncestorPath(todoId) || [];  // [] = top-level item
+    wsClient.send(JSON.stringify({ type: 'transfer', todo, ancestors, toUserId, toUserName }));
+  }
+  saveTodos();
+  render();
+  showToast(`✈ 已流转给 ${toUserName}`);
+}
+
 // ── Group / WebSocket client ────────────────────────────────────────────────
 
-let wsClient     = null;
-let wsMyId       = null;
-let wsConnected  = false;
-let groupUsers   = [];
-let groupVisible = false;
+let wsClient      = null;
+let wsMyId        = null;
+let wsConnected   = false;
+let groupUsers    = [];
+let groupVisible  = false;
+let viewingUserId = null;   // id of user whose todos overlay is open
 
 const gEl = {
   panel:      () => document.getElementById('group-panel'),
@@ -1102,9 +1360,52 @@ function gConnect() {
   ws.addEventListener('message', (e) => {
     try {
       const msg = JSON.parse(e.data);
-      if (msg.type === 'welcome')         { wsMyId = msg.id; }
-      else if (msg.type === 'users')      { groupUsers = msg.list; renderGroupUsers(); }
-      else if (msg.type === 'userTodos')  { showUserTodosOverlay(msg.name, msg.todos); }
+      if (msg.type === 'welcome')              { wsMyId = msg.id; }
+      else if (msg.type === 'users')           { groupUsers = msg.list; renderGroupUsers(); }
+      else if (msg.type === 'userTodos')       { showUserTodosOverlay(msg.userId, msg.name, msg.todos); }
+      else if (msg.type === 'userTodosUpdated') {
+        if (viewingUserId === msg.userId) showUserTodosOverlay(msg.userId, msg.name, msg.todos);
+      }
+      else if (msg.type === 'transferred') {
+        const timeNow  = Date.now();
+        const newHistory = [
+          ...(msg.todo.transferHistory || []),
+          { direction: 'in', name: msg.fromName, time: timeNow },
+        ];
+
+        // ── Match by stable uuid (cross-user, cross-session) ─────────────
+        const existing = msg.todo.uuid ? findByUuid(msg.todo.uuid) : null;
+
+        if (existing) {
+          // UPDATE in-place — keep local id, uuid, children, createdAt
+          existing.text            = msg.todo.text;
+          existing.status          = msg.todo.status;
+          existing.priority        = msg.todo.priority;
+          existing.steps           = (msg.todo.steps || []).map(s => ({ id: s.id, text: s.text || '', createdAt: s.createdAt || '' }));
+          existing.transferredTo   = null;
+          existing.transferredFrom = msg.fromName;
+          existing.transferHistory = newHistory;
+          saveTodos();
+          render();
+          showToast(`🔄 已更新来自 ${msg.fromName} 的流转：${msg.todo.text}`);
+        } else {
+          // CREATE — uuid not seen before; use ancestor path to place correctly
+          const targetList = ensureAncestorPath(msg.ancestors || [], todos);
+          const received   = migrate(reIdSubtree({
+            ...msg.todo,
+            transferredTo:   null,
+            transferredFrom: msg.fromName,
+            transferHistory: newHistory,
+          }));
+          targetList.push(received);
+          saveTodos();
+          render();
+          showToast(`📨 收到来自 ${msg.fromName} 的流转：${msg.todo.text}`);
+        }
+      }
+      else if (msg.type === 'transferFailed') {
+        showToast(`流转失败：${msg.reason || '对方不在线'}`, true);
+      }
     } catch { /* ignore bad JSON */ }
   });
 
@@ -1190,10 +1491,23 @@ function renderTodoTreeRO(list, depth) {
     const steps = (t.steps || []).map(s =>
       `<div class="ro-step" style="padding-left:${indent + 32}px">· ${gEsc(s.text)}</div>`
     ).join('');
+
+    // Transfer status badge (mirrors main list)
+    let transferBadge = '';
+    let extraClass = '';
+    if (t.transferredTo) {
+      transferBadge = `<span class="transfer-status-badge transfer-status-badge--out">✈ 已流转给 ${gEsc(t.transferredTo.name)}</span>`;
+      extraClass = ' ro-item--transferred';
+    } else if (t.transferredFrom) {
+      transferBadge = `<span class="transfer-status-badge transfer-status-badge--in">← 来自 ${gEsc(t.transferredFrom)}</span>`;
+      extraClass = ' ro-item--received';
+    }
+
     return `
-      <div class="ro-item ro-depth-${Math.min(depth, 3)}" style="padding-left:${indent + 8}px">
+      <div class="ro-item ro-depth-${Math.min(depth, 3)}${extraClass}" style="padding-left:${indent + 8}px">
         <span class="ro-sym ro-sym--${t.status}">${sym}</span>
         <span class="ro-title${t.status === 'completed' ? ' ro-done' : ''}">${gEsc(t.text)}</span>
+        ${transferBadge}
         <span class="ro-meta">${pri}</span>
         <span class="ro-pct">${Math.round(pct)}%</span>
       </div>
@@ -1201,10 +1515,13 @@ function renderTodoTreeRO(list, depth) {
   }).join('');
 }
 
-function showUserTodosOverlay(name, todoList) {
+function showUserTodosOverlay(userId, name, todoList) {
+  viewingUserId = userId;
   const overlay = document.getElementById('user-todos-overlay');
   document.getElementById('user-todos-name').textContent = name + ' 的 Todo 列表';
   const content = document.getElementById('user-todos-content');
+  // Remember scroll position when live-refreshing
+  const prevScroll = content.scrollTop;
 
   if (!todoList || todoList.length === 0) {
     content.innerHTML = '<div class="ro-empty">暂无任务</div>';
@@ -1213,9 +1530,11 @@ function showUserTodosOverlay(name, todoList) {
     content.innerHTML = renderTodoTreeRO(migrated, 0);
   }
   overlay.classList.remove('hidden');
+  content.scrollTop = prevScroll;   // restore scroll after refresh
 }
 
 function hideUserTodosOverlay() {
+  viewingUserId = null;
   document.getElementById('user-todos-overlay').classList.add('hidden');
 }
 

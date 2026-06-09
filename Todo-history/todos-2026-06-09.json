@@ -1,5 +1,73 @@
 [
   {
+    "id": "1780988311696f8ip",
+    "text": "TGAD1",
+    "status": "pending",
+    "priority": "normal",
+    "createdAt": "6月9日",
+    "children": [
+      {
+        "id": "17809883579658t3g",
+        "text": "2",
+        "status": "pending",
+        "priority": "normal",
+        "createdAt": "6月9日",
+        "children": [],
+        "collapsed": false,
+        "steps": [],
+        "stepsCollapsed": false,
+        "transferHistory": [],
+        "transferredTo": null,
+        "transferredFrom": null,
+        "uuid": "107b7e73-1248-458b-bf4d-56079bb3d839"
+      }
+    ],
+    "collapsed": false,
+    "steps": [
+      {
+        "id": "s17809888449653d7",
+        "text": "测试完毕",
+        "createdAt": "6月9日"
+      }
+    ],
+    "stepsCollapsed": false,
+    "transferHistory": [
+      {
+        "direction": "out",
+        "name": "骆思睿2",
+        "time": 1780988317061
+      },
+      {
+        "direction": "in",
+        "name": "骆思睿",
+        "time": 1780988317433
+      },
+      {
+        "direction": "out",
+        "name": "骆思睿",
+        "time": 1780988364109
+      },
+      {
+        "direction": "in",
+        "name": "骆思睿2",
+        "time": 1780988364110
+      },
+      {
+        "direction": "out",
+        "name": "骆思睿2",
+        "time": 1780988852045
+      },
+      {
+        "direction": "in",
+        "name": "骆思睿",
+        "time": 1780988852046
+      }
+    ],
+    "transferredTo": null,
+    "transferredFrom": "骆思睿",
+    "uuid": "9a471831-a5ed-411a-ad73-acff6a031f76"
+  },
+  {
     "id": "1780885417836b5mo",
     "text": "怀旧服bug修复",
     "completed": false,
@@ -22,17 +90,25 @@
           }
         ],
         "stepsCollapsed": true,
-        "status": "in-progress"
+        "status": "completed",
+        "transferHistory": [],
+        "transferredTo": null,
+        "transferredFrom": null,
+        "uuid": "05bbb847-cff2-4f0f-97c5-53326f95645a"
       }
     ],
-    "collapsed": true,
+    "collapsed": false,
     "steps": [],
     "stepsCollapsed": false,
-    "status": "pending"
+    "status": "pending",
+    "transferHistory": [],
+    "transferredTo": null,
+    "transferredFrom": null,
+    "uuid": "95ddf4c4-211a-430f-9b9e-c7d57be9fa21"
   },
   {
     "id": "1780885404804yoox",
-    "text": "AD44开发任务 - 资源接入",
+    "text": "AD44开发任务",
     "completed": false,
     "priority": "normal",
     "createdAt": "6月8日",
@@ -68,40 +144,87 @@
           }
         ],
         "stepsCollapsed": false,
-        "status": "in-progress"
+        "status": "in-progress",
+        "transferHistory": [],
+        "transferredTo": null,
+        "transferredFrom": null,
+        "uuid": "d4f072e4-c5d9-42b2-8341-40bd84ab87a5"
       },
       {
-        "id": "1780907195646gy0f",
-        "text": "TGAD44 地图 玩家使用Suicide命令后会崩溃",
-        "status": "in-progress",
+        "id": "1780972203932l90a",
+        "text": "进入任务区直接开始任务的功能",
+        "status": "pending",
         "priority": "normal",
-        "createdAt": "6月8日",
+        "createdAt": "6月9日",
         "children": [],
         "collapsed": false,
         "steps": [
           {
-            "id": "s1780907520670f8h",
-            "text": "Suicide 命令的执行链路",
-            "createdAt": "6月8日"
-          },
-          {
-            "id": "s1780908092853rlm",
-            "text": "观察日志中的信息 (没有有价值的内容)",
-            "createdAt": "6月8日"
-          },
-          {
-            "id": "s1780909301734dzl",
-            "text": "观察正常地图的区别 (可能是复活点的问题)",
-            "createdAt": "6月8日"
+            "id": "s1780972240427k7f",
+            "text": "查看一下功能点和策划案是否需要",
+            "createdAt": "6月9日"
           }
         ],
-        "stepsCollapsed": true
+        "stepsCollapsed": true,
+        "transferHistory": [],
+        "transferredTo": null,
+        "transferredFrom": null,
+        "uuid": "fd79c0cd-d637-4579-9d8d-faf82f2f4f23"
+      },
+      {
+        "id": "1780973281586dw5d",
+        "text": "小地图显示的功能",
+        "status": "pending",
+        "priority": "normal",
+        "createdAt": "6月9日",
+        "children": [],
+        "collapsed": false,
+        "steps": [],
+        "stepsCollapsed": false,
+        "transferHistory": [],
+        "transferredTo": null,
+        "transferredFrom": null,
+        "uuid": "a26738cd-fe6c-4eb0-904d-fb3baeb03318"
+      },
+      {
+        "id": "1780981293088u3kl",
+        "text": "阀门关闭后，对应的锅炉动作开启和结束的功能",
+        "status": "pending",
+        "priority": "normal",
+        "createdAt": "6月9日",
+        "children": [],
+        "collapsed": false,
+        "steps": [],
+        "stepsCollapsed": false,
+        "transferHistory": [],
+        "transferredTo": null,
+        "transferredFrom": null,
+        "uuid": "e22167e0-dbb7-4d9b-a709-9b55447bdf70"
+      },
+      {
+        "id": "1780981873842j565",
+        "text": "任务1替代资源整理",
+        "status": "pending",
+        "priority": "normal",
+        "createdAt": "6月9日",
+        "children": [],
+        "collapsed": false,
+        "steps": [],
+        "stepsCollapsed": false,
+        "transferHistory": [],
+        "transferredTo": null,
+        "transferredFrom": null,
+        "uuid": "44dddbd5-5a37-46d9-b30b-e4aa20db1579"
       }
     ],
     "collapsed": false,
     "steps": [],
     "stepsCollapsed": false,
-    "status": "pending"
+    "status": "pending",
+    "transferHistory": [],
+    "transferredTo": null,
+    "transferredFrom": null,
+    "uuid": "063efd62-fdfa-4f8a-9668-f7da767ec668"
   },
   {
     "id": "1780885445572f4zn",
@@ -123,15 +246,95 @@
             "id": "s1780915224716w0i",
             "text": "需要新增和配置输入",
             "createdAt": "6月8日"
+          },
+          {
+            "id": "s1780968850204dg6",
+            "text": "待验证",
+            "createdAt": "6月9日"
+          },
+          {
+            "id": "s17809776839137mq",
+            "text": "解决按键冲突问题",
+            "createdAt": "6月9日"
           }
         ],
         "stepsCollapsed": false,
-        "status": "pending"
+        "status": "completed",
+        "transferHistory": [],
+        "transferredTo": null,
+        "transferredFrom": null,
+        "uuid": "2089d9d7-97d9-4f74-930e-ad1e44ed5a55"
+      },
+      {
+        "id": "17809688651004e3n",
+        "text": "学习基于GAS的建造系统 - 建筑放置流程",
+        "status": "completed",
+        "priority": "low",
+        "createdAt": "6月9日",
+        "children": [],
+        "collapsed": false,
+        "steps": [
+          {
+            "id": "s1780968934917mc3",
+            "text": "学习AI写的文档，并对照查看代码",
+            "createdAt": "6月9日"
+          },
+          {
+            "id": "s1780968961668rl9",
+            "text": "不清楚的地方让AI继续补充",
+            "createdAt": "6月9日"
+          }
+        ],
+        "stepsCollapsed": true,
+        "transferHistory": [],
+        "transferredTo": null,
+        "transferredFrom": null,
+        "uuid": "896e5df1-1f20-424d-b409-f2e7b027e11e"
+      },
+      {
+        "id": "17809715367153cbc",
+        "text": "添加多个建筑和放置列表切换的功能",
+        "status": "pending",
+        "priority": "low",
+        "createdAt": "6月9日",
+        "children": [],
+        "collapsed": false,
+        "steps": [],
+        "stepsCollapsed": false,
+        "transferHistory": [],
+        "transferredTo": null,
+        "transferredFrom": null,
+        "uuid": "0ab44c91-e541-4c87-aad0-ac84ac1e7d5f"
+      },
+      {
+        "id": "17809811481041n6v",
+        "text": "UE5 远程Python执行能力MCP",
+        "status": "in-progress",
+        "priority": "low",
+        "createdAt": "6月9日",
+        "children": [],
+        "collapsed": false,
+        "steps": [
+          {
+            "id": "s1780984276782hyy",
+            "text": "只导出了ability_input_actions的内容",
+            "createdAt": "6月9日"
+          }
+        ],
+        "stepsCollapsed": false,
+        "transferHistory": [],
+        "transferredTo": null,
+        "transferredFrom": null,
+        "uuid": "8e4e5d62-5e7a-4bdb-8e2c-857592a75e79"
       }
     ],
     "collapsed": true,
     "steps": [],
     "stepsCollapsed": false,
-    "status": "pending"
+    "status": "pending",
+    "transferHistory": [],
+    "transferredTo": null,
+    "transferredFrom": null,
+    "uuid": "c0a239cd-1121-4001-a986-c85547cd1d69"
   }
 ]

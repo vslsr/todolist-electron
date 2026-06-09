@@ -9,26 +9,30 @@
     "build": "electron-builder --win",
     "build:dir": "electron-builder --win --dir"
   },
-  "keywords": [
-    "electron",
-    "todo",
-    "windows"
-  ],
+  "keywords": ["electron", "todo", "windows"],
   "author": "siruiluo",
   "license": "MIT",
   "devDependencies": {
     "electron": "^31.7.7",
-    "electron-builder": "^24.0.0"
+    "electron-builder": "^24.0.0",
+    "ws": "^8.21.0"
   },
   "dependencies": {
-    "electron-store": "^8.2.0",
-    "ws": "^8.21.0"
+    "electron-store": "^8.2.0"
   },
   "build": {
     "appId": "com.todolist.app",
     "productName": "TODO List",
+    "files": [
+      "main.js",
+      "preload.js",
+      "src/**/*",
+      "assets/**/*",
+      "node_modules/**/*",
+      "package.json"
+    ],
     "directories": {
-      "output": "../build/win"
+      "output": "dist-win"
     },
     "win": {
       "target": "nsis",

@@ -598,6 +598,100 @@ body {
   padding: 24px 14px;
 }
 
+/* ── Transfer (流转) ────────────────────────────────────────────────────── */
+
+/* Paper-plane button in task row */
+.task-transfer-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 12px;
+  color: #ccc;
+  padding: 0 2px;
+  opacity: 0;
+  transition: opacity 0.15s, color 0.15s;
+  flex-shrink: 0;
+  line-height: 1;
+}
+.task-row:hover .task-transfer-btn         { opacity: 1; color: #667eea; }
+.task-transfer-btn:hover                   { color: #4a5bd4 !important; }
+.task-item--transferred .task-transfer-btn { opacity: 0.5 !important; color: #bbb !important; cursor: default; }
+
+/* Transferred-out item style */
+.task-item--transferred > .task-row .task-text {
+  color: #b0b0b0;
+  text-decoration: line-through;
+  text-decoration-color: #ccc;
+}
+.task-item--transferred > .task-row .task-checkbox { opacity: 0.45; pointer-events: none; }
+.task-item--transferred > .task-row { opacity: 0.75; }
+
+/* Received item style */
+.task-item--received > .task-row {
+  border-left: 3px solid #667eea;
+  padding-left: 6px;
+  background: linear-gradient(90deg, #f2f4ff 0 12px, transparent 12px);
+  border-radius: 4px;
+}
+
+/* Inline transfer status badge */
+.transfer-status-badge {
+  font-size: 10px;
+  border-radius: 4px;
+  padding: 1px 6px;
+  white-space: nowrap;
+  flex-shrink: 0;
+  font-weight: 500;
+}
+.transfer-status-badge--out {
+  background: #f5f5f5;
+  color: #999;
+  border: 1px solid #e8e8e8;
+}
+.transfer-status-badge--in {
+  background: #eef1ff;
+  color: #667eea;
+  border: 1px solid #d4daff;
+}
+
+/* Transfer history section */
+.task-transfer-history .transfer-history-label { color: #667eea; }
+.transfer-history-text--out { color: #e05252; }
+.transfer-history-text--in  { color: #52a878; }
+
+/* Transfer member dropdown */
+.transfer-dropdown {
+  background: #fff;
+  border: 1px solid #dde1f0;
+  border-radius: 8px;
+  box-shadow: 0 6px 24px rgba(0,0,0,0.13);
+  min-width: 150px;
+  overflow: hidden;
+}
+.transfer-dropdown-title {
+  padding: 7px 12px 5px;
+  font-size: 10px;
+  font-weight: 700;
+  color: #999;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom: 1px solid #eaecf5;
+}
+.transfer-dropdown-item {
+  padding: 8px 14px;
+  font-size: 13px;
+  cursor: pointer;
+  color: #333;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: background 0.1s;
+}
+.transfer-dropdown-item::before { content: '👤'; font-size: 12px; }
+.transfer-dropdown-item:hover   { background: #f0f2ff; color: #667eea; }
+
+/* ─────────────────────────────────────────────────────────────────────────── */
+
 /* View button on user row */
 .g-view-btn {
   flex-shrink: 0;
@@ -673,6 +767,20 @@ body {
   font-size: 13px;
 }
 .ro-item:hover { background: #f5f6fb; }
+
+/* Transfer status indicators in readonly overlay */
+.ro-item--transferred .ro-title {
+  text-decoration: line-through;
+  text-decoration-color: #ccc;
+  color: #bbb;
+}
+.ro-item--transferred { opacity: 0.72; }
+
+.ro-item--received {
+  border-left: 3px solid #667eea;
+  background: linear-gradient(90deg, #f2f4ff 0 12px, transparent 12px);
+  border-radius: 4px;
+}
 
 .ro-depth-0 { font-weight: 500; }
 .ro-depth-1 { font-size: 12.5px; }

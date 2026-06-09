@@ -79,16 +79,39 @@ wss.on('connection', (ws, req) => {
         broadcastList();
       } else if (msg.type === 'todos') {
         c.todos = Array.isArray(msg.todos) ? msg.todos : [];
-        // no broadcast needed — todos are fetched on demand
+        // Push updated todos to all OTHER connected clients in real time
+        const push = JSON.stringify({
+          type:   'userTodosUpdated',
+          userId: c.id,
+          name:   c.name,
+          todos:  c.todos,
+        });
+        for (const [k, other] of clients) {
+          if (k !== key && other.ws.readyState === 1) other.ws.send(push);
+        }
+      } else if (msg.type === 'transfer') {
+        const target = [...clients.values()].find(v => v.id === msg.toUserId);
+        if (target && target.ws.readyState === 1) {
+          target.ws.send(JSON.stringify({
+            type:      'transferred',
+            todo:      msg.todo,
+            ancestors: msg.ancestors || [],   // parent path for correct placement
+            fromId:    c.id,
+            fromName:  c.name,
+          }));
+          console.log(`[✈] 流转: ${c.name} → ${target.name}  "${String(msg.todo?.text || '').slice(0, 20)}"`);
+        } else {
+          ws.send(JSON.stringify({ type: 'transferFailed', reason: '对方不在线或已断开' }));
+        }
       } else if (msg.type === 'requestTodos') {
-        // Find the target client by id and send their todos only to the requester
+        // On-demand fetch: send the latest stored todos to the requester
         const target = [...clients.values()].find(v => v.id === msg.targetId);
         if (target) {
           ws.send(JSON.stringify({
-            type:  'userTodos',
+            type:   'userTodos',
             userId: target.id,
-            name:  target.name,
-            todos: target.todos || [],
+            name:   target.name,
+            todos:  target.todos || [],
           }));
         }
       }
