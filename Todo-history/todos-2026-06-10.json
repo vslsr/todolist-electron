@@ -1,21 +1,5 @@
 [
   {
-    "id": "1780885417836b5mo",
-    "text": "怀旧服bug修复",
-    "completed": false,
-    "priority": "high",
-    "createdAt": "6月8日",
-    "children": [],
-    "collapsed": true,
-    "steps": [],
-    "stepsCollapsed": false,
-    "status": "completed",
-    "transferHistory": [],
-    "transferredTo": null,
-    "transferredFrom": null,
-    "uuid": "640319ea-8c0d-4889-8362-ed22f0640d92"
-  },
-  {
     "id": "1780885404804yoox",
     "text": "AD44开发任务",
     "completed": false,
@@ -37,11 +21,12 @@
             "createdAt": "6月9日"
           }
         ],
-        "stepsCollapsed": true,
+        "stepsCollapsed": false,
         "transferHistory": [],
         "transferredTo": null,
         "transferredFrom": null,
-        "uuid": "8bb73d2d-1961-46ed-999b-1cdebed99f05"
+        "uuid": "8bb73d2d-1961-46ed-999b-1cdebed99f05",
+        "dueDate": "2026-06-11"
       },
       {
         "id": "1780973281586dw5d",
@@ -56,7 +41,8 @@
         "transferHistory": [],
         "transferredTo": null,
         "transferredFrom": null,
-        "uuid": "9d4c2e73-c910-4764-94ed-49e7c4d95f35"
+        "uuid": "9d4c2e73-c910-4764-94ed-49e7c4d95f35",
+        "dueDate": null
       },
       {
         "id": "1780981293088u3kl",
@@ -76,13 +62,19 @@
             "id": "s1780997021842l5w",
             "text": "门瞬间打开了，没有播放动画的过程",
             "createdAt": "6月9日"
+          },
+          {
+            "id": "s1781058351841rn5",
+            "text": "研究一下如何导入动画",
+            "createdAt": "6月10日"
           }
         ],
         "stepsCollapsed": false,
         "transferHistory": [],
         "transferredTo": null,
         "transferredFrom": null,
-        "uuid": "9e06ad03-97e8-42c4-9e1c-30af08a63685"
+        "uuid": "9e06ad03-97e8-42c4-9e1c-30af08a63685",
+        "dueDate": null
       },
       {
         "id": "1780981873842j565",
@@ -97,7 +89,56 @@
         "transferHistory": [],
         "transferredTo": null,
         "transferredFrom": null,
-        "uuid": "2b5422ef-3163-488e-a33a-a09c61d18c0a"
+        "uuid": "2b5422ef-3163-488e-a33a-a09c61d18c0a",
+        "dueDate": null
+      },
+      {
+        "id": "17810531457919lo0",
+        "uuid": "ab5c28c9-5c8b-48fe-bc81-206a32b50f8f",
+        "text": "蒸汽的击退和伤害",
+        "status": "pending",
+        "priority": "normal",
+        "createdAt": "6月10日",
+        "children": [],
+        "collapsed": false,
+        "steps": [],
+        "stepsCollapsed": false,
+        "transferHistory": [],
+        "transferredTo": null,
+        "transferredFrom": null,
+        "dueDate": null
+      },
+      {
+        "id": "1781053294825yd6k",
+        "uuid": "becf7888-d64e-4d7a-87cd-9a81d56bf46b",
+        "text": "死亡观察点的实现",
+        "status": "pending",
+        "priority": "normal",
+        "createdAt": "6月10日",
+        "children": [],
+        "collapsed": false,
+        "steps": [],
+        "stepsCollapsed": false,
+        "transferHistory": [],
+        "transferredTo": null,
+        "transferredFrom": null,
+        "dueDate": null
+      },
+      {
+        "id": "1781053433889489z",
+        "uuid": "92db2641-f566-4b00-a03a-8ee13f8afa81",
+        "text": "任务初始化状态",
+        "status": "pending",
+        "priority": "normal",
+        "createdAt": "6月10日",
+        "children": [],
+        "collapsed": false,
+        "steps": [],
+        "stepsCollapsed": false,
+        "transferHistory": [],
+        "transferredTo": null,
+        "transferredFrom": null,
+        "dueDate": null
       }
     ],
     "collapsed": false,
@@ -107,7 +148,8 @@
     "transferHistory": [],
     "transferredTo": null,
     "transferredFrom": null,
-    "uuid": "6ce41196-0f26-41c1-81b0-2cb218a67f9e"
+    "uuid": "6ce41196-0f26-41c1-81b0-2cb218a67f9e",
+    "dueDate": null
   },
   {
     "id": "1780885445572f4zn",
@@ -129,13 +171,24 @@
             "id": "s1780994747083ew3",
             "text": "查看蓝图中配置建筑的方法",
             "createdAt": "6月9日"
+          },
+          {
+            "id": "s178105423819232v",
+            "text": "建筑不显示主体的问题",
+            "createdAt": "6月10日"
+          },
+          {
+            "id": "s1781056562200ey0",
+            "text": "判断哪些需要使用GAS，哪些不需要",
+            "createdAt": "6月10日"
           }
         ],
         "stepsCollapsed": false,
         "transferHistory": [],
         "transferredTo": null,
         "transferredFrom": null,
-        "uuid": "3f500c91-845a-429f-a8d1-1087cfc392bb"
+        "uuid": "3f500c91-845a-429f-a8d1-1087cfc392bb",
+        "dueDate": null
       },
       {
         "id": "17809811481041n6v",
@@ -156,7 +209,24 @@
         "transferHistory": [],
         "transferredTo": null,
         "transferredFrom": null,
-        "uuid": "5f2f0926-0ecf-4e2f-b20a-ba2ade04dfbe"
+        "uuid": "5f2f0926-0ecf-4e2f-b20a-ba2ade04dfbe",
+        "dueDate": null
+      },
+      {
+        "id": "1781062505806qoj9",
+        "uuid": "a8ed4248-ebf3-47e2-aeb8-89d0dd31dba4",
+        "text": "使用Blender让AI辅助制作临时资源的能力",
+        "status": "pending",
+        "priority": "low",
+        "createdAt": "6月10日",
+        "children": [],
+        "collapsed": false,
+        "steps": [],
+        "stepsCollapsed": false,
+        "transferHistory": [],
+        "transferredTo": null,
+        "transferredFrom": null,
+        "dueDate": null
       }
     ],
     "collapsed": false,
@@ -166,6 +236,7 @@
     "transferHistory": [],
     "transferredTo": null,
     "transferredFrom": null,
-    "uuid": "0d59449f-cb66-49aa-9171-dd7967504a34"
+    "uuid": "0d59449f-cb66-49aa-9171-dd7967504a34",
+    "dueDate": null
   }
 ]

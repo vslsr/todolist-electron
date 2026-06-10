@@ -151,6 +151,33 @@ function calcProgress(todo) {
   return Math.round(sum / todo.children.length);
 }
 
+// ── Due-date helpers ───────────────────────────────────────────────────────
+
+function todayMidnight() {
+  const d = new Date(); d.setHours(0, 0, 0, 0); return d;
+}
+function parseDue(dueDate) { return new Date(dueDate + 'T00:00:00'); }
+
+function isOverdue(todo) {
+  if (!todo.dueDate || todo.status === 'completed') return false;
+  return parseDue(todo.dueDate) < todayMidnight();
+}
+function isDueSoon(todo) {   // due within 3 days (not overdue)
+  if (!todo.dueDate || todo.status === 'completed') return false;
+  const diff = (parseDue(todo.dueDate) - todayMidnight()) / 864e5;
+  return diff >= 0 && diff <= 3;
+}
+function formatDueDate(dueDate) {
+  const due  = parseDue(dueDate);
+  const diff = Math.round((due - todayMidnight()) / 864e5);
+  if (diff < -1)  return `逾期 ${-diff} 天`;
+  if (diff === -1) return '昨天到期';
+  if (diff === 0)  return '今天到期';
+  if (diff === 1)  return '明天到期';
+  if (diff <= 7)   return `${diff} 天后`;
+  return `${due.getMonth() + 1}月${due.getDate()}日`;
+}
+
 // ── Migrate / create ───────────────────────────────────────────────────────
 
 const VALID_STATUS = new Set(['pending', 'in-progress', 'completed']);
@@ -177,6 +204,7 @@ function migrate(t) {
     transferHistory: t.transferHistory || [],
     transferredTo:   t.transferredTo   || null,   // { name, time } when sent out
     transferredFrom: t.transferredFrom || null,   // name string when received
+    dueDate:         t.dueDate         || null,   // "YYYY-MM-DD" or null
   };
 }
 
@@ -195,6 +223,7 @@ function createTodo(text = '', priority = 'normal') {
     transferHistory: [],
     transferredTo:   null,
     transferredFrom: null,
+    dueDate:         null,        // "YYYY-MM-DD" string, or null
   };
 }
 
@@ -654,6 +683,64 @@ function createTaskEl(todo) {
   del.title     = '删除';
   del.addEventListener('click', (e) => { e.stopPropagation(); deleteTodo(todo.id); });
 
+  // ── Due date widget ────────────────────────────────────────────────────
+  const dueDateWrap = document.createElement('span');
+  dueDateWrap.className = 'task-due-wrap';
+
+  // Hidden native date input — showPicker() opens the calendar
+  const dueDateInput = document.createElement('input');
+  dueDateInput.type      = 'date';
+  dueDateInput.className = 'task-due-input';
+  if (todo.dueDate) dueDateInput.value = todo.dueDate;
+  dueDateInput.addEventListener('change', (e) => {
+    e.stopPropagation();
+    const t = findById(todo.id);
+    if (t) { t.dueDate = dueDateInput.value || null; saveTodos(); render(); }
+  });
+
+  // Visible badge
+  const dueDateBadge = document.createElement('span');
+  dueDateBadge.className = 'task-due-badge';
+
+  if (todo.dueDate) {
+    const overdue = isOverdue(todo);
+    const soon    = !overdue && isDueSoon(todo);
+    dueDateBadge.classList.add(
+      overdue ? 'task-due-badge--overdue' :
+      soon    ? 'task-due-badge--soon'    : 'task-due-badge--set'
+    );
+    const dateText = document.createElement('span');
+    dateText.textContent = formatDueDate(todo.dueDate);
+    const clearBtn = document.createElement('span');
+    clearBtn.className   = 'task-due-clear';
+    clearBtn.textContent = '×';
+    clearBtn.title       = '清除到期日';
+    clearBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const t = findById(todo.id);
+      if (t) { t.dueDate = null; saveTodos(); render(); }
+    });
+    dueDateBadge.append(dateText, clearBtn);
+  } else {
+    dueDateBadge.classList.add('task-due-badge--empty');
+    dueDateBadge.textContent = '🗓';
+    dueDateBadge.title = '设置到期日';
+  }
+
+  // Click on wrap → open picker (unless clear-btn was clicked)
+  if (!isTransferred) {
+    dueDateWrap.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (e.target.classList.contains('task-due-clear')) return;
+      try { dueDateInput.showPicker(); } catch { dueDateInput.click(); }
+    });
+  } else if (!todo.dueDate) {
+    dueDateBadge.style.display = 'none';   // hide empty badge on locked items
+  }
+
+  dueDateWrap.append(dueDateInput, dueDateBadge);
+  // ──────────────────────────────────────────────────────────────────────
+
   // Hide editing actions on transferred-out items (preview + delete only)
   if (isTransferred) {
     addStepBtn.style.display = 'none';
@@ -674,7 +761,7 @@ function createTaskEl(todo) {
     tb.textContent = `← 来自 ${todo.transferredFrom}`;
     rowItems.push(tb);
   }
-  rowItems.push(meta, ring, addStepBtn, transferBtn, addChild, del);
+  rowItems.push(dueDateWrap, meta, ring, addStepBtn, transferBtn, addChild, del);
   row.append(...rowItems);
   li.appendChild(row);
 
@@ -1381,6 +1468,7 @@ function gConnect() {
           existing.text            = msg.todo.text;
           existing.status          = msg.todo.status;
           existing.priority        = msg.todo.priority;
+          existing.dueDate         = msg.todo.dueDate ?? null;
           existing.steps           = (msg.todo.steps || []).map(s => ({ id: s.id, text: s.text || '', createdAt: s.createdAt || '' }));
           existing.transferredTo   = null;
           existing.transferredFrom = msg.fromName;

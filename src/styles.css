@@ -659,6 +659,79 @@ body {
 .transfer-history-text--out { color: #e05252; }
 .transfer-history-text--in  { color: #52a878; }
 
+/* ── Due date widget ─────────────────────────────────────────────────────── */
+.task-due-wrap {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+/* Hidden native date input — picker still opens via showPicker() */
+.task-due-input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+}
+
+.task-due-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 10px;
+  padding: 1px 7px;
+  border-radius: 4px;
+  white-space: nowrap;
+  cursor: pointer;
+  user-select: none;
+  flex-shrink: 0;
+  transition: opacity 0.15s, background 0.15s;
+}
+
+/* Empty state — only visible on row hover */
+.task-due-badge--empty {
+  color: #bbb;
+  opacity: 0;
+}
+.task-row:hover .task-due-badge--empty { opacity: 1; }
+.task-due-badge--empty:hover { color: #667eea; }
+
+/* Date set — normal */
+.task-due-badge--set {
+  background: #eef1ff;
+  color: #667eea;
+  border: 1px solid #d4daff;
+}
+.task-due-badge--set:hover { background: #e4e9ff; }
+
+/* Due within 3 days */
+.task-due-badge--soon {
+  background: #fff8e6;
+  color: #d97706;
+  border: 1px solid #fde68a;
+}
+.task-due-badge--soon:hover { background: #fef3c7; }
+
+/* Overdue */
+.task-due-badge--overdue {
+  background: #fff0f0;
+  color: #e05252;
+  border: 1px solid #fecaca;
+  font-weight: 600;
+}
+.task-due-badge--overdue:hover { background: #ffe4e4; }
+
+/* Clear (×) inside the badge */
+.task-due-clear {
+  line-height: 1;
+  opacity: 0.45;
+  font-size: 11px;
+  transition: opacity 0.12s, color 0.12s;
+}
+.task-due-clear:hover { opacity: 1; color: #e05252; }
+
 /* Transfer member dropdown */
 .transfer-dropdown {
   background: #fff;
