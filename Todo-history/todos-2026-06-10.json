@@ -1,33 +1,87 @@
 [
   {
-    "id": "1780885404804yoox",
-    "text": "AD44开发任务",
-    "completed": false,
-    "priority": "normal",
-    "createdAt": "6月8日",
+    "id": "1781079999824ohak",
+    "uuid": "c3df5b6b-f929-405f-a923-39e778053c15",
+    "text": "怀旧服 Bug",
+    "status": "pending",
+    "priority": "high",
+    "createdAt": "6月10日",
     "children": [
       {
-        "id": "1780972203932l90a",
-        "text": "进入任务区直接开始任务的功能",
-        "status": "pending",
-        "priority": "normal",
-        "createdAt": "6月9日",
+        "id": "1781080004959x7yq",
+        "uuid": "92e98731-2f85-467e-81e1-69bffd0a1f8c",
+        "text": "【时光流金】【樱之谷流金】击败黑化雷藏Boss场景中，复活点位置小地图中未显示商店、加血图标，且子弹位置不对(上海代宝修复)",
+        "status": "in-progress",
+        "priority": "high",
+        "createdAt": "6月10日",
         "children": [],
         "collapsed": false,
         "steps": [
           {
-            "id": "s1780972240427k7f",
-            "text": "查看一下功能点和策划案是否需要",
-            "createdAt": "6月9日"
+            "id": "s1781080239888b69",
+            "text": "MapInfo里面查看小地图的配置",
+            "createdAt": "6月10日"
+          },
+          {
+            "id": "s1781080260391o6f",
+            "text": "找对应的人添加小地图图标",
+            "createdAt": "6月10日"
+          },
+          {
+            "id": "s1781084303478qs1",
+            "text": "等待小地图图片修改完毕",
+            "createdAt": "6月10日"
           }
         ],
         "stepsCollapsed": false,
         "transferHistory": [],
         "transferredTo": null,
         "transferredFrom": null,
-        "uuid": "8bb73d2d-1961-46ed-999b-1cdebed99f05",
-        "dueDate": "2026-06-11"
+        "dueDate": null
       },
+      {
+        "id": "1781080324871e66s",
+        "uuid": "992a0e01-1a10-4a1a-91b9-25150cebb62c",
+        "text": "【樱之谷流金】等身抱枕内近战武器无法对藤蔓造成伤害(上海代宝修复)",
+        "status": "completed",
+        "priority": "high",
+        "createdAt": "6月10日",
+        "children": [],
+        "collapsed": false,
+        "steps": [
+          {
+            "id": "s178108034731128z",
+            "text": "查看武器的ID和攻击逻辑",
+            "createdAt": "6月10日"
+          },
+          {
+            "id": "s1781084319126mub",
+            "text": "定位到是武器的问题",
+            "createdAt": "6月10日"
+          }
+        ],
+        "stepsCollapsed": false,
+        "transferHistory": [],
+        "transferredTo": null,
+        "transferredFrom": null,
+        "dueDate": null
+      }
+    ],
+    "collapsed": false,
+    "steps": [],
+    "stepsCollapsed": false,
+    "transferHistory": [],
+    "transferredTo": null,
+    "transferredFrom": null,
+    "dueDate": null
+  },
+  {
+    "id": "1780885404804yoox",
+    "text": "AD44开发任务",
+    "completed": false,
+    "priority": "normal",
+    "createdAt": "6月8日",
+    "children": [
       {
         "id": "1780973281586dw5d",
         "text": "小地图显示的功能",
@@ -47,7 +101,7 @@
       {
         "id": "1780981293088u3kl",
         "text": "阀门关闭后，对应的锅炉动作开启和结束的功能",
-        "status": "in-progress",
+        "status": "completed",
         "priority": "normal",
         "createdAt": "6月9日",
         "children": [],
@@ -65,11 +119,11 @@
           },
           {
             "id": "s1781058351841rn5",
-            "text": "研究一下如何导入动画",
+            "text": "研究一下如何导入动画 （UE5导入成功，研究UE3的导入方式）",
             "createdAt": "6月10日"
           }
         ],
-        "stepsCollapsed": false,
+        "stepsCollapsed": true,
         "transferHistory": [],
         "transferredTo": null,
         "transferredFrom": null,
@@ -96,7 +150,7 @@
         "id": "17810531457919lo0",
         "uuid": "ab5c28c9-5c8b-48fe-bc81-206a32b50f8f",
         "text": "蒸汽的击退和伤害",
-        "status": "pending",
+        "status": "completed",
         "priority": "normal",
         "createdAt": "6月10日",
         "children": [],
@@ -127,7 +181,7 @@
       {
         "id": "1781053433889489z",
         "uuid": "92db2641-f566-4b00-a03a-8ee13f8afa81",
-        "text": "任务初始化状态",
+        "text": "任务初始化状态，失败后重置任务",
         "status": "pending",
         "priority": "normal",
         "createdAt": "6月10日",
@@ -138,6 +192,44 @@
         "transferHistory": [],
         "transferredTo": null,
         "transferredFrom": null,
+        "dueDate": null
+      },
+      {
+        "id": "1781073494737ys3d",
+        "uuid": "45d3ad84-884f-4a9f-ab1a-7d3b26f843b8",
+        "text": "U3E导入fbx动画方式",
+        "status": "in-progress",
+        "priority": "low",
+        "createdAt": "6月10日",
+        "children": [],
+        "collapsed": false,
+        "steps": [],
+        "stepsCollapsed": false,
+        "transferHistory": [],
+        "transferredTo": null,
+        "transferredFrom": null,
+        "dueDate": null
+      },
+      {
+        "id": "1780972203932l90a",
+        "text": "进入任务区直接开始任务的功能",
+        "status": "pending",
+        "priority": "normal",
+        "createdAt": "6月9日",
+        "children": [],
+        "collapsed": false,
+        "steps": [
+          {
+            "id": "s1780972240427k7f",
+            "text": "查看一下功能点和策划案是否需要",
+            "createdAt": "6月9日"
+          }
+        ],
+        "stepsCollapsed": false,
+        "transferHistory": [],
+        "transferredTo": null,
+        "transferredFrom": null,
+        "uuid": "8bb73d2d-1961-46ed-999b-1cdebed99f05",
         "dueDate": null
       }
     ],
@@ -181,6 +273,11 @@
             "id": "s1781056562200ey0",
             "text": "判断哪些需要使用GAS，哪些不需要",
             "createdAt": "6月10日"
+          },
+          {
+            "id": "s1781071624693ued",
+            "text": "放置建筑后崩溃问题",
+            "createdAt": "6月10日"
           }
         ],
         "stepsCollapsed": false,
@@ -216,7 +313,7 @@
         "id": "1781062505806qoj9",
         "uuid": "a8ed4248-ebf3-47e2-aeb8-89d0dd31dba4",
         "text": "使用Blender让AI辅助制作临时资源的能力",
-        "status": "pending",
+        "status": "completed",
         "priority": "low",
         "createdAt": "6月10日",
         "children": [],
@@ -229,7 +326,7 @@
         "dueDate": null
       }
     ],
-    "collapsed": false,
+    "collapsed": true,
     "steps": [],
     "stepsCollapsed": false,
     "status": "pending",
