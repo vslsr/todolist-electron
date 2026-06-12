@@ -177,6 +177,16 @@
           <span>节点</span>
         </div>
 
+        <div class="ds-palette-item" data-shape="empty" title="拖入画板">
+          <svg viewBox="0 0 60 60" width="52" height="46">
+            <rect x="18" y="18" width="24" height="24" rx="3"
+                  fill="rgba(102,126,234,0.06)" stroke="#9aa3c2"
+                  stroke-width="2" stroke-dasharray="4 3"/>
+            <circle cx="30" cy="30" r="2.8" fill="#9aa3c2"/>
+          </svg>
+          <span>空节点</span>
+        </div>
+
         <div class="ds-palette-hint">拖入画板<br>Del 删除</div>
       </div>
 
@@ -218,6 +228,9 @@
     <button class="ds-ctx-item" data-action="layer-down">↓ 向下移动图层</button>
     <div class="ds-ctx-divider"></div>
     <button class="ds-ctx-item" id="ds-ctx-activate" data-action="activate-connections">⚡ 激活外联连线</button>
+    <div class="ds-ctx-divider"></div>
+    <button class="ds-ctx-item" id="ds-ctx-group"   data-action="group">⬡ 组合为节点</button>
+    <button class="ds-ctx-item" id="ds-ctx-ungroup" data-action="ungroup">⊡ 取消组合</button>
     <div class="ds-ctx-divider"></div>
     <button class="ds-ctx-item ds-ctx-item--danger" data-action="delete">✕ 删除</button>
   </div>

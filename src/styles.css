@@ -1155,7 +1155,161 @@ body {
   border-color: #667eea;
   box-shadow: 0 0 0 2px rgba(102,126,234,0.15);
 }
+.ds-prop-row input[type="text"],
+.ds-prop-row select {
+  flex: 1;
+  min-width: 0;
+  padding: 3px 6px;
+  border: 1px solid #e0e4f0;
+  border-radius: 5px;
+  font-size: 12px;
+  color: #3a4060;
+  outline: none;
+  background: #fff;
+}
+.ds-prop-row input[type="text"]:focus,
+.ds-prop-row select:focus {
+  border-color: #667eea;
+  box-shadow: 0 0 0 2px rgba(102,126,234,0.15);
+}
 .ds-prop-unit { font-size: 11px; color: #b0b8d0; }
+.ds-prop-divider { height: 1px; background: #eef0f8; margin: 8px 2px; }
+
+/* ── ID badge in prop header ── */
+.ds-prop-idbadge {
+  font-size: 9px;
+  font-family: 'Consolas', 'Courier New', monospace;
+  color: #b0b8d0;
+  background: #f0f2ff;
+  border-radius: 3px;
+  padding: 1px 4px;
+  margin-right: 4px;
+  letter-spacing: 0.3px;
+  flex-shrink: 0;
+}
+
+/* ── Parent-group row (shown on grouped child shapes) ── */
+.ds-prop-parent-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 8px;
+  padding: 4px 6px;
+  background: rgba(102,126,234,0.07);
+  border-radius: 5px;
+  font-size: 11px;
+  color: #667eea;
+}
+.ds-prop-parent-label { flex: 1; font-weight: 500; }
+
+/* ── Property item header (non-collapsible variant) ── */
+.ds-prop-hdr2 {
+  display: flex;
+  align-items: center;
+  padding: 7px 10px 4px;
+}
+.ds-prop-meta {
+  font-size: 10px;
+  color: #b0b8d0;
+  margin: 2px 0 8px;
+}
+
+/* ══ Hierarchy tree (Unity-style) ══ */
+.ds-tree {
+  padding: 4px 0;
+  border-bottom: 1px solid #eef0f8;
+  max-height: 38vh;
+  overflow-y: auto;
+}
+.ds-tree::-webkit-scrollbar { width: 4px; }
+.ds-tree::-webkit-scrollbar-thumb { background: #dde0ea; border-radius: 2px; }
+.ds-tree-empty {
+  padding: 14px 10px;
+  font-size: 11px;
+  color: #c0c8de;
+  text-align: center;
+}
+.ds-tree-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px 4px 0;
+  font-size: 11px;
+  cursor: pointer;
+  user-select: none;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  margin: 1px 4px;
+}
+.ds-tree-row:hover { background: #f0f2ff; }
+.ds-tree-row--sel {
+  background: rgba(102,126,234,0.14);
+  border-color: rgba(102,126,234,0.35);
+}
+.ds-tree-row--drag { opacity: 0.45; }
+.ds-tree-row--over {
+  background: rgba(82,168,120,0.16);
+  border-color: #52a878;
+}
+/* Insert-above / insert-below indicator lines (sibling drop) */
+.ds-tree-row--before { box-shadow: inset 0 3px 0 -1px #52a878; }
+.ds-tree-row--after  { box-shadow: inset 0 -3px 0 -1px #52a878; }
+.ds-tree-tw {
+  width: 13px;
+  flex-shrink: 0;
+  font-size: 9px;
+  color: #9aa3bf;
+  text-align: center;
+  cursor: pointer;
+}
+.ds-tree-tw--leaf { cursor: default; }
+.ds-tree-ico { font-size: 12px; color: #667eea; flex-shrink: 0; width: 14px; text-align: center; }
+.ds-tree-lbl { flex: 1; color: #3a4060; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ds-tree-id  { font-size: 9px; font-family: 'Consolas', monospace; color: #c0c8de; flex-shrink: 0; }
+.ds-tree-act {
+  font-size: 10px;
+  color: #9aa3bf;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0 2px;
+  flex-shrink: 0;
+  opacity: 0;
+  transition: color 0.15s, opacity 0.15s;
+}
+.ds-tree-row:hover .ds-tree-act { opacity: 1; }
+.ds-tree-act:hover { color: #667eea; }
+
+/* ── Parent-group eject button (in property editor) ── */
+.ds-prop-eject {
+  font-size: 10px;
+  color: #9aa3bf;
+  background: none;
+  border: 1px solid #e0e4f0;
+  border-radius: 4px;
+  cursor: pointer;
+  padding: 1px 6px;
+  line-height: 1.5;
+  flex-shrink: 0;
+  transition: color 0.15s, border-color 0.15s;
+}
+.ds-prop-eject:hover { color: #667eea; border-color: #667eea; }
+
+/* ── Ungroup / split button ── */
+.ds-prop-ungroup-btn {
+  display: block;
+  width: 100%;
+  padding: 6px 10px;
+  font-size: 11px;
+  color: #667eea;
+  background: rgba(102,126,234,0.07);
+  border: 1px solid rgba(102,126,234,0.2);
+  border-radius: 5px;
+  cursor: pointer;
+  text-align: center;
+  transition: background 0.15s;
+}
+.ds-prop-ungroup-btn:hover { background: rgba(102,126,234,0.14); }
 
 /* Task List Container */
 .task-list-container {
