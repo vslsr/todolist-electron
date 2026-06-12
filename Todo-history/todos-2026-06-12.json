@@ -1,0 +1,297 @@
+[
+  {
+    "id": "1781079999824ohak",
+    "uuid": "c3df5b6b-f929-405f-a923-39e778053c15",
+    "text": "怀旧服 Bug",
+    "status": "pending",
+    "priority": "high",
+    "createdAt": "6月10日",
+    "children": [],
+    "collapsed": false,
+    "steps": [],
+    "stepsCollapsed": false,
+    "transferHistory": [],
+    "transferredTo": null,
+    "transferredFrom": null,
+    "dueDate": null
+  },
+  {
+    "id": "1780885404804yoox",
+    "text": "AD44开发任务",
+    "completed": false,
+    "priority": "normal",
+    "createdAt": "6月8日",
+    "children": [
+      {
+        "id": "1780981873842j565",
+        "text": "任务1替代资源整理",
+        "status": "in-progress",
+        "priority": "normal",
+        "createdAt": "6月9日",
+        "children": [],
+        "collapsed": false,
+        "steps": [],
+        "stepsCollapsed": false,
+        "transferHistory": [],
+        "transferredTo": null,
+        "transferredFrom": null,
+        "uuid": "2b5422ef-3163-488e-a33a-a09c61d18c0a",
+        "dueDate": null
+      },
+      {
+        "id": "1781154974776zkrp",
+        "uuid": "7fe30e2c-493f-46aa-aca3-01d77e3f2569",
+        "text": "通用流程",
+        "status": "pending",
+        "priority": "normal",
+        "createdAt": "6月11日",
+        "children": [
+          {
+            "id": "1781053294825yd6k",
+            "uuid": "becf7888-d64e-4d7a-87cd-9a81d56bf46b",
+            "text": "死亡观察点的实现",
+            "status": "pending",
+            "priority": "normal",
+            "createdAt": "6月10日",
+            "children": [],
+            "collapsed": false,
+            "steps": [],
+            "stepsCollapsed": false,
+            "transferHistory": [],
+            "transferredTo": null,
+            "transferredFrom": null,
+            "dueDate": null
+          },
+          {
+            "id": "1781154259648nksm",
+            "uuid": "2df439ea-97f0-445d-9ee7-51f4ed465b24",
+            "text": "Task1 出生点设置",
+            "status": "pending",
+            "priority": "normal",
+            "createdAt": "6月11日",
+            "children": [],
+            "collapsed": false,
+            "steps": [
+              {
+                "id": "s17812294201695jh",
+                "text": "查看一下Force和Safe的位置区别",
+                "createdAt": "6月12日"
+              }
+            ],
+            "stepsCollapsed": false,
+            "transferHistory": [],
+            "transferredTo": null,
+            "transferredFrom": null,
+            "dueDate": null
+          },
+          {
+            "id": "1780972203932l90a",
+            "text": "进入任务区直接开始任务的功能",
+            "status": "pending",
+            "priority": "normal",
+            "createdAt": "6月9日",
+            "children": [],
+            "collapsed": false,
+            "steps": [
+              {
+                "id": "s1780972240427k7f",
+                "text": "查看一下功能点和策划案是否需要",
+                "createdAt": "6月9日"
+              }
+            ],
+            "stepsCollapsed": true,
+            "transferHistory": [],
+            "transferredTo": null,
+            "transferredFrom": null,
+            "uuid": "8bb73d2d-1961-46ed-999b-1cdebed99f05",
+            "dueDate": null
+          },
+          {
+            "id": "1781053433889489z",
+            "uuid": "92db2641-f566-4b00-a03a-8ee13f8afa81",
+            "text": "任务初始化状态，失败后重置任务",
+            "status": "in-progress",
+            "priority": "normal",
+            "createdAt": "6月10日",
+            "children": [],
+            "collapsed": false,
+            "steps": [
+              {
+                "id": "s17812275442971me",
+                "text": "阀门任务进度重置",
+                "createdAt": "6月12日"
+              },
+              {
+                "id": "s1781227549801pyu",
+                "text": "工厂效果重置：需要增加重置回调接口",
+                "createdAt": "6月12日"
+              },
+              {
+                "id": "s1781230486360p6a",
+                "text": "任务重置回调连接到kismet中 （开始时重置一次，所有玩家死亡重置一次）",
+                "createdAt": "6月12日"
+              }
+            ],
+            "stepsCollapsed": false,
+            "transferHistory": [],
+            "transferredTo": null,
+            "transferredFrom": null,
+            "dueDate": null
+          },
+          {
+            "id": "1780973281586dw5d",
+            "text": "小地图显示的功能",
+            "status": "pending",
+            "priority": "normal",
+            "createdAt": "6月9日",
+            "children": [],
+            "collapsed": false,
+            "steps": [],
+            "stepsCollapsed": false,
+            "transferHistory": [],
+            "transferredTo": null,
+            "transferredFrom": null,
+            "uuid": "9d4c2e73-c910-4764-94ed-49e7c4d95f35",
+            "dueDate": null
+          },
+          {
+            "id": "1781230461057hkkd",
+            "uuid": "5bf65359-febb-4e9d-b76a-3bbb4492c376",
+            "text": "通用任务流程开发用例",
+            "status": "in-progress",
+            "priority": "normal",
+            "createdAt": "6月12日",
+            "children": [],
+            "collapsed": false,
+            "steps": [],
+            "stepsCollapsed": false,
+            "transferHistory": [],
+            "transferredTo": null,
+            "transferredFrom": null,
+            "dueDate": null
+          }
+        ],
+        "collapsed": false,
+        "steps": [
+          {
+            "id": "s17812288555284qw",
+            "text": "查看任务的通用流程，参考33并编写开发用例",
+            "createdAt": "6月12日"
+          }
+        ],
+        "stepsCollapsed": false,
+        "transferHistory": [],
+        "transferredTo": null,
+        "transferredFrom": null,
+        "dueDate": null
+      }
+    ],
+    "collapsed": false,
+    "steps": [],
+    "stepsCollapsed": false,
+    "status": "pending",
+    "transferHistory": [],
+    "transferredTo": null,
+    "transferredFrom": null,
+    "uuid": "6ce41196-0f26-41c1-81b0-2cb218a67f9e",
+    "dueDate": null
+  },
+  {
+    "id": "1780885445572f4zn",
+    "text": "Lyra学习",
+    "completed": false,
+    "priority": "low",
+    "createdAt": "6月8日",
+    "children": [
+      {
+        "id": "17809715367153cbc",
+        "text": "添加多个建筑和放置列表切换的功能",
+        "status": "in-progress",
+        "priority": "low",
+        "createdAt": "6月9日",
+        "children": [],
+        "collapsed": false,
+        "steps": [
+          {
+            "id": "s1780994747083ew3",
+            "text": "查看蓝图中配置建筑的方法",
+            "createdAt": "6月9日"
+          },
+          {
+            "id": "s178105423819232v",
+            "text": "建筑不显示主体的问题",
+            "createdAt": "6月10日"
+          },
+          {
+            "id": "s1781056562200ey0",
+            "text": "判断哪些需要使用GAS，哪些不需要",
+            "createdAt": "6月10日"
+          },
+          {
+            "id": "s1781071624693ued",
+            "text": "放置建筑后崩溃问题",
+            "createdAt": "6月10日"
+          },
+          {
+            "id": "s17811639122283vi",
+            "text": "接入UI",
+            "createdAt": "6月11日"
+          }
+        ],
+        "stepsCollapsed": true,
+        "transferHistory": [],
+        "transferredTo": null,
+        "transferredFrom": null,
+        "uuid": "3f500c91-845a-429f-a8d1-1087cfc392bb",
+        "dueDate": null
+      },
+      {
+        "id": "17809811481041n6v",
+        "text": "UE5 远程Python执行能力MCP",
+        "status": "pending",
+        "priority": "low",
+        "createdAt": "6月9日",
+        "children": [],
+        "collapsed": false,
+        "steps": [
+          {
+            "id": "s1780984276782hyy",
+            "text": "只导出了ability_input_actions的内容",
+            "createdAt": "6月9日"
+          }
+        ],
+        "stepsCollapsed": true,
+        "transferHistory": [],
+        "transferredTo": null,
+        "transferredFrom": null,
+        "uuid": "5f2f0926-0ecf-4e2f-b20a-ba2ade04dfbe",
+        "dueDate": null
+      },
+      {
+        "id": "17811700470911zu5",
+        "uuid": "b07876b5-476c-4530-8e4b-22cae3014909",
+        "text": "建造系统 Skill 实现",
+        "status": "pending",
+        "priority": "low",
+        "createdAt": "6月11日",
+        "children": [],
+        "collapsed": false,
+        "steps": [],
+        "stepsCollapsed": false,
+        "transferHistory": [],
+        "transferredTo": null,
+        "transferredFrom": null,
+        "dueDate": null
+      }
+    ],
+    "collapsed": false,
+    "steps": [],
+    "stepsCollapsed": false,
+    "status": "pending",
+    "transferHistory": [],
+    "transferredTo": null,
+    "transferredFrom": null,
+    "uuid": "0d59449f-cb66-49aa-9171-dd7967504a34",
+    "dueDate": null
+  }
+]

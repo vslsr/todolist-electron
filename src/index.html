@@ -80,6 +80,7 @@
       <div class="spacer"></div>
       <button id="text-tab-btn"  class="filter-btn">文本</button>
       <button id="group-tab-btn" class="filter-btn">工作组</button>
+      <button id="draw-tab-btn"  class="filter-btn">✏ 绘图</button>
       <div class="filter-divider"></div>
       <button id="import-btn" class="btn btn-ghost-icon" title="从 JSON 文件导入">导入</button>
       <button id="export-btn" class="btn btn-ghost-icon" title="导出为 JSON 文件">导出</button>
@@ -139,6 +140,86 @@
         </ul>
       </div>
     </div>
+
+    <!-- ══ Drawing board (replaces content-row when active) ══ -->
+    <div id="draw-board" class="draw-board hidden">
+
+      <!-- Left shape palette -->
+      <div class="ds-palette">
+        <div class="ds-palette-title">形状</div>
+
+        <div class="ds-palette-item" data-shape="triangle" title="拖入画板">
+          <svg viewBox="0 0 60 55" width="52" height="46">
+            <polygon points="30,4 57,52 3,52" fill="#667eea"/>
+          </svg>
+          <span>三角形</span>
+        </div>
+
+        <div class="ds-palette-item" data-shape="circle" title="拖入画板">
+          <svg viewBox="0 0 60 60" width="52" height="46">
+            <ellipse cx="30" cy="30" rx="26" ry="26" fill="#52a878"/>
+          </svg>
+          <span>圆形</span>
+        </div>
+
+        <div class="ds-palette-item" data-shape="square" title="拖入画板">
+          <svg viewBox="0 0 60 60" width="52" height="46">
+            <rect x="5" y="5" width="50" height="50" rx="5" fill="#e8a020"/>
+          </svg>
+          <span>正方形</span>
+        </div>
+
+        <div class="ds-palette-item" data-shape="node" title="拖入画板">
+          <svg viewBox="0 0 60 60" width="52" height="46">
+            <circle cx="30" cy="30" r="16" fill="rgba(255,255,255,0.92)" stroke="#667eea" stroke-width="3"/>
+            <circle cx="30" cy="30" r="5"  fill="#667eea"/>
+          </svg>
+          <span>节点</span>
+        </div>
+
+        <div class="ds-palette-hint">拖入画板<br>Del 删除</div>
+      </div>
+
+      <!-- SVG canvas with grid -->
+      <div class="ds-canvas-wrap">
+        <svg id="draw-canvas" width="100%" height="100%"
+             oncontextmenu="return false">
+          <defs>
+            <pattern id="ds-grid" width="20" height="20" patternUnits="userSpaceOnUse">
+              <path d="M 20 0 L 0 0 0 20" fill="none" stroke="#dce1ee" stroke-width="0.5"/>
+            </pattern>
+            <!-- Arrowhead marker -->
+            <marker id="ds-arrowhead" markerWidth="8" markerHeight="6"
+                    refX="7" refY="3" orient="auto" markerUnits="userSpaceOnUse">
+              <polygon points="0 0, 8 3, 0 6" fill="#667eea"/>
+            </marker>
+            <marker id="ds-arrowhead-dim" markerWidth="8" markerHeight="6"
+                    refX="7" refY="3" orient="auto" markerUnits="userSpaceOnUse">
+              <polygon points="0 0, 8 3, 0 6" fill="#9aa3bf"/>
+            </marker>
+          </defs>
+          <rect id="draw-grid-rect" width="100%" height="100%" fill="url(#ds-grid)"/>
+          <g id="draw-arrows-layer"></g>
+          <g id="draw-shapes-layer"></g>
+        </svg>
+      </div>
+
+      <!-- Properties panel (right sidebar) -->
+      <div id="ds-props-panel" class="ds-props-panel"></div>
+    </div>
+
+  </div><!-- /.app -->
+
+  <!-- Right-click context menu (drawing board) -->
+  <div id="ds-context-menu" class="ds-context-menu hidden">
+    <button class="ds-ctx-item" data-action="reset">↺ 重置大小方向</button>
+    <div class="ds-ctx-divider"></div>
+    <button class="ds-ctx-item" data-action="layer-up">↑ 向上移动图层</button>
+    <button class="ds-ctx-item" data-action="layer-down">↓ 向下移动图层</button>
+    <div class="ds-ctx-divider"></div>
+    <button class="ds-ctx-item" id="ds-ctx-activate" data-action="activate-connections">⚡ 激活外联连线</button>
+    <div class="ds-ctx-divider"></div>
+    <button class="ds-ctx-item ds-ctx-item--danger" data-action="delete">✕ 删除</button>
   </div>
 
   <!-- User todos read-only overlay -->
@@ -151,5 +232,6 @@
   </div>
 
   <script src="renderer.js"></script>
+  <script src="draw.js"></script>
 </body>
 </html>

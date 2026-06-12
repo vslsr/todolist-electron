@@ -903,6 +903,260 @@ body {
   padding: 40px;
 }
 
+/* ══════════════════════════════════════════════════════════════════════════════
+   Drawing board
+   ══════════════════════════════════════════════════════════════════════════════ */
+
+.draw-board {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  background: #f7f8fd;
+}
+
+/* ── Palette ── */
+.ds-palette {
+  width: 88px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 14px 0 10px;
+  gap: 2px;
+  background: #fff;
+  border-right: 1px solid #e8eaf0;
+  flex-shrink: 0;
+  user-select: none;
+}
+
+.ds-palette-title {
+  font-size: 10px;
+  color: #c0c4d4;
+  font-weight: 600;
+  letter-spacing: 0.7px;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+
+.ds-palette-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 6px;
+  border-radius: 9px;
+  cursor: grab;
+  width: 74px;
+  transition: background 0.14s;
+}
+.ds-palette-item:hover   { background: #f0f2ff; }
+.ds-palette-item:active  { cursor: grabbing; }
+.ds-palette-item span    { font-size: 10px; color: #aaa; }
+
+.ds-palette-hint {
+  margin-top: auto;
+  font-size: 10px;
+  color: #ccc;
+  text-align: center;
+  line-height: 1.6;
+  padding: 8px 4px 0;
+}
+
+/* ── Canvas ── */
+.ds-canvas-wrap {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+  background: #f8f9fd;
+}
+
+#draw-canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  cursor: default;
+}
+
+/* ── Connection ports ── */
+.ds-ports {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.13s;
+}
+
+/* Show ports when hovering the parent shape group */
+.ds-shape-g:hover .ds-ports {
+  opacity: 1;
+  pointer-events: all;
+}
+
+/* Show ALL ports while an arrow is being dragged (so targets are reachable) */
+#draw-canvas.drawing-arrow .ds-ports {
+  opacity: 1;
+  pointer-events: all;
+}
+
+/* Hide ports while moving / resizing / rotating (avoid accidental arrow starts) */
+#draw-canvas.ds-interacting .ds-ports {
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+.ds-port {
+  transition: r 0.1s;
+  filter: drop-shadow(0 1px 2px rgba(102,126,234,0.35));
+}
+.ds-port:hover {
+  stroke: #4557d4;
+}
+
+/* ── Relay node: center port stays visible at all times ── */
+.ds-ports--node {
+  opacity: 1 !important;
+  pointer-events: all !important;
+}
+/* Still hide interaction during move/resize/rotate */
+#draw-canvas.ds-interacting .ds-ports--node {
+  pointer-events: none !important;
+}
+
+/* ── Marquee box-select ── */
+#draw-canvas.ds-selecting { cursor: crosshair; }
+
+/* ── Arrow lines ── */
+#draw-arrows-layer path {
+  transition: none;
+}
+
+/* ══════════════════════════════════════════════════════════════════════════════
+   Context menu
+   ══════════════════════════════════════════════════════════════════════════════ */
+.ds-context-menu {
+  position: fixed;
+  z-index: 10000;
+  background: #fff;
+  border: 1px solid #e0e4f0;
+  border-radius: 9px;
+  box-shadow: 0 6px 20px rgba(60,70,120,0.15);
+  padding: 4px 0;
+  min-width: 162px;
+  user-select: none;
+}
+.ds-ctx-item {
+  display: block;
+  width: 100%;
+  padding: 7px 16px;
+  text-align: left;
+  background: none;
+  border: none;
+  font-size: 13px;
+  color: #333;
+  cursor: pointer;
+  border-radius: 0;
+  white-space: nowrap;
+}
+.ds-ctx-item:hover            { background: #f0f2ff; color: #4557d4; }
+.ds-ctx-item--danger          { color: #c44; }
+.ds-ctx-item--danger:hover    { background: #fff0f0; color: #b22; }
+.ds-ctx-divider               { height: 1px; background: #eef0f8; margin: 3px 0; }
+
+/* ══════════════════════════════════════════════════════════════════════════════
+   Properties panel (right sidebar of drawing board)
+   ══════════════════════════════════════════════════════════════════════════════ */
+.ds-props-panel {
+  width: 196px;
+  min-width: 196px;
+  border-left: 1px solid #e8ebf5;
+  background: #fafbff;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+}
+.ds-props-panel::-webkit-scrollbar { width: 4px; }
+.ds-props-panel::-webkit-scrollbar-thumb { background: #dde0ea; border-radius: 2px; }
+
+.ds-props-header {
+  padding: 9px 12px 7px;
+  font-size: 10px;
+  font-weight: 700;
+  color: #9aa3bf;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  border-bottom: 1px solid #eef0f8;
+  flex-shrink: 0;
+}
+.ds-props-empty {
+  padding: 20px 12px;
+  font-size: 12px;
+  color: #b8c0d8;
+  text-align: center;
+}
+
+/* ── Individual shape item ── */
+.ds-prop-item {
+  border-bottom: 1px solid #eef0f8;
+}
+.ds-prop-hdr {
+  display: flex;
+  align-items: center;
+  padding: 7px 10px;
+  cursor: pointer;
+  user-select: none;
+}
+.ds-prop-hdr:hover { background: #f0f2ff; }
+.ds-prop-icon   { font-size: 14px; margin-right: 7px; color: #667eea; }
+.ds-prop-name   { flex: 1; font-size: 12px; color: #3a4060; font-weight: 500; }
+.ds-prop-toggle {
+  font-size: 9px;
+  color: #9aa3bf;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0 2px;
+  line-height: 1;
+}
+
+/* ── Property fields ── */
+.ds-prop-body            { padding: 6px 10px 10px; }
+.ds-prop-body--collapsed { display: none; }
+
+.ds-prop-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 6px;
+}
+.ds-prop-row label {
+  width: 30px;
+  font-size: 11px;
+  color: #9aa3bf;
+  flex-shrink: 0;
+}
+.ds-prop-row input[type="color"] {
+  flex: 1;
+  height: 24px;
+  border: 1px solid #e0e4f0;
+  border-radius: 5px;
+  padding: 1px 3px;
+  cursor: pointer;
+  background: #fff;
+}
+.ds-prop-row input[type="number"] {
+  width: 56px;
+  padding: 3px 6px;
+  border: 1px solid #e0e4f0;
+  border-radius: 5px;
+  font-size: 12px;
+  color: #3a4060;
+  outline: none;
+  background: #fff;
+}
+.ds-prop-row input[type="number"]:focus {
+  border-color: #667eea;
+  box-shadow: 0 0 0 2px rgba(102,126,234,0.15);
+}
+.ds-prop-unit { font-size: 11px; color: #b0b8d0; }
+
 /* Task List Container */
 .task-list-container {
   flex: 1;
