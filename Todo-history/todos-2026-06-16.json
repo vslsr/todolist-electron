@@ -1,0 +1,559 @@
+[
+  {
+    "id": "17815185466805i14",
+    "uuid": "32f77405-91b0-40cb-bcd1-a14a9d61a983",
+    "text": "SVN规范增加",
+    "status": "pending",
+    "priority": "normal",
+    "createdAt": "6月15日",
+    "children": [],
+    "collapsed": false,
+    "steps": [],
+    "stepsCollapsed": false,
+    "transferHistory": [],
+    "transferredTo": null,
+    "transferredFrom": null,
+    "dueDate": "2026-06-18"
+  },
+  {
+    "id": "1781249596229xwif",
+    "uuid": "d48c0548-73bd-42c7-b5d0-e1fdf4fa9297",
+    "text": "怀旧服 Bug",
+    "status": "pending",
+    "priority": "high",
+    "createdAt": "6月12日",
+    "children": [
+      {
+        "id": "1781518561904en4s",
+        "uuid": "ff5b8eb8-3bbe-478c-aa0d-59169c5b7a60",
+        "text": "【时光流金】【捧月沟】B区BOSS击杀后没有评分",
+        "status": "pending",
+        "priority": "high",
+        "createdAt": "6月15日",
+        "children": [],
+        "collapsed": false,
+        "steps": [],
+        "stepsCollapsed": false,
+        "transferHistory": [],
+        "transferredTo": null,
+        "transferredFrom": null,
+        "dueDate": null
+      }
+    ],
+    "collapsed": false,
+    "steps": [],
+    "stepsCollapsed": false,
+    "transferHistory": [],
+    "transferredTo": null,
+    "transferredFrom": null,
+    "dueDate": null
+  },
+  {
+    "id": "1780885404804yoox",
+    "text": "AD44开发任务 Task1",
+    "completed": false,
+    "priority": "normal",
+    "createdAt": "6月8日",
+    "children": [
+      {
+        "id": "1780981873842j565",
+        "text": "任务1替代资源整理",
+        "status": "in-progress",
+        "priority": "normal",
+        "createdAt": "6月9日",
+        "children": [],
+        "collapsed": false,
+        "steps": [],
+        "stepsCollapsed": false,
+        "transferHistory": [],
+        "transferredTo": null,
+        "transferredFrom": null,
+        "uuid": "2b5422ef-3163-488e-a33a-a09c61d18c0a",
+        "dueDate": null
+      },
+      {
+        "id": "1781154974776zkrp",
+        "uuid": "7fe30e2c-493f-46aa-aca3-01d77e3f2569",
+        "text": "通用流程",
+        "status": "pending",
+        "priority": "normal",
+        "createdAt": "6月11日",
+        "children": [
+          {
+            "id": "1781249078974h39r",
+            "uuid": "feeebf5d-301b-41fb-b939-76d5175c1afa",
+            "text": "引擎卡死崩溃的问题",
+            "status": "pending",
+            "priority": "high",
+            "createdAt": "6月12日",
+            "children": [],
+            "collapsed": false,
+            "steps": [],
+            "stepsCollapsed": false,
+            "transferHistory": [],
+            "transferredTo": null,
+            "transferredFrom": null,
+            "dueDate": null
+          },
+          {
+            "id": "1781053294825yd6k",
+            "uuid": "becf7888-d64e-4d7a-87cd-9a81d56bf46b",
+            "text": "死亡观察点的实现",
+            "status": "pending",
+            "priority": "normal",
+            "createdAt": "6月10日",
+            "children": [],
+            "collapsed": false,
+            "steps": [],
+            "stepsCollapsed": false,
+            "transferHistory": [],
+            "transferredTo": null,
+            "transferredFrom": null,
+            "dueDate": null
+          },
+          {
+            "id": "1781154259648nksm",
+            "uuid": "2df439ea-97f0-445d-9ee7-51f4ed465b24",
+            "text": "Task1 出生点设置",
+            "status": "pending",
+            "priority": "normal",
+            "createdAt": "6月11日",
+            "children": [],
+            "collapsed": false,
+            "steps": [
+              {
+                "id": "s17812294201695jh",
+                "text": "查看一下Force和Safe的位置区别",
+                "createdAt": "6月12日"
+              }
+            ],
+            "stepsCollapsed": true,
+            "transferHistory": [],
+            "transferredTo": null,
+            "transferredFrom": null,
+            "dueDate": null
+          },
+          {
+            "id": "1780972203932l90a",
+            "text": "进入任务区直接开始任务的功能",
+            "status": "pending",
+            "priority": "normal",
+            "createdAt": "6月9日",
+            "children": [],
+            "collapsed": false,
+            "steps": [
+              {
+                "id": "s1780972240427k7f",
+                "text": "查看一下功能点和策划案是否需要",
+                "createdAt": "6月9日"
+              }
+            ],
+            "stepsCollapsed": true,
+            "transferHistory": [],
+            "transferredTo": null,
+            "transferredFrom": null,
+            "uuid": "8bb73d2d-1961-46ed-999b-1cdebed99f05",
+            "dueDate": null
+          },
+          {
+            "id": "1780973281586dw5d",
+            "text": "小地图显示的功能",
+            "status": "pending",
+            "priority": "normal",
+            "createdAt": "6月9日",
+            "children": [],
+            "collapsed": false,
+            "steps": [],
+            "stepsCollapsed": false,
+            "transferHistory": [],
+            "transferredTo": null,
+            "transferredFrom": null,
+            "uuid": "9d4c2e73-c910-4764-94ed-49e7c4d95f35",
+            "dueDate": null
+          }
+        ],
+        "collapsed": false,
+        "steps": [
+          {
+            "id": "s17812288555284qw",
+            "text": "查看任务的通用流程，参考33并编写开发用例",
+            "createdAt": "6月12日"
+          }
+        ],
+        "stepsCollapsed": true,
+        "transferHistory": [],
+        "transferredTo": null,
+        "transferredFrom": null,
+        "dueDate": null
+      }
+    ],
+    "collapsed": false,
+    "steps": [],
+    "stepsCollapsed": false,
+    "status": "pending",
+    "transferHistory": [],
+    "transferredTo": null,
+    "transferredFrom": null,
+    "uuid": "6ce41196-0f26-41c1-81b0-2cb218a67f9e",
+    "dueDate": null
+  },
+  {
+    "id": "1781486823836l1c1",
+    "uuid": "7e77ef2b-74a3-4a20-86c7-6257d6b165d6",
+    "text": "AD44 玩法开发 Gameplay01",
+    "status": "pending",
+    "priority": "normal",
+    "createdAt": "6月15日",
+    "children": [
+      {
+        "id": "1781493008739ifru",
+        "uuid": "f4bfefbf-5dd9-455a-b7c4-18ab47ada22d",
+        "text": "玩法开发规范",
+        "status": "pending",
+        "priority": "normal",
+        "createdAt": "6月15日",
+        "children": [],
+        "collapsed": false,
+        "steps": [],
+        "stepsCollapsed": false,
+        "transferHistory": [],
+        "transferredTo": null,
+        "transferredFrom": null,
+        "dueDate": null
+      },
+      {
+        "id": "1781486833428udw4",
+        "uuid": "886e5f90-5af2-4a92-9593-230e15368802",
+        "text": "HUD 提示“去往安全区躲避轰炸”，任务目标文字更换为“逃离轰炸区”",
+        "status": "pending",
+        "priority": "normal",
+        "createdAt": "6月15日",
+        "children": [],
+        "collapsed": false,
+        "steps": [],
+        "stepsCollapsed": false,
+        "transferHistory": [],
+        "transferredTo": null,
+        "transferredFrom": null,
+        "dueDate": null
+      },
+      {
+        "id": "1781486871028jsmy",
+        "uuid": "7569b5f7-37ba-42c9-821e-4743b8cb497f",
+        "text": "对玩家轰炸反馈",
+        "status": "pending",
+        "priority": "normal",
+        "createdAt": "6月15日",
+        "children": [
+          {
+            "id": "1781486876132ex1i",
+            "uuid": "266dc916-9683-41bf-be26-a99bc2806aa7",
+            "text": "以目标玩家当前位置生成浅红色预警圈并渐变为亮红色",
+            "status": "pending",
+            "priority": "normal",
+            "createdAt": "6月15日",
+            "children": [],
+            "collapsed": false,
+            "steps": [],
+            "stepsCollapsed": false,
+            "transferHistory": [],
+            "transferredTo": null,
+            "transferredFrom": null,
+            "dueDate": null
+          },
+          {
+            "id": "178148689304474pb",
+            "uuid": "83ebf886-18bc-4dee-bfe3-152af2dbcc83",
+            "text": "玩家被轰炸命中时给出受击反馈",
+            "status": "pending",
+            "priority": "normal",
+            "createdAt": "6月15日",
+            "children": [],
+            "collapsed": false,
+            "steps": [],
+            "stepsCollapsed": false,
+            "transferHistory": [],
+            "transferredTo": null,
+            "transferredFrom": null,
+            "dueDate": null
+          },
+          {
+            "id": "1781486899708x8wt",
+            "uuid": "5b5346ab-eb3d-47c2-b355-fac5d4ef0d2f",
+            "text": "轰炸落点播放爆炸特效与音效",
+            "status": "pending",
+            "priority": "normal",
+            "createdAt": "6月15日",
+            "children": [],
+            "collapsed": false,
+            "steps": [],
+            "stepsCollapsed": false,
+            "transferHistory": [],
+            "transferredTo": null,
+            "transferredFrom": null,
+            "dueDate": null
+          }
+        ],
+        "collapsed": true,
+        "steps": [],
+        "stepsCollapsed": false,
+        "transferHistory": [],
+        "transferredTo": null,
+        "transferredFrom": null,
+        "dueDate": null
+      },
+      {
+        "id": "1781486920437l20s",
+        "uuid": "985d4da3-ef01-48e1-ab1e-7f85b35c1cc1",
+        "text": "障碍物轰炸破坏反馈",
+        "status": "pending",
+        "priority": "normal",
+        "createdAt": "6月15日",
+        "children": [
+          {
+            "id": "17814869298766tdu",
+            "uuid": "e510cfea-b8ef-4263-9f82-7787264bdae3",
+            "text": "障碍物表面亮起红色流光提示",
+            "status": "pending",
+            "priority": "normal",
+            "createdAt": "6月15日",
+            "children": [],
+            "collapsed": false,
+            "steps": [],
+            "stepsCollapsed": false,
+            "transferHistory": [],
+            "transferredTo": null,
+            "transferredFrom": null,
+            "dueDate": null
+          },
+          {
+            "id": "1781486938932o79w",
+            "uuid": "a53c68f0-5fa6-4cbf-9d7f-bb7dfb1b8171",
+            "text": "靠近障碍物时 HUD 提示“通过障碍物”",
+            "status": "pending",
+            "priority": "normal",
+            "createdAt": "6月15日",
+            "children": [],
+            "collapsed": false,
+            "steps": [],
+            "stepsCollapsed": false,
+            "transferHistory": [],
+            "transferredTo": null,
+            "transferredFrom": null,
+            "dueDate": null
+          },
+          {
+            "id": "1781486947236roz0",
+            "uuid": "0fea6a75-1ae0-464c-827a-722d6cfd0d5d",
+            "text": "飞艇对障碍物前方执行一次轰炸并播放破坏特效与音效",
+            "status": "pending",
+            "priority": "normal",
+            "createdAt": "6月15日",
+            "children": [],
+            "collapsed": false,
+            "steps": [],
+            "stepsCollapsed": false,
+            "transferHistory": [],
+            "transferredTo": null,
+            "transferredFrom": null,
+            "dueDate": null
+          }
+        ],
+        "collapsed": false,
+        "steps": [],
+        "stepsCollapsed": false,
+        "transferHistory": [],
+        "transferredTo": null,
+        "transferredFrom": null,
+        "dueDate": null
+      },
+      {
+        "id": "17814887098994vke",
+        "uuid": "f59911e0-f2d8-494c-b0fc-87658398c404",
+        "text": "玩家进入玩法区后纳入飞艇轰炸目标集合",
+        "status": "pending",
+        "priority": "normal",
+        "createdAt": "6月15日",
+        "children": [
+          {
+            "id": "1781488723347g94u",
+            "uuid": "438bcbd6-1f76-42de-8894-a3ff6c3680a6",
+            "text": "每个玩家按独立随机 CD 被选为轰炸目标",
+            "status": "pending",
+            "priority": "normal",
+            "createdAt": "6月15日",
+            "children": [
+              {
+                "id": "1781488751532aogp",
+                "uuid": "a2d4e4ff-7ba9-4c2d-b3de-5d093dc9a7c6",
+                "text": "对目标玩家当前位置生成半径 R1 的预警圈",
+                "status": "in-progress",
+                "priority": "normal",
+                "createdAt": "6月15日",
+                "children": [],
+                "collapsed": false,
+                "steps": [],
+                "stepsCollapsed": false,
+                "transferHistory": [],
+                "transferredTo": null,
+                "transferredFrom": null,
+                "dueDate": null
+              },
+              {
+                "id": "1781488756635labc",
+                "uuid": "90921d59-7d67-4a42-956e-4ced187b1206",
+                "text": "预警持续 T3 后结算一次范围伤害 D1",
+                "status": "in-progress",
+                "priority": "normal",
+                "createdAt": "6月15日",
+                "children": [],
+                "collapsed": false,
+                "steps": [],
+                "stepsCollapsed": false,
+                "transferHistory": [],
+                "transferredTo": null,
+                "transferredFrom": null,
+                "dueDate": null
+              },
+              {
+                "id": "17815135165143p44",
+                "uuid": "a57334a1-585a-417a-960c-bd21fb3438d0",
+                "text": "单次轰炸完成后重新随机计算该玩家下一轮被飞艇攻击的 CD",
+                "status": "in-progress",
+                "priority": "normal",
+                "createdAt": "6月15日",
+                "children": [],
+                "collapsed": false,
+                "steps": [],
+                "stepsCollapsed": false,
+                "transferHistory": [],
+                "transferredTo": null,
+                "transferredFrom": null,
+                "dueDate": null
+              }
+            ],
+            "collapsed": false,
+            "steps": [],
+            "stepsCollapsed": false,
+            "transferHistory": [],
+            "transferredTo": null,
+            "transferredFrom": null,
+            "dueDate": null
+          }
+        ],
+        "collapsed": false,
+        "steps": [],
+        "stepsCollapsed": false,
+        "transferHistory": [],
+        "transferredTo": null,
+        "transferredFrom": null,
+        "dueDate": null
+      }
+    ],
+    "collapsed": false,
+    "steps": [],
+    "stepsCollapsed": false,
+    "transferHistory": [],
+    "transferredTo": null,
+    "transferredFrom": null,
+    "dueDate": null
+  },
+  {
+    "id": "1780885445572f4zn",
+    "text": "Lyra学习",
+    "completed": false,
+    "priority": "low",
+    "createdAt": "6月8日",
+    "children": [
+      {
+        "id": "17809715367153cbc",
+        "text": "添加多个建筑和放置列表切换的功能",
+        "status": "in-progress",
+        "priority": "low",
+        "createdAt": "6月9日",
+        "children": [],
+        "collapsed": false,
+        "steps": [
+          {
+            "id": "s1780994747083ew3",
+            "text": "查看蓝图中配置建筑的方法",
+            "createdAt": "6月9日"
+          },
+          {
+            "id": "s178105423819232v",
+            "text": "建筑不显示主体的问题",
+            "createdAt": "6月10日"
+          },
+          {
+            "id": "s1781056562200ey0",
+            "text": "判断哪些需要使用GAS，哪些不需要",
+            "createdAt": "6月10日"
+          },
+          {
+            "id": "s1781071624693ued",
+            "text": "放置建筑后崩溃问题",
+            "createdAt": "6月10日"
+          },
+          {
+            "id": "s17811639122283vi",
+            "text": "接入UI",
+            "createdAt": "6月11日"
+          }
+        ],
+        "stepsCollapsed": true,
+        "transferHistory": [],
+        "transferredTo": null,
+        "transferredFrom": null,
+        "uuid": "3f500c91-845a-429f-a8d1-1087cfc392bb",
+        "dueDate": null
+      },
+      {
+        "id": "17809811481041n6v",
+        "text": "UE5 远程Python执行能力MCP",
+        "status": "pending",
+        "priority": "low",
+        "createdAt": "6月9日",
+        "children": [],
+        "collapsed": false,
+        "steps": [
+          {
+            "id": "s1780984276782hyy",
+            "text": "只导出了ability_input_actions的内容",
+            "createdAt": "6月9日"
+          }
+        ],
+        "stepsCollapsed": true,
+        "transferHistory": [],
+        "transferredTo": null,
+        "transferredFrom": null,
+        "uuid": "5f2f0926-0ecf-4e2f-b20a-ba2ade04dfbe",
+        "dueDate": null
+      },
+      {
+        "id": "17811700470911zu5",
+        "uuid": "b07876b5-476c-4530-8e4b-22cae3014909",
+        "text": "建造系统 Skill 实现",
+        "status": "pending",
+        "priority": "low",
+        "createdAt": "6月11日",
+        "children": [],
+        "collapsed": false,
+        "steps": [],
+        "stepsCollapsed": false,
+        "transferHistory": [],
+        "transferredTo": null,
+        "transferredFrom": null,
+        "dueDate": null
+      }
+    ],
+    "collapsed": false,
+    "steps": [],
+    "stepsCollapsed": false,
+    "status": "pending",
+    "transferHistory": [],
+    "transferredTo": null,
+    "transferredFrom": null,
+    "uuid": "0d59449f-cb66-49aa-9171-dd7967504a34",
+    "dueDate": null
+  }
+]
