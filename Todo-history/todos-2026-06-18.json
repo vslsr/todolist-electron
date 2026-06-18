@@ -1,21 +1,5 @@
 [
   {
-    "id": "17815185466805i14",
-    "uuid": "32f77405-91b0-40cb-bcd1-a14a9d61a983",
-    "text": "SVN规范增加",
-    "status": "pending",
-    "priority": "normal",
-    "createdAt": "6月15日",
-    "children": [],
-    "collapsed": false,
-    "steps": [],
-    "stepsCollapsed": false,
-    "transferHistory": [],
-    "transferredTo": null,
-    "transferredFrom": null,
-    "dueDate": "2026-06-18"
-  },
-  {
     "id": "1781249596229xwif",
     "uuid": "d48c0548-73bd-42c7-b5d0-e1fdf4fa9297",
     "text": "怀旧服 Bug",
@@ -24,12 +8,12 @@
     "createdAt": "6月12日",
     "children": [
       {
-        "id": "1781518561904en4s",
-        "uuid": "ff5b8eb8-3bbe-478c-aa0d-59169c5b7a60",
-        "text": "【时光流金】【捧月沟】B区BOSS击杀后没有评分",
+        "id": "17817443001130epi",
+        "uuid": "4308db59-2ff1-4eb2-b87f-75ac771a5b2b",
+        "text": "沟通提交版本问题",
         "status": "pending",
         "priority": "high",
-        "createdAt": "6月15日",
+        "createdAt": "6月18日",
         "children": [],
         "collapsed": false,
         "steps": [],
@@ -168,6 +152,21 @@
                 "id": "s1781589785283fb0",
                 "text": "从其他项目中先拷贝一份小地图到AD44的包内",
                 "createdAt": "6月16日"
+              },
+              {
+                "id": "s1781659489428idk",
+                "text": "接入小地图SetMapInfo",
+                "createdAt": "6月17日"
+              },
+              {
+                "id": "s1781659503579jdi",
+                "text": "查看一下小地图的标准",
+                "createdAt": "6月17日"
+              },
+              {
+                "id": "s1781681226036j4h",
+                "text": "HUD_Map_Europe_440",
+                "createdAt": "6月17日"
               }
             ],
             "stepsCollapsed": false,
@@ -187,6 +186,22 @@
           }
         ],
         "stepsCollapsed": true,
+        "transferHistory": [],
+        "transferredTo": null,
+        "transferredFrom": null,
+        "dueDate": null
+      },
+      {
+        "id": "17817746243945ldu",
+        "uuid": "23f8661a-9d07-42f1-9de4-9f1711a53c7d",
+        "text": "关闭阀门后，弹出的提示应该是单人的",
+        "status": "in-progress",
+        "priority": "normal",
+        "createdAt": "6月18日",
+        "children": [],
+        "collapsed": false,
+        "steps": [],
+        "stepsCollapsed": false,
         "transferHistory": [],
         "transferredTo": null,
         "transferredFrom": null,
@@ -300,7 +315,7 @@
             "dueDate": null
           }
         ],
-        "collapsed": true,
+        "collapsed": false,
         "steps": [],
         "stepsCollapsed": false,
         "transferHistory": [],
@@ -374,28 +389,12 @@
         "dueDate": null
       },
       {
-        "id": "17814887098994vke",
-        "uuid": "f59911e0-f2d8-494c-b0fc-87658398c404",
-        "text": "玩家进入玩法区后纳入飞艇轰炸目标集合",
-        "status": "in-progress",
-        "priority": "normal",
-        "createdAt": "6月15日",
-        "children": [],
-        "collapsed": false,
-        "steps": [],
-        "stepsCollapsed": false,
-        "transferHistory": [],
-        "transferredTo": null,
-        "transferredFrom": null,
-        "dueDate": null
-      },
-      {
-        "id": "1781488723347g94u",
-        "uuid": "438bcbd6-1f76-42de-8894-a3ff6c3680a6",
+        "id": "1781777979996to1m",
+        "uuid": "22f56e02-e4bd-4ab2-8cee-7340cd154098",
         "text": "每个玩家按独立随机 CD 被选为轰炸目标",
         "status": "in-progress",
         "priority": "normal",
-        "createdAt": "6月15日",
+        "createdAt": "6月18日",
         "children": [],
         "collapsed": false,
         "steps": [],
@@ -406,44 +405,12 @@
         "dueDate": null
       },
       {
-        "id": "17815135165143p44",
-        "uuid": "a57334a1-585a-417a-960c-bd21fb3438d0",
-        "text": "单次轰炸完成后重新随机计算该玩家下一轮被飞艇攻击的 CD",
+        "id": "1781777991548rw79",
+        "uuid": "06578e26-015e-4931-953e-ec8d32b4448b",
+        "text": "玩家进入玩法区后纳入飞艇轰炸目标集合",
         "status": "in-progress",
         "priority": "normal",
-        "createdAt": "6月15日",
-        "children": [],
-        "collapsed": false,
-        "steps": [],
-        "stepsCollapsed": false,
-        "transferHistory": [],
-        "transferredTo": null,
-        "transferredFrom": null,
-        "dueDate": null
-      },
-      {
-        "id": "1781488756635labc",
-        "uuid": "90921d59-7d67-4a42-956e-4ced187b1206",
-        "text": "预警持续 T3 后结算一次范围伤害 D1",
-        "status": "completed",
-        "priority": "normal",
-        "createdAt": "6月15日",
-        "children": [],
-        "collapsed": false,
-        "steps": [],
-        "stepsCollapsed": false,
-        "transferHistory": [],
-        "transferredTo": null,
-        "transferredFrom": null,
-        "dueDate": null
-      },
-      {
-        "id": "1781488751532aogp",
-        "uuid": "a2d4e4ff-7ba9-4c2d-b3de-5d093dc9a7c6",
-        "text": "对目标玩家当前位置生成半径 R1 的预警圈",
-        "status": "completed",
-        "priority": "normal",
-        "createdAt": "6月15日",
+        "createdAt": "6月18日",
         "children": [],
         "collapsed": false,
         "steps": [],
