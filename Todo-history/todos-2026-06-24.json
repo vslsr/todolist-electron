@@ -1,0 +1,591 @@
+[
+  {
+    "id": "1781249596229xwif",
+    "uuid": "d48c0548-73bd-42c7-b5d0-e1fdf4fa9297",
+    "text": "怀旧服 Bug",
+    "status": "pending",
+    "priority": "high",
+    "createdAt": "6月12日",
+    "children": [
+      {
+        "id": "17820990425871ae5",
+        "uuid": "2939434a-26f7-49ff-a883-55a000c0a6b0",
+        "text": "【赛季】【时光流金-樱之谷】【必现】小地图中商店、加子弹、回血图标太大建议优化（上海代宝修复）",
+        "status": "completed",
+        "priority": "high",
+        "createdAt": "6月22日",
+        "children": [],
+        "collapsed": false,
+        "steps": [
+          {
+            "id": "s1782118684977od1",
+            "text": "等待小地图图片修改",
+            "createdAt": "6月22日"
+          }
+        ],
+        "stepsCollapsed": true,
+        "transferHistory": [],
+        "transferredTo": null,
+        "transferredFrom": null,
+        "dueDate": null
+      },
+      {
+        "id": "1782203108327zi9p",
+        "uuid": "fd89b218-a75a-4244-ae03-565085b44a9c",
+        "text": "【外网反馈】【赛季】【时光流金-樱之谷】【测试服2已复现】B区第2个关卡读秒前智慧手枪按V键上机甲进入守关内按V键下机甲后上半身不显(上海代宝修复)",
+        "status": "completed",
+        "priority": "high",
+        "createdAt": "6月23日",
+        "children": [],
+        "collapsed": false,
+        "steps": [
+          {
+            "id": "s1782203793121zmx",
+            "text": "当玩家切换到机甲后，再切换回无双模式时，视角切换逻辑没有正确处理 b_Spine2 的显示状态。",
+            "createdAt": "6月23日"
+          },
+          {
+            "id": "s17822885398158o4",
+            "text": "准备热更",
+            "createdAt": "6月24日"
+          }
+        ],
+        "stepsCollapsed": false,
+        "transferHistory": [],
+        "transferredTo": null,
+        "transferredFrom": null,
+        "dueDate": null
+      },
+      {
+        "id": "1782264409957j6ts",
+        "uuid": "33e5b906-e4c8-4267-9347-dd549b14dab5",
+        "text": "删除EXEC函数",
+        "status": "completed",
+        "priority": "high",
+        "createdAt": "6月24日",
+        "children": [],
+        "collapsed": false,
+        "steps": [],
+        "stepsCollapsed": false,
+        "transferHistory": [],
+        "transferredTo": null,
+        "transferredFrom": null,
+        "dueDate": null
+      },
+      {
+        "id": "17822694586467br4",
+        "uuid": "562da19d-89a0-425e-acd2-e64b19d00242",
+        "text": "B区BOSS前小地图中BOSS场景和NPC对不上",
+        "status": "completed",
+        "priority": "high",
+        "createdAt": "6月24日",
+        "children": [],
+        "collapsed": false,
+        "steps": [],
+        "stepsCollapsed": false,
+        "transferHistory": [],
+        "transferredTo": null,
+        "transferredFrom": null,
+        "dueDate": null
+      }
+    ],
+    "collapsed": false,
+    "steps": [],
+    "stepsCollapsed": false,
+    "transferHistory": [],
+    "transferredTo": null,
+    "transferredFrom": null,
+    "dueDate": null
+  },
+  {
+    "id": "1780885404804yoox",
+    "text": "AD44开发任务 Task1",
+    "completed": false,
+    "priority": "normal",
+    "createdAt": "6月8日",
+    "children": [
+      {
+        "id": "1781154974776zkrp",
+        "uuid": "7fe30e2c-493f-46aa-aca3-01d77e3f2569",
+        "text": "通用流程",
+        "status": "pending",
+        "priority": "normal",
+        "createdAt": "6月11日",
+        "children": [
+          {
+            "id": "1781249078974h39r",
+            "uuid": "feeebf5d-301b-41fb-b939-76d5175c1afa",
+            "text": "引擎卡死崩溃的问题",
+            "status": "pending",
+            "priority": "high",
+            "createdAt": "6月12日",
+            "children": [],
+            "collapsed": false,
+            "steps": [
+              {
+                "id": "s17821223601547p7",
+                "text": "需要重新建立地图",
+                "createdAt": "6月22日"
+              }
+            ],
+            "stepsCollapsed": false,
+            "transferHistory": [],
+            "transferredTo": null,
+            "transferredFrom": null,
+            "dueDate": null
+          },
+          {
+            "id": "1781053294825yd6k",
+            "uuid": "becf7888-d64e-4d7a-87cd-9a81d56bf46b",
+            "text": "死亡观察点的实现",
+            "status": "pending",
+            "priority": "normal",
+            "createdAt": "6月10日",
+            "children": [],
+            "collapsed": false,
+            "steps": [],
+            "stepsCollapsed": false,
+            "transferHistory": [],
+            "transferredTo": null,
+            "transferredFrom": null,
+            "dueDate": null
+          },
+          {
+            "id": "1781154259648nksm",
+            "uuid": "2df439ea-97f0-445d-9ee7-51f4ed465b24",
+            "text": "Task1 出生点设置",
+            "status": "pending",
+            "priority": "normal",
+            "createdAt": "6月11日",
+            "children": [],
+            "collapsed": false,
+            "steps": [
+              {
+                "id": "s17812294201695jh",
+                "text": "查看一下Force和Safe的位置区别",
+                "createdAt": "6月12日"
+              }
+            ],
+            "stepsCollapsed": true,
+            "transferHistory": [],
+            "transferredTo": null,
+            "transferredFrom": null,
+            "dueDate": null
+          },
+          {
+            "id": "1780972203932l90a",
+            "text": "进入任务区直接开始任务的功能",
+            "status": "pending",
+            "priority": "normal",
+            "createdAt": "6月9日",
+            "children": [],
+            "collapsed": false,
+            "steps": [
+              {
+                "id": "s1780972240427k7f",
+                "text": "查看一下功能点和策划案是否需要",
+                "createdAt": "6月9日"
+              }
+            ],
+            "stepsCollapsed": true,
+            "transferHistory": [],
+            "transferredTo": null,
+            "transferredFrom": null,
+            "uuid": "8bb73d2d-1961-46ed-999b-1cdebed99f05",
+            "dueDate": null
+          },
+          {
+            "id": "1780973281586dw5d",
+            "text": "小地图显示的功能",
+            "status": "in-progress",
+            "priority": "normal",
+            "createdAt": "6月9日",
+            "children": [],
+            "collapsed": false,
+            "steps": [
+              {
+                "id": "s1781589785283fb0",
+                "text": "从其他项目中先拷贝一份小地图到AD44的包内",
+                "createdAt": "6月16日"
+              },
+              {
+                "id": "s1781659489428idk",
+                "text": "接入小地图SetMapInfo",
+                "createdAt": "6月17日"
+              },
+              {
+                "id": "s1781659503579jdi",
+                "text": "查看一下小地图的标准",
+                "createdAt": "6月17日"
+              },
+              {
+                "id": "s1781681226036j4h",
+                "text": "HUD_Map_Europe_440",
+                "createdAt": "6月17日"
+              }
+            ],
+            "stepsCollapsed": true,
+            "transferHistory": [],
+            "transferredTo": null,
+            "transferredFrom": null,
+            "uuid": "9d4c2e73-c910-4764-94ed-49e7c4d95f35",
+            "dueDate": null
+          }
+        ],
+        "collapsed": true,
+        "steps": [
+          {
+            "id": "s17812288555284qw",
+            "text": "查看任务的通用流程，参考33并编写开发用例",
+            "createdAt": "6月12日"
+          }
+        ],
+        "stepsCollapsed": true,
+        "transferHistory": [],
+        "transferredTo": null,
+        "transferredFrom": null,
+        "dueDate": null
+      },
+      {
+        "id": "17817746243945ldu",
+        "uuid": "23f8661a-9d07-42f1-9de4-9f1711a53c7d",
+        "text": "关闭阀门后，弹出的提示应该是单人的",
+        "status": "in-progress",
+        "priority": "normal",
+        "createdAt": "6月18日",
+        "children": [],
+        "collapsed": false,
+        "steps": [],
+        "stepsCollapsed": false,
+        "transferHistory": [],
+        "transferredTo": null,
+        "transferredFrom": null,
+        "dueDate": null
+      }
+    ],
+    "collapsed": true,
+    "steps": [],
+    "stepsCollapsed": false,
+    "status": "pending",
+    "transferHistory": [],
+    "transferredTo": null,
+    "transferredFrom": null,
+    "uuid": "6ce41196-0f26-41c1-81b0-2cb218a67f9e",
+    "dueDate": null
+  },
+  {
+    "id": "1781486823836l1c1",
+    "uuid": "7e77ef2b-74a3-4a20-86c7-6257d6b165d6",
+    "text": "AD44 玩法开发 Gameplay01",
+    "status": "pending",
+    "priority": "normal",
+    "createdAt": "6月15日",
+    "children": [
+      {
+        "id": "1781493008739ifru",
+        "uuid": "f4bfefbf-5dd9-455a-b7c4-18ab47ada22d",
+        "text": "玩法开发规范",
+        "status": "pending",
+        "priority": "normal",
+        "createdAt": "6月15日",
+        "children": [],
+        "collapsed": false,
+        "steps": [],
+        "stepsCollapsed": false,
+        "transferHistory": [],
+        "transferredTo": null,
+        "transferredFrom": null,
+        "dueDate": null
+      },
+      {
+        "id": "1781486833428udw4",
+        "uuid": "886e5f90-5af2-4a92-9593-230e15368802",
+        "text": "HUD 提示“去往安全区躲避轰炸”，任务目标文字更换为“逃离轰炸区”",
+        "status": "pending",
+        "priority": "normal",
+        "createdAt": "6月15日",
+        "children": [],
+        "collapsed": false,
+        "steps": [],
+        "stepsCollapsed": false,
+        "transferHistory": [],
+        "transferredTo": null,
+        "transferredFrom": null,
+        "dueDate": null
+      },
+      {
+        "id": "1781486920437l20s",
+        "uuid": "985d4da3-ef01-48e1-ab1e-7f85b35c1cc1",
+        "text": "障碍物轰炸破坏反馈",
+        "status": "in-progress",
+        "priority": "normal",
+        "createdAt": "6月15日",
+        "children": [
+          {
+            "id": "17814869298766tdu",
+            "uuid": "e510cfea-b8ef-4263-9f82-7787264bdae3",
+            "text": "障碍物表面亮起红色流光提示",
+            "status": "pending",
+            "priority": "normal",
+            "createdAt": "6月15日",
+            "children": [],
+            "collapsed": false,
+            "steps": [],
+            "stepsCollapsed": false,
+            "transferHistory": [],
+            "transferredTo": null,
+            "transferredFrom": null,
+            "dueDate": null
+          },
+          {
+            "id": "1781486938932o79w",
+            "uuid": "a53c68f0-5fa6-4cbf-9d7f-bb7dfb1b8171",
+            "text": "靠近障碍物时 HUD 提示“通过障碍物”",
+            "status": "pending",
+            "priority": "normal",
+            "createdAt": "6月15日",
+            "children": [],
+            "collapsed": false,
+            "steps": [],
+            "stepsCollapsed": false,
+            "transferHistory": [],
+            "transferredTo": null,
+            "transferredFrom": null,
+            "dueDate": null
+          },
+          {
+            "id": "1781486947236roz0",
+            "uuid": "0fea6a75-1ae0-464c-827a-722d6cfd0d5d",
+            "text": "飞艇对障碍物前方执行一次轰炸并播放破坏特效与音效",
+            "status": "pending",
+            "priority": "normal",
+            "createdAt": "6月15日",
+            "children": [],
+            "collapsed": false,
+            "steps": [],
+            "stepsCollapsed": false,
+            "transferHistory": [],
+            "transferredTo": null,
+            "transferredFrom": null,
+            "dueDate": null
+          }
+        ],
+        "collapsed": true,
+        "steps": [],
+        "stepsCollapsed": false,
+        "transferHistory": [],
+        "transferredTo": null,
+        "transferredFrom": null,
+        "dueDate": null
+      },
+      {
+        "id": "1782198927262o4c9",
+        "uuid": "f3329ed2-ec1d-43be-9d10-fccea0d88336",
+        "text": "非变身玩家触发障碍物轰炸破坏\t非变身玩家靠近障碍物小于 S2 -> 触发通过障碍物提示与一次定点轰炸",
+        "status": "in-progress",
+        "priority": "normal",
+        "createdAt": "6月23日",
+        "children": [],
+        "collapsed": false,
+        "steps": [],
+        "stepsCollapsed": false,
+        "transferHistory": [],
+        "transferredTo": null,
+        "transferredFrom": null,
+        "dueDate": null
+      },
+      {
+        "id": "1782198939013ssp2",
+        "uuid": "01fa1e1b-3eb9-4e95-9a8b-68010489ad90",
+        "text": "非变身玩家触发障碍物轰炸破坏\t以障碍物前方 S3 为中心执行一次飞艇轰炸",
+        "status": "in-progress",
+        "priority": "normal",
+        "createdAt": "6月23日",
+        "children": [],
+        "collapsed": false,
+        "steps": [],
+        "stepsCollapsed": false,
+        "transferHistory": [],
+        "transferredTo": null,
+        "transferredFrom": null,
+        "dueDate": null
+      },
+      {
+        "id": "1782198950116en0g",
+        "uuid": "3c5616d6-139c-4f69-823d-0e2fcd2df1fc",
+        "text": "非变身玩家触发障碍物轰炸破坏\t障碍物被轰炸破坏后重置触发该轰炸玩家的被轰炸 CD （算作玩家被炸过一次）",
+        "status": "in-progress",
+        "priority": "normal",
+        "createdAt": "6月23日",
+        "children": [],
+        "collapsed": false,
+        "steps": [],
+        "stepsCollapsed": false,
+        "transferHistory": [],
+        "transferredTo": null,
+        "transferredFrom": null,
+        "dueDate": null
+      }
+    ],
+    "collapsed": false,
+    "steps": [],
+    "stepsCollapsed": false,
+    "transferHistory": [],
+    "transferredTo": null,
+    "transferredFrom": null,
+    "dueDate": null
+  },
+  {
+    "id": "1780885445572f4zn",
+    "text": "Lyra学习",
+    "completed": false,
+    "priority": "low",
+    "createdAt": "6月8日",
+    "children": [
+      {
+        "id": "17809715367153cbc",
+        "text": "添加多个建筑和放置列表切换的功能",
+        "status": "in-progress",
+        "priority": "low",
+        "createdAt": "6月9日",
+        "children": [],
+        "collapsed": false,
+        "steps": [
+          {
+            "id": "s1780994747083ew3",
+            "text": "查看蓝图中配置建筑的方法",
+            "createdAt": "6月9日"
+          },
+          {
+            "id": "s178105423819232v",
+            "text": "建筑不显示主体的问题",
+            "createdAt": "6月10日"
+          },
+          {
+            "id": "s1781056562200ey0",
+            "text": "判断哪些需要使用GAS，哪些不需要",
+            "createdAt": "6月10日"
+          },
+          {
+            "id": "s1781071624693ued",
+            "text": "放置建筑后崩溃问题",
+            "createdAt": "6月10日"
+          },
+          {
+            "id": "s17811639122283vi",
+            "text": "接入UI",
+            "createdAt": "6月11日"
+          }
+        ],
+        "stepsCollapsed": true,
+        "transferHistory": [],
+        "transferredTo": null,
+        "transferredFrom": null,
+        "uuid": "3f500c91-845a-429f-a8d1-1087cfc392bb",
+        "dueDate": null
+      },
+      {
+        "id": "17809811481041n6v",
+        "text": "UE5 远程Python执行能力MCP",
+        "status": "pending",
+        "priority": "low",
+        "createdAt": "6月9日",
+        "children": [],
+        "collapsed": false,
+        "steps": [
+          {
+            "id": "s1780984276782hyy",
+            "text": "只导出了ability_input_actions的内容",
+            "createdAt": "6月9日"
+          }
+        ],
+        "stepsCollapsed": true,
+        "transferHistory": [],
+        "transferredTo": null,
+        "transferredFrom": null,
+        "uuid": "5f2f0926-0ecf-4e2f-b20a-ba2ade04dfbe",
+        "dueDate": null
+      },
+      {
+        "id": "17811700470911zu5",
+        "uuid": "b07876b5-476c-4530-8e4b-22cae3014909",
+        "text": "建造系统 Skill 实现",
+        "status": "pending",
+        "priority": "low",
+        "createdAt": "6月11日",
+        "children": [],
+        "collapsed": false,
+        "steps": [],
+        "stepsCollapsed": false,
+        "transferHistory": [],
+        "transferredTo": null,
+        "transferredFrom": null,
+        "dueDate": null
+      }
+    ],
+    "collapsed": true,
+    "steps": [],
+    "stepsCollapsed": false,
+    "status": "pending",
+    "transferHistory": [],
+    "transferredTo": null,
+    "transferredFrom": null,
+    "uuid": "0d59449f-cb66-49aa-9171-dd7967504a34",
+    "dueDate": null
+  },
+  {
+    "id": "17820991422435t8a",
+    "uuid": "06f21863-21e6-493f-8a43-c8a58091cbbe",
+    "text": "网页游戏项目",
+    "status": "pending",
+    "priority": "low",
+    "createdAt": "6月22日",
+    "children": [
+      {
+        "id": "1782099164435z0q5",
+        "uuid": "36c96033-9b0a-4f79-811d-d704028a0931",
+        "text": "学习单位智能体设计",
+        "status": "pending",
+        "priority": "low",
+        "createdAt": "6月22日",
+        "children": [],
+        "collapsed": false,
+        "steps": [],
+        "stepsCollapsed": false,
+        "transferHistory": [],
+        "transferredTo": null,
+        "transferredFrom": null,
+        "dueDate": null
+      },
+      {
+        "id": "17820991776354hkk",
+        "uuid": "f670fb49-f0f3-4e96-b601-357397fc4e4e",
+        "text": "学习AI全局决策设计",
+        "status": "pending",
+        "priority": "low",
+        "createdAt": "6月22日",
+        "children": [],
+        "collapsed": false,
+        "steps": [
+          {
+            "id": "s1782099191659gig",
+            "text": "尝试引入AI决策树",
+            "createdAt": "6月22日"
+          }
+        ],
+        "stepsCollapsed": false,
+        "transferHistory": [],
+        "transferredTo": null,
+        "transferredFrom": null,
+        "dueDate": null
+      }
+    ],
+    "collapsed": true,
+    "steps": [],
+    "stepsCollapsed": false,
+    "transferHistory": [],
+    "transferredTo": null,
+    "transferredFrom": null,
+    "dueDate": null
+  }
+]
