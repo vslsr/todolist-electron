@@ -1,21 +1,5 @@
 [
   {
-    "id": "1781249596229xwif",
-    "uuid": "d48c0548-73bd-42c7-b5d0-e1fdf4fa9297",
-    "text": "怀旧服 Bug",
-    "status": "pending",
-    "priority": "high",
-    "createdAt": "6月12日",
-    "children": [],
-    "collapsed": false,
-    "steps": [],
-    "stepsCollapsed": false,
-    "transferHistory": [],
-    "transferredTo": null,
-    "transferredFrom": null,
-    "dueDate": null
-  },
-  {
     "id": "1780885404804yoox",
     "text": "AD44开发任务 Task1",
     "completed": false,
@@ -49,9 +33,14 @@
                 "id": "s1782439471402660",
                 "text": "在Main和Navart层单独存在时，会出现死亡卡死问题",
                 "createdAt": "6月26日"
+              },
+              {
+                "id": "s1782705418088rxy",
+                "text": "等待新美术白盒",
+                "createdAt": "6月29日"
               }
             ],
-            "stepsCollapsed": true,
+            "stepsCollapsed": false,
             "transferHistory": [],
             "transferredTo": null,
             "transferredFrom": null,
@@ -118,28 +107,6 @@
             "dueDate": null
           },
           {
-            "id": "1780972203932l90a",
-            "text": "进入任务区直接开始任务的功能",
-            "status": "completed",
-            "priority": "normal",
-            "createdAt": "6月9日",
-            "children": [],
-            "collapsed": false,
-            "steps": [
-              {
-                "id": "s1780972240427k7f",
-                "text": "查看一下功能点和策划案是否需要",
-                "createdAt": "6月9日"
-              }
-            ],
-            "stepsCollapsed": true,
-            "transferHistory": [],
-            "transferredTo": null,
-            "transferredFrom": null,
-            "uuid": "8bb73d2d-1961-46ed-999b-1cdebed99f05",
-            "dueDate": null
-          },
-          {
             "id": "1780973281586dw5d",
             "text": "小地图显示的功能",
             "status": "in-progress",
@@ -186,112 +153,6 @@
           }
         ],
         "stepsCollapsed": true,
-        "transferHistory": [],
-        "transferredTo": null,
-        "transferredFrom": null,
-        "dueDate": null
-      },
-      {
-        "id": "17817746243945ldu",
-        "uuid": "23f8661a-9d07-42f1-9de4-9f1711a53c7d",
-        "text": "关闭阀门后，弹出的提示应该是单人的",
-        "status": "in-progress",
-        "priority": "normal",
-        "createdAt": "6月18日",
-        "children": [],
-        "collapsed": false,
-        "steps": [],
-        "stepsCollapsed": false,
-        "transferHistory": [
-          {
-            "direction": "out",
-            "name": "ZC",
-            "time": 1782459787849
-          }
-        ],
-        "transferredTo": {
-          "name": "ZC",
-          "time": 1782459787849
-        },
-        "transferredFrom": null,
-        "dueDate": null
-      },
-      {
-        "id": "1782464014977vlz5",
-        "uuid": "9a28514a-b700-4bb7-a0ed-16e4b951c810",
-        "text": "阀门完成后的弹出提示显示逻辑需要修改",
-        "status": "in-progress",
-        "priority": "normal",
-        "createdAt": "6月26日",
-        "children": [],
-        "collapsed": false,
-        "steps": [
-          {
-            "id": "s178246724451598i",
-            "text": "单人完成阀门后，只在完成阀门的玩家屏幕上面弹出提示",
-            "createdAt": "6月26日"
-          },
-          {
-            "id": "s1782467273419f2j",
-            "text": "最后一个阀门说明任务已经完成，则不弹出提示",
-            "createdAt": "6月26日"
-          }
-        ],
-        "stepsCollapsed": false,
-        "transferHistory": [],
-        "transferredTo": null,
-        "transferredFrom": null,
-        "dueDate": null
-      },
-      {
-        "id": "1782464048009s4z7",
-        "uuid": "e2e91efb-927c-438e-bba3-42a225e3fe48",
-        "text": "任务区域开始、阀门完成、任务完成使用不同的弹出提示",
-        "status": "in-progress",
-        "priority": "normal",
-        "createdAt": "6月26日",
-        "children": [],
-        "collapsed": false,
-        "steps": [
-          {
-            "id": "s1782467291452r57",
-            "text": "配置不同的弹出提示内容·",
-            "createdAt": "6月26日"
-          }
-        ],
-        "stepsCollapsed": false,
-        "transferHistory": [],
-        "transferredTo": null,
-        "transferredFrom": null,
-        "dueDate": null
-      },
-      {
-        "id": "178246703508202va",
-        "uuid": "41c64e09-88db-4733-a83e-1338de9813b6",
-        "text": "即使阀门已经关闭图标依旧不会消失（目前观察是2号阀门的白点不会消失以及最后一个关闭的阀门的白点不会消失）",
-        "status": "completed",
-        "priority": "normal",
-        "createdAt": "6月26日",
-        "children": [],
-        "collapsed": false,
-        "steps": [],
-        "stepsCollapsed": false,
-        "transferHistory": [],
-        "transferredTo": null,
-        "transferredFrom": null,
-        "dueDate": null
-      },
-      {
-        "id": "1782467043363conw",
-        "uuid": "f331960e-6df4-4db8-978d-45ccb3aaf1aa",
-        "text": "BUG: 外面的玩家并没有传进准备区而是传到工厂中心上空。",
-        "status": "completed",
-        "priority": "normal",
-        "createdAt": "6月26日",
-        "children": [],
-        "collapsed": false,
-        "steps": [],
-        "stepsCollapsed": false,
         "transferHistory": [],
         "transferredTo": null,
         "transferredFrom": null,
@@ -352,12 +213,12 @@
         "dueDate": null
       },
       {
-        "id": "1782467098601psnz",
-        "uuid": "6d146015-1b88-4bb0-a9d2-b1a97c6f502e",
-        "text": "即使阀门已经关闭图标依旧不会消失（目前观察是2号阀门的白点不会消失以及最后一个关闭的阀门的白点不会消失）",
-        "status": "pending",
-        "priority": "normal",
-        "createdAt": "6月26日",
+        "id": "1782702988544yfy2",
+        "uuid": "d450e76e-45e8-4f1a-952f-ddb402aa7207",
+        "text": "创建Main层并测试是否可以跑通",
+        "status": "in-progress",
+        "priority": "high",
+        "createdAt": "6月29日",
         "children": [],
         "collapsed": false,
         "steps": [],
@@ -365,7 +226,7 @@
         "transferHistory": [],
         "transferredTo": null,
         "transferredFrom": null,
-        "dueDate": null
+        "dueDate": "2026-07-03"
       }
     ],
     "collapsed": false,
@@ -379,6 +240,39 @@
     "dueDate": null
   },
   {
+    "id": "1781249596229xwif",
+    "uuid": "d48c0548-73bd-42c7-b5d0-e1fdf4fa9297",
+    "text": "怀旧服 Bug",
+    "status": "pending",
+    "priority": "normal",
+    "createdAt": "6月12日",
+    "children": [
+      {
+        "id": "1782697810765c1kl",
+        "uuid": "4e35c3c5-f94e-46de-95c2-1532c6ef00a0",
+        "text": "【赛季】【时光流金-樱之谷】【必现】B/C区过场动画有一帧显示离开安全区域（上海代宝修复）",
+        "status": "pending",
+        "priority": "normal",
+        "createdAt": "6月29日",
+        "children": [],
+        "collapsed": false,
+        "steps": [],
+        "stepsCollapsed": false,
+        "transferHistory": [],
+        "transferredTo": null,
+        "transferredFrom": null,
+        "dueDate": null
+      }
+    ],
+    "collapsed": false,
+    "steps": [],
+    "stepsCollapsed": false,
+    "transferHistory": [],
+    "transferredTo": null,
+    "transferredFrom": null,
+    "dueDate": null
+  },
+  {
     "id": "1781486823836l1c1",
     "uuid": "7e77ef2b-74a3-4a20-86c7-6257d6b165d6",
     "text": "AD44 玩法开发 Gameplay01",
@@ -386,38 +280,6 @@
     "priority": "normal",
     "createdAt": "6月15日",
     "children": [
-      {
-        "id": "1781493008739ifru",
-        "uuid": "f4bfefbf-5dd9-455a-b7c4-18ab47ada22d",
-        "text": "玩法开发规范",
-        "status": "pending",
-        "priority": "normal",
-        "createdAt": "6月15日",
-        "children": [],
-        "collapsed": false,
-        "steps": [],
-        "stepsCollapsed": false,
-        "transferHistory": [],
-        "transferredTo": null,
-        "transferredFrom": null,
-        "dueDate": null
-      },
-      {
-        "id": "1781486833428udw4",
-        "uuid": "886e5f90-5af2-4a92-9593-230e15368802",
-        "text": "HUD 提示“去往安全区躲避轰炸”，任务目标文字更换为“逃离轰炸区”",
-        "status": "pending",
-        "priority": "normal",
-        "createdAt": "6月15日",
-        "children": [],
-        "collapsed": false,
-        "steps": [],
-        "stepsCollapsed": false,
-        "transferHistory": [],
-        "transferredTo": null,
-        "transferredFrom": null,
-        "dueDate": null
-      },
       {
         "id": "1781486920437l20s",
         "uuid": "985d4da3-ef01-48e1-ab1e-7f85b35c1cc1",
@@ -484,7 +346,7 @@
         "dueDate": null
       }
     ],
-    "collapsed": true,
+    "collapsed": false,
     "steps": [],
     "stepsCollapsed": false,
     "transferHistory": [],

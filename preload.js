@@ -7,4 +7,5 @@ contextBridge.exposeInMainWorld('electronAPI', {
   },
   exportJson: (data) => ipcRenderer.invoke('dialog:exportJson', data),
   importJson: () => ipcRenderer.invoke('dialog:importJson'),
+  openTool: (tool) => ipcRenderer.invoke('tool:open', tool),
 });

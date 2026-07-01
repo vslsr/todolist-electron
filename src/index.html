@@ -81,6 +81,7 @@
       <button id="text-tab-btn"  class="filter-btn">文本</button>
       <button id="group-tab-btn" class="filter-btn">工作组</button>
       <button id="draw-tab-btn"  class="filter-btn">✏ 绘图</button>
+      <button id="tools-tab-btn" class="filter-btn">🧰 工具</button>
       <div class="filter-divider"></div>
       <button id="import-btn" class="btn btn-ghost-icon" title="从 JSON 文件导入">导入</button>
       <button id="export-btn" class="btn btn-ghost-icon" title="导出为 JSON 文件">导出</button>
@@ -107,6 +108,15 @@
           </div>
           <textarea id="export-textarea" class="export-textarea" readonly spellcheck="false"></textarea>
         </div>
+      </div>
+
+      <!-- Toolbox switch panel (切换板) -->
+      <div id="tools-panel" class="tools-panel hidden">
+        <div class="tools-panel-header">
+          <span class="tools-panel-title">🧰 切换板</span>
+          <span class="tools-panel-hint">点击工具以在独立窗口中打开</span>
+        </div>
+        <div id="tools-grid" class="tools-grid"></div>
       </div>
 
       <!-- Group sidebar -->

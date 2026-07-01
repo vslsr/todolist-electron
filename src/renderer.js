@@ -1626,6 +1626,40 @@ function hideUserTodosOverlay() {
   document.getElementById('user-todos-overlay').classList.add('hidden');
 }
 
+// ══ Toolbox switch panel (切换板小工具) ═══════════════════════════════════
+// Registry of available tools. Add new tools here — each `id` maps to
+// src/tools/<id>.html, opened in its own window via the main process.
+const TOOLS = [
+  { id: 'test-tool', name: '测试工具', icon: '🧪', title: '测试工具', width: 420, height: 400 },
+  { id: 'objlist-merge', name: '对象列表合并', icon: '🧩', title: '对象列表合并 · SeqVar_ObjectList', width: 900, height: 680 },
+];
+
+let toolsVisible = false;
+
+function renderToolsGrid() {
+  const grid = document.getElementById('tools-grid');
+  if (!grid || grid.childElementCount) return; // build once
+  TOOLS.forEach(tool => {
+    const item = document.createElement('button');
+    item.className = 'tool-item';
+    item.title = tool.name;
+    item.innerHTML =
+      `<span class="tool-icon">${tool.icon}</span>` +
+      `<span class="tool-name">${tool.name}</span>`;
+    item.addEventListener('click', () => {
+      window.electronAPI.openTool(tool);
+    });
+    grid.appendChild(item);
+  });
+}
+
+document.getElementById('tools-tab-btn').addEventListener('click', () => {
+  toolsVisible = !toolsVisible;
+  renderToolsGrid();
+  document.getElementById('tools-panel').classList.toggle('hidden', !toolsVisible);
+  document.getElementById('tools-tab-btn').classList.toggle('active', toolsVisible);
+});
+
 // -- Event bindings ---------------------------------------------------
 
 document.getElementById('group-tab-btn').addEventListener('click', () => {

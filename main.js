@@ -47,6 +47,52 @@ app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') app.quit();
 });
 
+// ── Tool windows (切换板小工具) ─────────────────────────────────────────────
+// Each tool opens in its own BrowserWindow loading src/tools/<id>.html.
+const toolWindows = new Map();
+
+function openToolWindow(tool) {
+  const { id, title, width, height } = tool;
+
+  // Focus existing window instead of opening a duplicate.
+  const existing = toolWindows.get(id);
+  if (existing && !existing.isDestroyed()) {
+    if (existing.isMinimized()) existing.restore();
+    existing.focus();
+    return;
+  }
+
+  const win = new BrowserWindow({
+    width: width || 480,
+    height: height || 420,
+    minWidth: 320,
+    minHeight: 260,
+    parent: mainWindow,
+    title: title || '工具',
+    webPreferences: {
+      preload: path.join(__dirname, 'preload.js'),
+      contextIsolation: true,
+      nodeIntegration: false,
+    },
+    icon: path.join(__dirname, 'assets', 'icon.ico'),
+    show: false,
+    backgroundColor: '#f5f5f5',
+    autoHideMenuBar: true,
+  });
+
+  win.loadFile(path.join('src', 'tools', `${id}.html`));
+  win.once('ready-to-show', () => win.show());
+  win.on('closed', () => toolWindows.delete(id));
+
+  toolWindows.set(id, win);
+}
+
+ipcMain.handle('tool:open', (_event, tool) => {
+  if (!tool || !tool.id) return { success: false };
+  openToolWindow(tool);
+  return { success: true };
+});
+
 // IPC handlers for data persistence
 ipcMain.handle('store:get', (_event, key) => {
   return store.get(key);
