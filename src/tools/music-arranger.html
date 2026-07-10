@@ -252,6 +252,11 @@
     <div class="spacer"></div>
     <button id="import" class="tbtn ghost" title="导入编曲 JSON">导入</button>
     <button id="export" class="tbtn ghost" title="导出编曲 JSON">导出</button>
+    <select id="audio-fmt" class="playmode" title="导出音频格式：WAV 无损 / Opus 压缩(.ogg 或 .webm)">
+      <option value="wav">WAV</option>
+      <option value="opus">Opus</option>
+    </select>
+    <button id="export-audio" class="tbtn ghost" title="导出为音频文件：实时录制整首一遍(时长≈歌曲长度)">🎧 音频</button>
     <button id="demo" class="tbtn ghost" title="载入示例 House 编曲">示例</button>
     <button id="clear" class="tbtn ghost" title="清空全部">清空</button>
     <input id="file-input" type="file" accept="application/json,.json" style="display:none" />

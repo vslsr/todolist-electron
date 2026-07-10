@@ -581,7 +581,7 @@
     if (A.masterFilter) { safe(() => A.masterFilter.frequency.cancelScheduledValues(Tone.now())); safe(() => A.masterFilter.frequency.setValueAtTime(project.master.filter, Tone.now())); }
     A.curSeg = null; A.playing = false; setPlayUI(false); hidePlayhead(); clearSongPlayhead();
   }
-  function togglePlay() { A.playing ? stop() : play(); }
+  function togglePlay() { if (A.exporting) return; A.playing ? stop() : play(); }
   function applyGlobals() {
     Tone.Transport.bpm.value = project.tempo.bpm;
     Tone.Transport.swing = project.tempo.swing / 100; Tone.Transport.swingSubdivision = '16n';
@@ -899,6 +899,108 @@
   }
 
   // ═══════════════════════════════════════════════════════════════════════
+  //  导出音频 (WAV 无损 / Opus 压缩) —— 实时录制主总线 A.limiter
+  //  说明: Tone 合成器 + smplr 采样混用, 离线渲染无法捕获采样, 故实时把整首播放
+  //  一遍并抓取主输出。导出时长 ≈ 歌曲时长。
+  // ═══════════════════════════════════════════════════════════════════════
+  function encodeWav(chL, chR, rate) {
+    const len = chL.length, stereo = !!chR, ch = stereo ? 2 : 1, bytes = len * ch * 2;
+    const view = new DataView(new ArrayBuffer(44 + bytes));
+    const ws = (o, s) => { for (let i = 0; i < s.length; i++) view.setUint8(o + i, s.charCodeAt(i)); };
+    ws(0, 'RIFF'); view.setUint32(4, 36 + bytes, true); ws(8, 'WAVE');
+    ws(12, 'fmt '); view.setUint32(16, 16, true); view.setUint16(20, 1, true); view.setUint16(22, ch, true);
+    view.setUint32(24, rate, true); view.setUint32(28, rate * ch * 2, true); view.setUint16(32, ch * 2, true); view.setUint16(34, 16, true);
+    ws(36, 'data'); view.setUint32(40, bytes, true);
+    let o = 44;
+    for (let i = 0; i < len; i++) {
+      let l = Math.max(-1, Math.min(1, chL[i])); view.setInt16(o, l < 0 ? l * 0x8000 : l * 0x7fff, true); o += 2;
+      if (stereo) { let r = Math.max(-1, Math.min(1, chR[i])); view.setInt16(o, r < 0 ? r * 0x8000 : r * 0x7fff, true); o += 2; }
+    }
+    return new Blob([view], { type: 'audio/wav' });
+  }
+  function mergeChunks(chunks) { let n = 0; chunks.forEach((c) => (n += c.length)); const out = new Float32Array(n); let o = 0; chunks.forEach((c) => { out.set(c, o); o += c.length; }); return out; }
+  function downloadBlob(blob, name) {
+    const url = URL.createObjectURL(blob), a = document.createElement('a');
+    a.href = url; a.download = name; document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 8000);
+  }
+  function pickOpusMime() {
+    const cand = ['audio/ogg;codecs=opus', 'audio/webm;codecs=opus', 'audio/webm'];
+    return (window.MediaRecorder && cand.find((m) => { try { return MediaRecorder.isTypeSupported(m); } catch (e) { return false; } })) || null;
+  }
+  // 预热: 把各片段用到的 sf:* 音色与采样鼓机提前加载好, 避免录制首次触发时回退合成音
+  async function prewarmForExport() {
+    const jobs = [], seen = new Set();
+    project.patterns.forEach((pt) => ['bass', 'harmony', 'melody'].forEach((layer) => {
+      const v = pt.layers[layer].instrument;
+      if (typeof v === 'string' && v.startsWith('sf:') && !seen.has(layer + '|' + v)) {
+        seen.add(layer + '|' + v);
+        if (!A.inst[layer]) setLayerSynth(layer, defaultKind(layer));
+        jobs.push(loadSoundfont(v.slice(3), layer));
+      }
+    }));
+    const dm = project.patterns.find((pt) => pt.layers.drums.engine === 'sample');
+    if (dm) jobs.push(loadDrumMachine(dm.layers.drums.machine));
+    await Promise.allSettled(jobs);
+  }
+  async function exportAudio(fmt) {
+    if (A.exporting) return;
+    const tl = songTimeline();
+    if (!tl.totalBars) { toast('歌曲结构为空 — 请在“结构”标签添加段落再导出音频'); return; }
+    try { await ensureAudio(); } catch (e) { toast('音频启动失败'); return; }
+    if (A.playing) stop();
+    const btn = $('export-audio'), name = (ext) => `song-${project.tempo.bpm}bpm-${tl.totalBars}bars.${ext}`;
+    A.exporting = true; if (btn) btn.disabled = true;
+    const ctx = Tone.getContext().rawContext, rate = ctx.sampleRate;
+    const totalSec = tl.totalBars * (60 / project.tempo.bpm) * 4, tail = 2.6;
+    setLoad('准备音色…'); await prewarmForExport();
+
+    let tap = null, sink = null, mrec = null, mparts = null, mmime = null, chunksL = [], chunksR = [], mono = false;
+    const cleanup = () => { safe(() => A.limiter.disconnect(tap)); safe(() => tap && tap.disconnect()); safe(() => sink && sink.disconnect()); };
+    const done = (ok, ext) => { A.exporting = false; if (btn) btn.disabled = false; setLoad(''); if (ok) toast('已导出音频 (.' + ext + ')'); };
+
+    if (fmt === 'opus') {
+      mmime = pickOpusMime();
+      if (!mmime) { toast('此环境不支持 Opus 录制,请改用 WAV'); done(false); return; }
+      tap = ctx.createMediaStreamDestination(); safe(() => A.limiter.connect(tap));
+      mparts = []; mrec = new MediaRecorder(tap.stream, { mimeType: mmime });
+      mrec.ondataavailable = (e) => { if (e.data && e.data.size) mparts.push(e.data); };
+    } else {
+      tap = ctx.createScriptProcessor(4096, 2, 2); sink = ctx.createGain(); sink.gain.value = 0;
+      tap.onaudioprocess = (e) => {
+        const b = e.inputBuffer, l = b.getChannelData(0), r = b.numberOfChannels > 1 ? b.getChannelData(1) : l;
+        if (b.numberOfChannels < 2) mono = true;
+        chunksL.push(new Float32Array(l)); chunksR.push(new Float32Array(r));
+      };
+      safe(() => A.limiter.connect(tap)); tap.connect(sink); sink.connect(ctx.destination);
+    }
+
+    // 启动整首, 强制单遍不循环
+    applyGlobals(); A.curSeg = null; A.soundPattern = null;
+    if (!buildSongSequence()) { cleanup(); done(false); return; }
+    A.seq.loop = false;
+    if (mrec) safe(() => mrec.start());
+    Tone.Transport.start(); A.playing = true; setPlayUI(true);
+
+    const prog = setInterval(() => {
+      const pct = Math.min(99, Math.round((Tone.Transport.seconds / totalSec) * 100));
+      setLoad('导出音频 ' + pct + '% · ' + fmt.toUpperCase() + ' · 实时录制中…');
+    }, 200);
+
+    setTimeout(() => {
+      clearInterval(prog); stop();
+      if (fmt === 'opus') {
+        mrec.onstop = () => { cleanup(); const ext = mmime.indexOf('ogg') >= 0 ? 'ogg' : 'webm'; downloadBlob(new Blob(mparts, { type: mmime }), name(ext)); done(true, ext); };
+        safe(() => mrec.stop());
+      } else {
+        if (tap) tap.onaudioprocess = null; cleanup();
+        downloadBlob(encodeWav(mergeChunks(chunksL), mono ? null : mergeChunks(chunksR), rate), name('wav'));
+        done(true, 'wav');
+      }
+    }, (totalSec + tail) * 1000 + 200);
+  }
+
+  // ═══════════════════════════════════════════════════════════════════════
   //  JSON 导入 / 导出
   // ═══════════════════════════════════════════════════════════════════════
   function exportProject() {
@@ -1040,6 +1142,7 @@
 
     // 顶栏
     $('export').onclick = exportProject;
+    $('export-audio').onclick = () => exportAudio($('audio-fmt').value);
     $('import').onclick = () => $('file-input').click();
     $('file-input').onchange = (e) => { const f = e.target.files[0]; if (f) importProjectFile(f); e.target.value = ''; };
     $('demo').onclick = () => { loadProject(demoProject()); toast('已载入示例整曲 — 点 ▶ 播放'); };
