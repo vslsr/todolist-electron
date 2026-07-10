@@ -1896,6 +1896,7 @@ const TOOLS = [
   { id: 'teleport-chain', name: 'Teleport链生成', icon: '🌀', title: 'Teleport 链生成 · SeqAct_Teleport', width: 940, height: 700 },
   { id: 'prop-list', name: '属性列表生成', icon: '📋', title: '属性列表生成 · 属性面板字符串', width: 900, height: 640 },
   { id: 'quiz', name: '题库测验', icon: '📝', title: '题库测验 · 检验掌握程度', width: 760, height: 760 },
+  { id: 'music-arranger', name: '电子编曲', icon: '🎹', title: '电子音乐编曲器 · 五层编曲 (Tone.js + smplr)', width: 1180, height: 820 },
 ];
 
 let toolsVisible = false;

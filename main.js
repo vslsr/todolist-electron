@@ -228,3 +228,43 @@ ipcMain.handle('quiz:loadBank', (_event, file) => {
     return { success: false, error: e.message };
   }
 });
+
+ipcMain.handle('quiz:importBank', async () => {
+  const parent = BrowserWindow.getFocusedWindow() || mainWindow;
+  const { canceled, filePaths } = await dialog.showOpenDialog(parent, {
+    title: '导入题库 JSON',
+    filters: [{ name: '题库 JSON', extensions: ['json'] }],
+    properties: ['openFile'],
+  });
+  if (canceled || !filePaths || filePaths.length === 0) return { success: false, canceled: true };
+
+  const src = filePaths[0];
+  let bank;
+  try {
+    bank = JSON.parse(fs.readFileSync(src, 'utf-8'));
+  } catch (e) {
+    return { success: false, error: 'JSON 解析失败:' + e.message };
+  }
+  if (!bank || !Array.isArray(bank.questions)) {
+    return { success: false, error: '不是有效题库（缺少 questions 数组）' };
+  }
+
+  const dir = questionBankDir();
+  try { fs.mkdirSync(dir, { recursive: true }); } catch {}
+
+  // 目标文件名沿用源文件名；重名且非同一文件时加序号,避免覆盖已有题库。
+  let base = path.basename(src);
+  let target = path.join(dir, base);
+  if (fs.existsSync(target) && path.resolve(src) !== path.resolve(target)) {
+    const stem = base.replace(/\.json$/i, '');
+    let i = 1;
+    do { base = `${stem} (${i++}).json`; target = path.join(dir, base); } while (fs.existsSync(target));
+  }
+
+  try {
+    fs.writeFileSync(target, JSON.stringify(bank, null, 2), 'utf-8'); // 规范化写入,风格与仓库一致
+  } catch (e) {
+    return { success: false, error: '写入题库目录失败:' + e.message };
+  }
+  return { success: true, file: base, count: bank.questions.length };
+});

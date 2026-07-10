@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <!--
+    CSP: 脚本/样式本地自包含 (Tone.js UMD + music-arranger.js)。
+    smplr 采样运行时从这几个 CDN 拉取,故 connect-src / media-src 放开这些域名;
+    首次联网加载后由 CacheStorage 缓存,之后可离线复用。blob: 供 Tone 的 AudioWorklet。
+  -->
+  <meta http-equiv="Content-Security-Policy" content="
+    default-src 'self';
+    script-src 'self' blob:;
+    style-src 'self' 'unsafe-inline';
+    img-src 'self' data:;
+    connect-src 'self' https://smpldsnds.github.io https://gleitz.github.io https://goldst.dev;
+    media-src 'self' blob: data: https://smpldsnds.github.io https://gleitz.github.io https://goldst.dev;
+    worker-src 'self' blob:;
+  " />
+  <title>电子音乐编曲器</title>
+  <style>
+    :root {
+      --accent: #667eea; --accent2: #a06bff; --bg: #14161f; --bg2: #1b1e2b;
+      --panel: #212536; --panel2: #262b40; --line: #333853; --line2: #2a2f47;
+      --text: #e7e9f4; --muted: #8a90b0; --muted2: #6a7096;
+      --on: #667eea; --on2: #4fd1c5; --accent-on: #ffcc66;
+      --kick: #ff6b6b; --snare: #ffd166; --hat: #4fd1c5; --perc: #a06bff; --clap: #f78fb3;
+      --ok: #3ddc84; --warn: #ffb648; --err: #ff5c7a;
+      --cell: 26px; --rowh: 15px;
+    }
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0; font-family: "Segoe UI", "Microsoft YaHei", sans-serif; font-size: 13px;
+      background: var(--bg); color: var(--text); display: flex; flex-direction: column;
+      overflow: hidden; user-select: none;
+    }
+    button { font-family: inherit; cursor: pointer; border: none; border-radius: 6px; }
+    button:disabled { opacity: .45; cursor: not-allowed; }
+    select, input[type="number"], input[type="text"] {
+      font-family: inherit; background: var(--bg2); color: var(--text);
+      border: 1px solid var(--line); border-radius: 6px; padding: 4px 7px; font-size: 12px; outline: none;
+    }
+    select:focus, input:focus { border-color: var(--accent); }
+    input[type="range"] { accent-color: var(--accent); cursor: pointer; height: 18px; }
+    .chip { background: var(--panel2); border: 1px solid var(--line); border-radius: 6px; padding: 3px 8px; font-size: 11px; color: var(--muted); }
+
+    /* ── Transport bar ─────────────────────────────── */
+    .transport {
+      display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+      padding: 9px 14px; background: var(--bg2); border-bottom: 1px solid var(--line);
+    }
+    .brand { font-size: 14px; font-weight: 800; letter-spacing: .3px; margin-right: 2px; }
+    .brand small { font-weight: 500; color: var(--muted2); font-size: 10px; margin-left: 4px; }
+    .play-btn {
+      width: 42px; height: 34px; font-size: 16px; color: #fff; background: var(--accent);
+      display: flex; align-items: center; justify-content: center; border-radius: 8px;
+    }
+    .play-btn.playing { background: var(--err); }
+    .play-btn:hover:not(:disabled) { filter: brightness(1.1); }
+    .field { display: flex; align-items: center; gap: 5px; font-size: 11px; color: var(--muted); }
+    .field b { color: var(--text); font-weight: 600; }
+    .field input[type="number"] { width: 56px; text-align: center; }
+    .field input[type="range"] { width: 84px; }
+    .spacer { flex: 1; }
+    .tbtn { background: var(--panel2); color: var(--text); border: 1px solid var(--line); padding: 6px 11px; font-size: 12px; }
+    .tbtn:hover:not(:disabled) { border-color: var(--accent); }
+    .tbtn.ghost { background: transparent; }
+    .val { min-width: 30px; text-align: right; color: var(--text); font-variant-numeric: tabular-nums; }
+
+    /* ── Tabs ─────────────────────────────── */
+    .tabs { display: flex; gap: 2px; padding: 0 12px; background: var(--bg2); border-bottom: 1px solid var(--line); }
+    .tab {
+      background: transparent; color: var(--muted); padding: 9px 15px 10px; font-size: 13px; font-weight: 600;
+      border-radius: 0; border-bottom: 2px solid transparent; display: flex; align-items: center; gap: 6px;
+    }
+    .tab .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--line); }
+    .tab.active { color: var(--text); border-bottom-color: var(--accent); }
+    .tab:hover { color: var(--text); }
+    .tab[data-layer="drums"] .dot { background: var(--kick); }
+    .tab[data-layer="bass"] .dot { background: var(--on2); }
+    .tab[data-layer="harmony"] .dot { background: var(--perc); }
+    .tab[data-layer="melody"] .dot { background: var(--snare); }
+    .tab[data-layer="fx"] .dot { background: var(--clap); }
+
+    /* ── Panels ─────────────────────────────── */
+    .stage { flex: 1; overflow: hidden; position: relative; }
+    .panel { position: absolute; inset: 0; overflow: auto; padding: 14px; display: none; flex-direction: column; gap: 12px; }
+    .panel.active { display: flex; }
+    .row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+    .row .lbl { font-size: 11px; color: var(--muted); }
+    .hint { font-size: 11px; color: var(--muted2); line-height: 1.6; }
+    .card { background: var(--panel); border: 1px solid var(--line2); border-radius: 10px; padding: 12px 14px; }
+    .card h3 { margin: 0 0 4px; font-size: 12px; color: var(--muted); font-weight: 700; letter-spacing: .4px; text-transform: uppercase; }
+
+    /* Grid scroller (shared by all timeline editors) */
+    .scroller { overflow-x: auto; overflow-y: hidden; border: 1px solid var(--line2); border-radius: 10px; background: var(--bg2); }
+    .grid-wrap { position: relative; }
+
+    /* Step numbers ruler */
+    .ruler { display: flex; height: 20px; border-bottom: 1px solid var(--line); }
+    .ruler .barmark { flex: 0 0 auto; font-size: 10px; color: var(--muted2); display: flex; align-items: center; padding-left: 5px; border-right: 1px solid var(--line); }
+
+    /* Drum grid */
+    .drum-row { display: flex; align-items: center; height: 32px; border-bottom: 1px solid var(--line2); }
+    .drum-head {
+      flex: 0 0 168px; display: flex; align-items: center; gap: 6px; padding: 0 8px; height: 100%;
+      background: var(--panel); border-right: 1px solid var(--line); position: sticky; left: 0; z-index: 2;
+    }
+    .drum-name { font-size: 12px; font-weight: 600; flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .mini { width: 20px; height: 20px; font-size: 10px; display: flex; align-items: center; justify-content: center;
+            background: var(--panel2); color: var(--muted); border: 1px solid var(--line); border-radius: 4px; }
+    .mini.act { color: #fff; }
+    .mini.solo.act { background: var(--accent-on); color: #222; border-color: var(--accent-on); }
+    .mini.mute.act { background: var(--err); color: #fff; border-color: var(--err); }
+    .steps { display: flex; height: 100%; }
+    .cell {
+      flex: 0 0 var(--cell); height: 100%; border-right: 1px solid var(--line2);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .cell .pad { width: 78%; height: 66%; border-radius: 4px; background: #2b3048; transition: background .05s, transform .05s; }
+    .cell.beat { border-right-color: var(--line); }
+    .cell.bar { border-right: 2px solid #47507a; }
+    .cell:hover .pad { background: #3a4166; }
+    .cell.on .pad { background: var(--rowc, var(--on)); }
+    .cell.on.accent .pad { box-shadow: 0 0 0 2px var(--accent-on) inset; }
+    .cell.playhead { background: rgba(102,126,234,.14); }
+
+    /* Piano roll */
+    .roll-keys { flex: 0 0 46px; position: sticky; left: 0; z-index: 2; background: var(--panel); border-right: 1px solid var(--line); }
+    .prow { display: flex; height: var(--rowh); border-bottom: 1px solid var(--line2); }
+    .prow.black { background: #171a27; }
+    .prow.inscale .lane { background: rgba(102,126,234,.05); }
+    .prow.root .lane { background: rgba(160,107,255,.09); }
+    .keylabel { flex: 0 0 46px; font-size: 9px; color: var(--muted2); display: flex; align-items: center; justify-content: flex-end; padding-right: 5px;
+                position: sticky; left: 0; background: inherit; border-right: 1px solid var(--line); }
+    .prow.black .keylabel { color: #556; }
+    .lane { display: flex; position: relative; flex: 1; }
+    .lane .pcell { flex: 0 0 var(--cell); height: 100%; border-right: 1px solid var(--line2); }
+    .lane .pcell.beat { border-right-color: var(--line); }
+    .lane .pcell.bar { border-right: 2px solid #47507a; }
+    .note {
+      position: absolute; top: 1px; height: calc(var(--rowh) - 3px); background: linear-gradient(180deg,var(--accent),#5563c9);
+      border: 1px solid #8b96e8; border-radius: 3px; z-index: 3; cursor: pointer;
+    }
+    .note:hover { filter: brightness(1.15); }
+    .note.melodyc { background: linear-gradient(180deg,var(--snare),#e0a83f); border-color:#ffe08a; }
+
+    /* Chord track */
+    .chord-track { display: flex; gap: 8px; flex-wrap: wrap; }
+    .chord-slot { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 10px; width: 128px; }
+    .chord-slot .bar-no { font-size: 10px; color: var(--muted2); margin-bottom: 6px; }
+    .chord-slot select { width: 100%; margin-bottom: 6px; }
+    .chord-slot .preview { font-size: 10px; color: var(--on2); min-height: 13px; }
+
+    /* FX lane */
+    .fx-palette { display: flex; gap: 6px; flex-wrap: wrap; }
+    .fx-chip { padding: 6px 10px; font-size: 12px; border-radius: 7px; border: 1px solid var(--line); background: var(--panel2); color: var(--text); display: flex; gap: 6px; align-items: center; }
+    .fx-chip.sel { border-color: var(--accent); background: #2b3157; }
+    .fx-lane-rows { display: flex; flex-direction: column; }
+    .fx-lane {
+      position: relative; height: 34px; border-bottom: 1px solid var(--line2); display: flex; align-items: center;
+    }
+    .fx-lane .lane-head { flex: 0 0 110px; font-size: 11px; color: var(--muted); padding: 0 8px; position: sticky; left: 0; background: var(--panel); z-index: 2; height: 100%; display: flex; align-items: center; border-right: 1px solid var(--line); }
+    .fx-track { position: relative; flex: 1; height: 100%; }
+    .fx-event {
+      position: absolute; top: 5px; height: 24px; border-radius: 5px; font-size: 10px; color: #14161f;
+      display: flex; align-items: center; padding: 0 6px; cursor: pointer; overflow: hidden; white-space: nowrap;
+    }
+    .fx-event:hover { filter: brightness(1.1); }
+    .fx-event.riser { background: linear-gradient(90deg,#4fd1c5,#a06bff); }
+    .fx-event.downlifter { background: linear-gradient(90deg,#a06bff,#4fd1c5); }
+    .fx-event.impact { background: var(--kick); color:#fff; }
+    .fx-event.reverse { background: var(--snare); }
+    .fx-event.sweep { background: linear-gradient(90deg,#667eea,#ffcc66); }
+
+    /* global playhead line */
+    .playline { position: absolute; top: 0; width: 2px; background: var(--accent-on); z-index: 5; pointer-events: none; box-shadow: 0 0 6px var(--accent-on); display: none; }
+
+    /* status */
+    .status { padding: 5px 14px; font-size: 11px; color: var(--muted); border-top: 1px solid var(--line); background: var(--bg2);
+              display: flex; align-items: center; gap: 12px; }
+    .status .sdot { width: 7px; height: 7px; border-radius: 50%; background: var(--muted2); }
+    .status .sdot.ok { background: var(--ok); } .status .sdot.warn { background: var(--warn); } .status .sdot.err { background: var(--err); }
+    .status .sload { color: var(--on2); }
+    .toast { position: fixed; left: 50%; bottom: 46px; transform: translateX(-50%); background: #000c; color: #fff; padding: 8px 16px; border-radius: 8px; font-size: 12px; z-index: 50; opacity: 0; transition: opacity .2s; pointer-events: none; }
+    .toast.show { opacity: 1; }
+
+    /* ── Play-mode select ─────────────────────────────── */
+    .playmode { background: var(--panel2); color: var(--text); border: 1px solid var(--accent); font-weight: 600; padding: 6px 8px; }
+
+    /* ── Pattern bar ─────────────────────────────── */
+    .patternbar { display: flex; align-items: center; gap: 8px; padding: 7px 14px; background: var(--bg2); border-bottom: 1px solid var(--line); }
+    .pb-label { font-size: 11px; color: var(--muted); font-weight: 700; }
+    .pat-chips { display: flex; gap: 5px; }
+    .pat-chip { background: var(--panel2); color: var(--muted); border: 1px solid var(--line); border-radius: 6px; padding: 4px 12px; font-size: 12px; font-weight: 700; min-width: 30px; }
+    .pat-chip.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+    .pat-chip:hover:not(.active) { color: var(--text); border-color: var(--accent); }
+    .pat-rename { width: 76px; font-size: 12px; padding: 3px 6px; }
+    .pat-op { background: var(--panel2); color: var(--text); border: 1px solid var(--line); border-radius: 6px; width: 26px; height: 26px; font-size: 13px; }
+    .pat-op:hover { border-color: var(--accent); }
+    .pb-hint { font-size: 10px; color: var(--muted2); margin-left: 4px; }
+    .pb-sep { width: 1px; height: 18px; background: var(--line); margin: 0 4px; }
+    .lay-toggles { display: flex; gap: 4px; }
+    .lay-tog { background: var(--panel2); color: var(--muted2); border: 1px solid var(--line); border-radius: 6px; width: 26px; height: 26px; font-size: 12px; font-weight: 700; opacity: .55; }
+    .lay-tog:hover { opacity: .85; }
+    .lay-tog.on { background: var(--on2); color: #14161f; border-color: var(--on2); opacity: 1; }
+    .tab[data-layer="song"] .dot { background: var(--accent-on); }
+
+    /* ── Song structure ─────────────────────────────── */
+    .ck { display: inline-flex; align-items: center; gap: 4px; font-size: 12px; color: var(--text); cursor: pointer; }
+    .ck input { accent-color: var(--accent); }
+    .song-now { font-size: 12px; color: var(--accent-on); font-weight: 600; }
+    .song-timeline { display: flex; gap: 6px; flex-wrap: wrap; min-height: 30px; }
+    .song-empty { font-size: 12px; color: var(--muted2); line-height: 1.7; padding: 6px 2px; }
+    .song-block { border-radius: 9px; padding: 8px 10px; cursor: pointer; border: 1.5px solid transparent; background: var(--panel2); transition: transform .08s; overflow: hidden; }
+    .song-block:hover { transform: translateY(-1px); }
+    .song-block.sel { border-color: #fff; }
+    .song-block.playing { box-shadow: 0 0 0 2px var(--accent-on), 0 0 12px var(--accent-on); }
+    .song-block .sb-type { font-size: 13px; font-weight: 800; color: #14161f; }
+    .song-block .sb-meta { font-size: 10px; color: #14161faa; margin: 2px 0 5px; font-weight: 600; }
+    .song-block .sb-dots { display: flex; gap: 3px; }
+    .song-block .ld { width: 9px; height: 9px; border-radius: 50%; background: #14161f33; }
+    .song-block .ld.on { background: #14161f; }
+    .song-block.intro { background: linear-gradient(135deg,#8ec5ff,#a0b4ff); }
+    .song-block.verse { background: linear-gradient(135deg,#8fe3c8,#6fd0e0); }
+    .song-block.build { background: linear-gradient(135deg,#ffd166,#ff9a6b); }
+    .song-block.drop  { background: linear-gradient(135deg,#ff6b6b,#ff3d7f); }
+    .song-block.break { background: linear-gradient(135deg,#c3a0ff,#9f8fff); }
+    .song-block.outro { background: linear-gradient(135deg,#b0b8d0,#8a90b0); }
+    #sec-editor .row { margin-bottom: 8px; }
+    #sec-editor .row:last-child { margin-bottom: 0; }
+    .tbtn.danger { color: var(--err); border-color: var(--err); }
+    .tbtn.danger:hover { background: var(--err); color: #fff; }
+  </style>
+</head>
+<body>
+  <!-- ── Transport ─────────────────────────────── -->
+  <div class="transport">
+    <span class="brand">🎹 电子编曲器 <small>Tone.js · smplr</small></span>
+    <button id="play" class="play-btn" title="播放 / 停止 (Space)">▶</button>
+    <select id="playmode" class="playmode" title="播放范围：单个片段循环 或 按结构播放整首">
+      <option value="pattern">▶ 片段循环</option>
+      <option value="song">▶ 整首歌曲</option>
+    </select>
+    <div class="field"><b>BPM</b><input id="bpm" type="number" min="60" max="200" step="1" value="128" /></div>
+    <div class="field"><b>小节</b>
+      <select id="bars"><option value="1">1</option><option value="2" selected>2</option><option value="4">4</option><option value="8">8</option></select>
+    </div>
+    <div class="field">摇摆<input id="swing" type="range" min="0" max="60" value="0" /><span class="val" id="swing-val">0%</span></div>
+    <div class="field">音量<input id="master" type="range" min="-40" max="0" value="-8" /><span class="val" id="master-val">-8dB</span></div>
+    <div class="spacer"></div>
+    <button id="import" class="tbtn ghost" title="导入编曲 JSON">导入</button>
+    <button id="export" class="tbtn ghost" title="导出编曲 JSON">导出</button>
+    <button id="demo" class="tbtn ghost" title="载入示例 House 编曲">示例</button>
+    <button id="clear" class="tbtn ghost" title="清空全部">清空</button>
+    <input id="file-input" type="file" accept="application/json,.json" style="display:none" />
+  </div>
+
+  <!-- ── Tabs ─────────────────────────────── -->
+  <div class="tabs">
+    <button class="tab active" data-layer="drums"><span class="dot"></span>节奏 Drums</button>
+    <button class="tab" data-layer="bass"><span class="dot"></span>贝斯 Bass</button>
+    <button class="tab" data-layer="harmony"><span class="dot"></span>和声 Pad</button>
+    <button class="tab" data-layer="melody"><span class="dot"></span>旋律 Melody</button>
+    <button class="tab" data-layer="fx"><span class="dot"></span>音效 FX</button>
+    <button class="tab" data-layer="song"><span class="dot"></span>结构 Song</button>
+  </div>
+
+  <!-- ── Pattern bar (片段 A/B/C…) ─────────────────────────────── -->
+  <div class="patternbar">
+    <span class="pb-label">片段</span>
+    <div class="pat-chips" id="pat-chips"></div>
+    <button id="pat-add" class="pat-op" title="新建空白片段">＋</button>
+    <button id="pat-dup" class="pat-op" title="复制当前片段">⧉</button>
+    <button id="pat-del" class="pat-op" title="删除当前片段">🗑</button>
+    <span class="pb-sep"></span>
+    <span class="pb-label">启用层</span>
+    <div class="lay-toggles" id="lay-toggles"></div>
+    <span class="pb-hint">点亮=该层在“片段循环”播放时发声，关掉即静音;双击片段名可重命名</span>
+  </div>
+
+  <!-- ── Stage ─────────────────────────────── -->
+  <div class="stage">
+    <!-- 1. Drums -->
+    <div class="panel active" id="panel-drums">
+      <div class="row">
+        <span class="lbl">音源</span>
+        <select id="drum-engine">
+          <option value="synth">合成 (Tone.js · 零依赖离线)</option>
+          <option value="sample">采样 (smplr 真实鼓机)</option>
+        </select>
+        <select id="drum-kit" disabled></select>
+        <span class="chip" id="drum-src-info">MembraneSynth / NoiseSynth / MetalSynth</span>
+      </div>
+      <div class="hint">点击格子写入/删除鼓点，Shift+点击设为重音。每 4 格为一拍，粗线为小节。左侧 S=独奏 M=静音。</div>
+      <div class="scroller"><div class="grid-wrap" id="drum-grid"></div></div>
+    </div>
+
+    <!-- 2. Bass -->
+    <div class="panel" id="panel-bass">
+      <div class="row">
+        <span class="lbl">音色</span><select id="bass-inst"></select>
+        <label class="lbl"><input type="checkbox" id="bass-sc" /> 侧链 Sidechain</label>
+        <span class="lbl">源</span><select id="bass-sc-src"></select>
+        <span class="lbl">强度</span><input id="bass-sc-amt" type="range" min="0" max="100" value="70" /><span class="val" id="bass-sc-val">70%</span>
+      </div>
+      <div class="hint">在空白处按下拖动写入音符(横向拉伸时值)，点击音符删除。贝斯与底鼓咬合、侧链制造“抽吸”推进感。</div>
+      <div class="scroller"><div class="grid-wrap" id="bass-roll"></div></div>
+    </div>
+
+    <!-- 3. Harmony -->
+    <div class="panel" id="panel-harmony">
+      <div class="row">
+        <span class="lbl">音色</span><select id="harm-inst"></select>
+        <span class="lbl">形态</span>
+        <select id="harm-mode">
+          <option value="pad">铺底 Pad(长音）</option>
+          <option value="arp">分解和弦 Arp</option>
+          <option value="pluck">切分 Pluck</option>
+        </select>
+        <span class="lbl">Arp速率</span><select id="harm-rate"><option>8n</option><option selected>16n</option><option>8t</option><option>4n</option></select>
+        <span class="lbl">八度</span><select id="harm-oct"><option>2</option><option>3</option><option selected>4</option><option>5</option></select>
+        <span class="lbl">混响</span><input id="harm-rev" type="range" min="0" max="100" value="40" />
+        <span class="lbl">合唱</span><input id="harm-cho" type="range" min="0" max="100" value="20" />
+      </div>
+      <div class="hint">每个小节选择一个和弦(根音+性质)，配合上方形态生成铺底/分解/切分。为整曲奠定色彩与情绪。</div>
+      <div class="card"><div class="chord-track" id="chord-track"></div></div>
+    </div>
+
+    <!-- 4. Melody -->
+    <div class="panel" id="panel-melody">
+      <div class="row">
+        <span class="lbl">音色</span><select id="mel-inst"></select>
+        <span class="lbl">调</span><select id="mel-key"></select>
+        <select id="mel-scale">
+          <option value="minor">小调 Minor</option>
+          <option value="major">大调 Major</option>
+          <option value="dorian">Dorian</option>
+          <option value="penta-min">小调五声</option>
+          <option value="chromatic">半音(全部)</option>
+        </select>
+        <span class="lbl">混响</span><input id="mel-rev" type="range" min="0" max="100" value="25" />
+      </div>
+      <div class="hint">主旋律/Hook 记忆点。调内音会高亮，根音更亮。空白拖动写音符、点击删除。</div>
+      <div class="scroller"><div class="grid-wrap" id="melody-roll"></div></div>
+    </div>
+
+    <!-- 5. FX -->
+    <div class="panel" id="panel-fx">
+      <div class="row">
+        <span class="lbl">母线滤波基准</span><input id="fx-filter" type="range" min="200" max="20000" value="20000" />
+        <span class="val" id="fx-filter-val">20kHz</span>
+        <span class="lbl">母线混响</span><input id="fx-master-rev" type="range" min="0" max="100" value="15" />
+      </div>
+      <div class="hint">在对应音效轨道的空白处点击即可放置事件(自动吸附到拍)，点击已放置的事件可删除。用于连接段落、增加立体感与科技感。</div>
+      <div class="scroller"><div class="grid-wrap" id="fx-grid"></div></div>
+    </div>
+
+    <!-- 6. Song structure -->
+    <div class="panel" id="panel-song">
+      <div class="row">
+        <span class="lbl">整曲</span>
+        <span class="chip" id="song-length"></span>
+        <label class="ck"><input type="checkbox" id="song-loop" /> 整曲循环</label>
+        <span class="song-now" id="song-now"></span>
+      </div>
+      <div class="hint">歌曲 = 段落时间线。每个段落引用一个“片段”，并设定<b>启用哪些层</b>与<b>动态</b>(滤波开合 / 淡入淡出 / 段尾自动 Riser / 段首 Impact)。把顶部切到“整首歌曲”播放，即按前奏→主歌→铺垫→高潮→尾奏顺序连成完整曲子。点段落块可选中并在下方编辑。</div>
+      <div class="card"><div class="song-timeline" id="song-timeline"></div></div>
+      <div class="row">
+        <span class="lbl">添加段落</span>
+        <select id="sec-add-type"></select>
+        <button id="sec-add" class="tbtn">＋ 添加到末尾</button>
+      </div>
+      <div class="card" id="sec-editor"></div>
+    </div>
+
+    <div class="playline" id="playline"></div>
+  </div>
+
+  <!-- ── Status ─────────────────────────────── -->
+  <div class="status">
+    <span class="sdot" id="audio-dot"></span>
+    <span id="audio-status">音频未启动 — 点击 ▶ 开始</span>
+    <span class="spacer" style="flex:1"></span>
+    <span class="sload" id="load-status"></span>
+    <span class="chip" id="step-info"></span>
+  </div>
+  <div class="toast" id="toast"></div>
+
+  <script src="vendor/tone.js"></script>
+  <script src="music-arranger.js"></script>
+</body>
+</html>

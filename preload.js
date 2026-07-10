@@ -12,5 +12,6 @@ contextBridge.exposeInMainWorld('electronAPI', {
   quiz: {
     listBanks: () => ipcRenderer.invoke('quiz:listBanks'),
     loadBank: (file) => ipcRenderer.invoke('quiz:loadBank', file),
+    importBank: () => ipcRenderer.invoke('quiz:importBank'),
   },
 });

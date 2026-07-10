@@ -206,7 +206,7 @@ function retry() {
 }
 
 // ---------- 题库加载 ----------
-async function loadBankList() {
+async function loadBankList(selectFile) {
   setStatus('读取题库目录…');
   let res;
   try {
@@ -238,7 +238,9 @@ async function loadBankList() {
     opt.value = b.file;
     bankSel.appendChild(opt);
   });
-  await selectBank(res.banks[0].file);
+  const toSelect = selectFile && res.banks.some((b) => b.file === selectFile) ? selectFile : res.banks[0].file;
+  bankSel.value = toSelect;
+  await selectBank(toSelect);
 }
 
 async function selectBank(file) {
@@ -258,8 +260,26 @@ async function selectBank(file) {
   renderBank(res.bank);
 }
 
+async function importBank() {
+  setStatus('选择题库文件…');
+  let res;
+  try {
+    res = await window.electronAPI.quiz.importBank();
+  } catch (e) {
+    setStatus('导入失败:' + e.message);
+    return;
+  }
+  if (!res || !res.success) {
+    setStatus(res && res.canceled ? '已取消导入。' : '导入失败:' + ((res && res.error) || '未知错误'));
+    return;
+  }
+  await loadBankList(res.file);          // 刷新列表并选中刚导入的题库
+  setStatus(`已导入《${res.file}》（${res.count} 题）。`);
+}
+
 bankSel.addEventListener('change', () => selectBank(bankSel.value));
-$('reload-btn').addEventListener('click', loadBankList);
+$('reload-btn').addEventListener('click', () => loadBankList());
+$('import-btn').addEventListener('click', importBank);
 submitBtn.addEventListener('click', submit);
 retryBtn.addEventListener('click', retry);
 
