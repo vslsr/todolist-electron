@@ -93,6 +93,65 @@ ipcMain.handle('tool:open', (_event, tool) => {
   return { success: true };
 });
 
+// ── Sedentary-reminder strong alert (置顶强提醒窗口) ─────────────────────────
+// Pops a frameless, always-on-top window above ALL apps (incl. fullscreen).
+let reminderAlertWin = null;
+
+function showReminderAlert(payload) {
+  // Replace any existing alert so a new phase doesn't stack windows.
+  if (reminderAlertWin && !reminderAlertWin.isDestroyed()) {
+    reminderAlertWin.close();
+    reminderAlertWin = null;
+  }
+
+  const win = new BrowserWindow({
+    width: 560,
+    height: 340,
+    frame: false,
+    resizable: false,
+    movable: true,
+    center: true,
+    alwaysOnTop: true,
+    skipTaskbar: true,
+    fullscreenable: false,
+    minimizable: false,
+    maximizable: false,
+    show: false,
+    backgroundColor: '#1b1e2b',
+    webPreferences: {
+      preload: path.join(__dirname, 'preload.js'),
+      contextIsolation: true,
+      nodeIntegration: false,
+    },
+  });
+
+  // Raise above fullscreen apps / other always-on-top windows.
+  win.setAlwaysOnTop(true, 'screen-saver');
+  win.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true });
+
+  win.loadFile(path.join('src', 'reminder-alert.html'), {
+    query: {
+      title: payload.title || '久坐提醒',
+      body:  payload.body  || '',
+      phase: payload.phase || 'work',
+    },
+  });
+
+  win.once('ready-to-show', () => {
+    win.show();
+    win.focus();
+    win.flashFrame(true);
+  });
+  win.on('closed', () => { reminderAlertWin = null; });
+
+  reminderAlertWin = win;
+}
+
+ipcMain.handle('reminder:alert', (_event, payload) => {
+  showReminderAlert(payload || {});
+  return { success: true };
+});
+
 // IPC handlers for data persistence
 ipcMain.handle('store:get', (_event, key) => {
   return store.get(key);
@@ -122,4 +181,50 @@ ipcMain.handle('dialog:importJson', async () => {
   if (canceled || filePaths.length === 0) return { success: false };
   const data = fs.readFileSync(filePaths[0], 'utf-8');
   return { success: true, data };
+});
+
+// ── Question bank (题库) file access ─────────────────────────────────────────
+// Reads *.json banks produced by the exam-question-authoring skill.
+// Dev: <project root>/question-bank ; Packaged: <folder beside the .exe> (user-writable).
+function questionBankDir() {
+  return app.isPackaged
+    ? path.join(path.dirname(app.getPath('exe')), 'question-bank')
+    : path.join(app.getAppPath(), 'question-bank');
+}
+
+ipcMain.handle('quiz:listBanks', () => {
+  const dir = questionBankDir();
+  let files;
+  try {
+    files = fs.readdirSync(dir).filter((f) => f.toLowerCase().endsWith('.json'));
+  } catch {
+    return { success: true, dir, banks: [] }; // 目录不存在 → 空列表
+  }
+  const banks = files.map((file) => {
+    try {
+      const bank = JSON.parse(fs.readFileSync(path.join(dir, file), 'utf-8'));
+      return {
+        file,
+        title: bank.title || bank.bankId || file,
+        count: Array.isArray(bank.questions) ? bank.questions.length : 0,
+      };
+    } catch {
+      return { file, title: file + '（解析失败）', count: 0 };
+    }
+  });
+  return { success: true, dir, banks };
+});
+
+ipcMain.handle('quiz:loadBank', (_event, file) => {
+  // 只接受目录内的裸文件名,防止路径穿越。
+  if (typeof file !== 'string' || file !== path.basename(file) || !file.toLowerCase().endsWith('.json')) {
+    return { success: false, error: '非法文件名' };
+  }
+  try {
+    const bank = JSON.parse(fs.readFileSync(path.join(questionBankDir(), file), 'utf-8'));
+    if (!bank || !Array.isArray(bank.questions)) return { success: false, error: '题库格式无效' };
+    return { success: true, bank };
+  } catch (e) {
+    return { success: false, error: e.message };
+  }
 });

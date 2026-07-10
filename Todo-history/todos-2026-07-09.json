@@ -1,7 +1,105 @@
 [
   {
+    "id": "1783559906948pm1x",
+    "uuid": "6213e2c0-8237-415e-b74b-505f05043470",
+    "text": "UE3的MCP工具开发",
+    "status": "pending",
+    "priority": "normal",
+    "createdAt": "7月8日",
+    "children": [],
+    "collapsed": false,
+    "steps": [],
+    "stepsCollapsed": false,
+    "transferHistory": [],
+    "transferredTo": null,
+    "transferredFrom": null,
+    "dueDate": null
+  },
+  {
+    "id": "17833065681620xox",
+    "uuid": "0279d20c-1384-44aa-82b3-61c925d601d3",
+    "text": "AD44开发任务 C区域",
+    "status": "pending",
+    "priority": "normal",
+    "createdAt": "7月6日",
+    "children": [
+      {
+        "id": "178330657074714zl",
+        "uuid": "25dc9bf4-8bd3-4b2b-88ac-3057946bd31e",
+        "text": "C区 功能拆分",
+        "status": "pending",
+        "priority": "normal",
+        "createdAt": "7月6日",
+        "children": [],
+        "collapsed": false,
+        "steps": [],
+        "stepsCollapsed": false,
+        "transferHistory": [],
+        "transferredTo": null,
+        "transferredFrom": null,
+        "dueDate": "2026-07-07"
+      }
+    ],
+    "collapsed": true,
+    "steps": [],
+    "stepsCollapsed": false,
+    "transferHistory": [],
+    "transferredTo": null,
+    "transferredFrom": null,
+    "dueDate": null
+  },
+  {
+    "id": "1782891906560c1h1",
+    "uuid": "d9aed10d-2c77-4d4c-bbc1-7b1eb9224518",
+    "text": "AD44 Boss的Script流程建立",
+    "status": "in-progress",
+    "priority": "normal",
+    "createdAt": "7月1日",
+    "children": [
+      {
+        "id": "1782901677198fmq9",
+        "uuid": "f29590e8-0f66-4103-9b45-3d6a6365745b",
+        "text": "Boss区逻辑：团灭复活点在外面的准备区，单人复活是内部的战斗区域。",
+        "status": "pending",
+        "priority": "normal",
+        "createdAt": "7月1日",
+        "children": [],
+        "collapsed": false,
+        "steps": [],
+        "stepsCollapsed": false,
+        "transferHistory": [],
+        "transferredTo": null,
+        "transferredFrom": null,
+        "dueDate": null
+      },
+      {
+        "id": "17833100904853cra",
+        "uuid": "d93e658a-2243-44e9-92d3-26d41f9a143a",
+        "text": "拆分表中各区流程部分，添加下最后BOSS准备区功能拆分",
+        "status": "in-progress",
+        "priority": "normal",
+        "createdAt": "7月6日",
+        "children": [],
+        "collapsed": false,
+        "steps": [],
+        "stepsCollapsed": false,
+        "transferHistory": [],
+        "transferredTo": null,
+        "transferredFrom": null,
+        "dueDate": "2026-07-07"
+      }
+    ],
+    "collapsed": true,
+    "steps": [],
+    "stepsCollapsed": false,
+    "transferHistory": [],
+    "transferredTo": null,
+    "transferredFrom": null,
+    "dueDate": null
+  },
+  {
     "id": "1780885404804yoox",
-    "text": "AD44开发任务 Task1",
+    "text": "AD44开发任务 A区 Task1",
     "completed": false,
     "priority": "normal",
     "createdAt": "6月8日",
@@ -14,38 +112,6 @@
         "priority": "normal",
         "createdAt": "6月11日",
         "children": [
-          {
-            "id": "1781249078974h39r",
-            "uuid": "feeebf5d-301b-41fb-b939-76d5175c1afa",
-            "text": "引擎卡死崩溃的问题",
-            "status": "in-progress",
-            "priority": "high",
-            "createdAt": "6月12日",
-            "children": [],
-            "collapsed": false,
-            "steps": [
-              {
-                "id": "s17821223601547p7",
-                "text": "需要重新建立地图",
-                "createdAt": "6月22日"
-              },
-              {
-                "id": "s1782439471402660",
-                "text": "在Main和Navart层单独存在时，会出现死亡卡死问题",
-                "createdAt": "6月26日"
-              },
-              {
-                "id": "s1782705418088rxy",
-                "text": "等待新美术白盒",
-                "createdAt": "6月29日"
-              }
-            ],
-            "stepsCollapsed": false,
-            "transferHistory": [],
-            "transferredTo": null,
-            "transferredFrom": null,
-            "dueDate": null
-          },
           {
             "id": "1781053294825yd6k",
             "uuid": "becf7888-d64e-4d7a-87cd-9a81d56bf46b",
@@ -66,7 +132,7 @@
             "id": "1781154259648nksm",
             "uuid": "2df439ea-97f0-445d-9ee7-51f4ed465b24",
             "text": "Task1 出生点设置",
-            "status": "in-progress",
+            "status": "pending",
             "priority": "normal",
             "createdAt": "6月11日",
             "children": [
@@ -122,7 +188,7 @@
                 "createdAt": "6月26日"
               }
             ],
-            "stepsCollapsed": false,
+            "stepsCollapsed": true,
             "transferHistory": [],
             "transferredTo": null,
             "transferredFrom": null,
@@ -131,7 +197,7 @@
           {
             "id": "1780973281586dw5d",
             "text": "小地图显示的功能",
-            "status": "in-progress",
+            "status": "pending",
             "priority": "normal",
             "createdAt": "6月9日",
             "children": [],
@@ -158,7 +224,7 @@
                 "createdAt": "6月17日"
               }
             ],
-            "stepsCollapsed": false,
+            "stepsCollapsed": true,
             "transferHistory": [],
             "transferredTo": null,
             "transferredFrom": null,
@@ -166,7 +232,7 @@
             "dueDate": null
           }
         ],
-        "collapsed": false,
+        "collapsed": true,
         "steps": [
           {
             "id": "s17812288555284qw",
@@ -174,7 +240,7 @@
             "createdAt": "6月12日"
           }
         ],
-        "stepsCollapsed": true,
+        "stepsCollapsed": false,
         "transferHistory": [],
         "transferredTo": null,
         "transferredFrom": null,
@@ -184,22 +250,6 @@
         "id": "1782467049577g0a9",
         "uuid": "82588902-d1c6-44b1-bb02-475f7c42f3f2",
         "text": "玩家团灭后再次进入任务区会触发读秒但不会立刻开启任务，且读秒结束后除了蒸汽打开以外无法与其他机关做任何交互。",
-        "status": "pending",
-        "priority": "normal",
-        "createdAt": "6月26日",
-        "children": [],
-        "collapsed": false,
-        "steps": [],
-        "stepsCollapsed": false,
-        "transferHistory": [],
-        "transferredTo": null,
-        "transferredFrom": null,
-        "dueDate": null
-      },
-      {
-        "id": "1782467072467o3ck",
-        "uuid": "3e9f1126-a5f8-4f43-ada4-0646032a538b",
-        "text": "完成任务后并不会出现下一个区域的白点指引提示。",
         "status": "pending",
         "priority": "normal",
         "createdAt": "6月26日",
@@ -228,90 +278,19 @@
             "createdAt": "6月26日"
           }
         ],
-        "stepsCollapsed": false,
+        "stepsCollapsed": true,
         "transferHistory": [],
         "transferredTo": null,
         "transferredFrom": null,
         "dueDate": null
       },
       {
-        "id": "1782702988544yfy2",
-        "uuid": "d450e76e-45e8-4f1a-952f-ddb402aa7207",
-        "text": "创建Main层",
-        "status": "in-progress",
-        "priority": "high",
-        "createdAt": "6月29日",
-        "children": [],
-        "collapsed": false,
-        "steps": [
-          {
-            "id": "s17828919341355qu",
-            "text": "已经接入4层，差跑通测试",
-            "createdAt": "7月1日"
-          }
-        ],
-        "stepsCollapsed": false,
-        "transferHistory": [],
-        "transferredTo": null,
-        "transferredFrom": null,
-        "dueDate": "2026-07-03"
-      },
-      {
-        "id": "1782891906560c1h1",
-        "uuid": "d9aed10d-2c77-4d4c-bbc1-7b1eb9224518",
-        "text": "Boss的Script流程建立",
-        "status": "in-progress",
-        "priority": "normal",
-        "createdAt": "7月1日",
-        "children": [
-          {
-            "id": "17829010466053c88",
-            "uuid": "efa50371-5c9d-4457-bb89-c131c50628be",
-            "text": "Boss区逻辑：任务2完成后，直接播放CG，CG完成后所有玩家直接传送到天上的准备区。之后准备区正常15秒倒计时，之后播放bossCG，完成后传送进入战斗区域。",
-            "status": "pending",
-            "priority": "normal",
-            "createdAt": "7月1日",
-            "children": [],
-            "collapsed": false,
-            "steps": [],
-            "stepsCollapsed": false,
-            "transferHistory": [],
-            "transferredTo": null,
-            "transferredFrom": null,
-            "dueDate": null
-          },
-          {
-            "id": "1782901677198fmq9",
-            "uuid": "f29590e8-0f66-4103-9b45-3d6a6365745b",
-            "text": "Boss区逻辑：团灭复活点在外面的准备区，单人复活是内部的战斗区域。",
-            "status": "pending",
-            "priority": "normal",
-            "createdAt": "7月1日",
-            "children": [],
-            "collapsed": false,
-            "steps": [],
-            "stepsCollapsed": false,
-            "transferHistory": [],
-            "transferredTo": null,
-            "transferredFrom": null,
-            "dueDate": null
-          }
-        ],
-        "collapsed": false,
-        "steps": [],
-        "stepsCollapsed": false,
-        "transferHistory": [],
-        "transferredTo": null,
-        "transferredFrom": null,
-        "dueDate": null
-      },
-      {
-        "id": "1782892873351b93x",
-        "uuid": "1bacb461-8acd-4ae8-808b-e56b0c0e0058",
-        "text": "下一区域白点指引亮起",
+        "id": "1783421341359ynhm",
+        "uuid": "999db9d7-9ecb-43e1-bb4b-77ea201a719c",
+        "text": "bug: 必须等待倒计时结束后，传送并开启任务",
         "status": "completed",
         "priority": "normal",
-        "createdAt": "7月1日",
+        "createdAt": "7月7日",
         "children": [],
         "collapsed": false,
         "steps": [],
@@ -333,20 +312,74 @@
     "dueDate": null
   },
   {
-    "id": "1781249596229xwif",
-    "uuid": "d48c0548-73bd-42c7-b5d0-e1fdf4fa9297",
-    "text": "怀旧服 Bug",
+    "id": "1783313057662idik",
+    "uuid": "5153d577-26ed-471d-a8e7-69330edba6e6",
+    "text": "AD44开发任务 A区 Task2",
     "status": "pending",
     "priority": "normal",
-    "createdAt": "6月12日",
+    "createdAt": "7月6日",
     "children": [
       {
-        "id": "1782697810765c1kl",
-        "uuid": "4e35c3c5-f94e-46de-95c2-1532c6ef00a0",
-        "text": "【赛季】【时光流金-樱之谷】【必现】B/C区过场动画有一帧显示离开安全区域（上海代宝修复）",
-        "status": "pending",
+        "id": "1783313092086o90d",
+        "uuid": "d71bc23a-14e6-45fd-8dbc-1dbb2acaac46",
+        "text": "AD44 参考AD33的C区任务2",
+        "status": "completed",
         "priority": "normal",
-        "createdAt": "6月29日",
+        "createdAt": "7月6日",
+        "children": [],
+        "collapsed": false,
+        "steps": [],
+        "stepsCollapsed": false,
+        "transferHistory": [],
+        "transferredTo": null,
+        "transferredFrom": null,
+        "dueDate": null
+      },
+      {
+        "id": "1783410913131yv7a",
+        "uuid": "6740b577-dfbc-494d-a899-a2430da1303d",
+        "text": "AD44 任务2开发用例",
+        "status": "completed",
+        "priority": "normal",
+        "createdAt": "7月7日",
+        "children": [],
+        "collapsed": false,
+        "steps": [],
+        "stepsCollapsed": false,
+        "transferHistory": [],
+        "transferredTo": null,
+        "transferredFrom": null,
+        "dueDate": null
+      },
+      {
+        "id": "1783321386713ukym",
+        "uuid": "d4e760a1-f1f9-4dee-a3f9-dd87b3246087",
+        "text": "杀怪也能增长进度条，每秒额外增加P4(暂定5%)的进度条增长速度。",
+        "status": "completed",
+        "priority": "normal",
+        "createdAt": "7月6日",
+        "children": [],
+        "collapsed": false,
+        "steps": [
+          {
+            "id": "s1783321401777giw",
+            "text": "只要有怪受伤、死亡，就进行每秒增加进度。如果有1秒没有怪物受伤、死亡，则不加。",
+            "createdAt": "7月6日"
+          }
+        ],
+        "stepsCollapsed": false,
+        "transferHistory": [],
+        "transferredTo": null,
+        "transferredFrom": null,
+        "dueDate": null
+      },
+      {
+        "id": "17835859349618oxg",
+        "uuid": "664f5422-84d7-4371-9030-ecf12c8b2264",
+        "text": "怪物攻击塔",
+        "status": "completed",
+        "priority": "normal",
+        "createdAt": "7月9日",
         "children": [],
         "collapsed": false,
         "steps": [],
@@ -368,66 +401,18 @@
   {
     "id": "1781486823836l1c1",
     "uuid": "7e77ef2b-74a3-4a20-86c7-6257d6b165d6",
-    "text": "AD44 玩法开发 Gameplay01",
+    "text": "AD44 玩法开发 A区 Gameplay01",
     "status": "pending",
     "priority": "normal",
     "createdAt": "6月15日",
     "children": [
       {
-        "id": "1781486920437l20s",
-        "uuid": "985d4da3-ef01-48e1-ab1e-7f85b35c1cc1",
-        "text": "障碍物轰炸破坏反馈",
-        "status": "in-progress",
+        "id": "1783421381799kxm4",
+        "uuid": "977095c5-cbdb-41fa-8005-076b8434735f",
+        "text": "天桥轰炸：在触发一次后，变为固定轰炸点",
+        "status": "completed",
         "priority": "normal",
-        "createdAt": "6月15日",
-        "children": [],
-        "collapsed": false,
-        "steps": [],
-        "stepsCollapsed": false,
-        "transferHistory": [],
-        "transferredTo": null,
-        "transferredFrom": null,
-        "dueDate": null
-      },
-      {
-        "id": "178289339721487d1",
-        "uuid": "3d3156ef-e639-4460-8f77-ef0acf2b3461",
-        "text": "玩家轰炸命中小怪时造成直死伤害",
-        "status": "in-progress",
-        "priority": "normal",
-        "createdAt": "7月1日",
-        "children": [],
-        "collapsed": false,
-        "steps": [],
-        "stepsCollapsed": false,
-        "transferHistory": [],
-        "transferredTo": null,
-        "transferredFrom": null,
-        "dueDate": null
-      },
-      {
-        "id": "1782893415062m0n7",
-        "uuid": "d41dd38a-b773-41ff-a3f4-a38ab20f26ec",
-        "text": "玩法开始后按配置启动场中出怪口",
-        "status": "in-progress",
-        "priority": "normal",
-        "createdAt": "7月1日",
-        "children": [],
-        "collapsed": false,
-        "steps": [],
-        "stepsCollapsed": false,
-        "transferHistory": [],
-        "transferredTo": null,
-        "transferredFrom": null,
-        "dueDate": null
-      },
-      {
-        "id": "17828934674633ii3",
-        "uuid": "282e3209-566f-4ea0-8515-e72f11cc43cf",
-        "text": "天桥按自身爆炸 CD 到达后播放一次爆炸特效与音效（无预警、无伤害），场景固定点位轰炸按配置执行范围伤害",
-        "status": "pending",
-        "priority": "normal",
-        "createdAt": "7月1日",
+        "createdAt": "7月7日",
         "children": [],
         "collapsed": false,
         "steps": [],

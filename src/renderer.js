@@ -72,6 +72,7 @@ function getAncestorPath(todoId, list = todos, path = []) {
         priority:        t.priority,
         status:          t.status,
         steps:           t.steps,
+        stack:           t.stack,
         createdAt:       t.createdAt,
         stepsCollapsed:  t.stepsCollapsed,
         transferHistory: t.transferHistory,
@@ -201,6 +202,9 @@ function migrate(t) {
     collapsed:       t.collapsed ?? false,
     steps:           (t.steps || []).map(s => ({ id: s.id, text: s.text || '', createdAt: s.createdAt || '' })),
     stepsCollapsed:  t.stepsCollapsed  ?? false,
+    stack:           (t.stack || []).map(s => ({ id: s.id, text: s.text || '', createdAt: s.createdAt || '' })), // LIFO 工作栈，末尾为栈顶
+    stackCollapsed:  t.stackCollapsed  ?? false,
+    stackOpen:       t.stackOpen       ?? false,  // keep an empty panel open once user opens it
     transferHistory: t.transferHistory || [],
     transferredTo:   t.transferredTo   || null,   // { name, time } when sent out
     transferredFrom: t.transferredFrom || null,   // name string when received
@@ -220,6 +224,9 @@ function createTodo(text = '', priority = 'normal') {
     collapsed:       false,
     steps:           [],
     stepsCollapsed:  false,
+    stack:           [],          // LIFO 工作栈：末尾为栈顶（当前工作）
+    stackCollapsed:  false,
+    stackOpen:       false,
     transferHistory: [],
     transferredTo:   null,
     transferredFrom: null,
@@ -348,6 +355,65 @@ function toggleStepsCollapsed(todoId) {
   if (t) { t.stepsCollapsed = !t.stepsCollapsed; saveTodos(); render(); }
 }
 
+// ── Stack / 堆栈器 (per-item LIFO work stack) ────────────────────────────────
+// Each todo carries a stack of work items. The TOP (last element) is the
+// current focus — "栈顶表示当前要完成的工作". Push adds a new top; pop removes
+// the completed top and the next item down becomes the current focus.
+
+function focusStackInput(todoId) {
+  const el = document.querySelector(`[data-id="${todoId}"] .stack-input`);
+  if (el) el.focus();
+}
+
+function openStack(todoId) {
+  const t = findById(todoId);
+  if (!t) return;
+  t.stackOpen = true;
+  t.stackCollapsed = false;
+  saveTodos();
+  render();
+  focusStackInput(todoId);
+}
+
+function closeStack(todoId) {
+  const t = findById(todoId);
+  if (!t) return;
+  t.stackOpen = false;
+  saveTodos();
+  render();
+}
+
+function toggleStackCollapsed(todoId) {
+  const t = findById(todoId);
+  if (t) { t.stackCollapsed = !t.stackCollapsed; saveTodos(); render(); }
+}
+
+function pushStack(todoId, text) {
+  const t = findById(todoId);
+  if (!t) return;
+  const clean = (text || '').trim();
+  if (!clean) return;
+  const item = {
+    id:        `k${Date.now()}${Math.random().toString(36).slice(2, 5)}`,
+    text:      clean,
+    createdAt: new Date().toLocaleDateString('zh-CN', { month: 'short', day: 'numeric' }),
+  };
+  t.stack = [...(t.stack || []), item];   // append → new top (current work)
+  t.stackOpen = true;
+  t.stackCollapsed = false;
+  saveTodos();
+  render();
+  focusStackInput(todoId);   // keep focus for rapid entry
+}
+
+function popStack(todoId) {
+  const t = findById(todoId);
+  if (!t || !t.stack || t.stack.length === 0) return;
+  t.stack = t.stack.slice(0, -1);   // remove the top (completed) item
+  saveTodos();
+  render();
+}
+
 function clearCompleted() {
   function clean(list) {
     return list
@@ -441,6 +507,13 @@ function generateExportText(list, depth = 0) {
       t.steps.forEach((s, i) => {
         if (s.text) lines.push(`${pad}    备注 ${i + 1}. ${s.text}`);
       });
+    }
+    if (t.stack && t.stack.length > 0) {
+      lines.push(`${pad}    ▤ 工作栈 (${t.stack.length}):`);
+      for (let i = t.stack.length - 1; i >= 0; i--) {
+        const marker = i === t.stack.length - 1 ? '⌖ 当前' : `  ↑${(t.stack.length - 1) - i}`;
+        lines.push(`${pad}      ${marker} ${t.stack[i].text}`);
+      }
     }
     if (t.children && t.children.length > 0) {
       const child = generateExportText(t.children, depth + 1);
@@ -662,6 +735,14 @@ function createTaskEl(todo) {
   addStepBtn.title     = '添加工作备注';
   addStepBtn.addEventListener('click', (e) => { e.stopPropagation(); addStep(todo.id); });
 
+  // Stack (堆栈器) button — opens the item's work stack
+  const stackHasItems = !!(todo.stack && todo.stack.length > 0);
+  const stackBtn = document.createElement('button');
+  stackBtn.className = `task-stack-btn${stackHasItems ? ' task-stack-btn--active' : ''}`;
+  stackBtn.innerHTML = '▤';
+  stackBtn.title     = '工作栈（堆栈器）· 栈顶为当前工作';
+  stackBtn.addEventListener('click', (e) => { e.stopPropagation(); openStack(todo.id); });
+
   // Transfer (paper-plane) button
   const transferBtn = document.createElement('button');
   transferBtn.className = 'task-transfer-btn';
@@ -744,6 +825,7 @@ function createTaskEl(todo) {
   // Hide editing actions on transferred-out items (preview + delete only)
   if (isTransferred) {
     addStepBtn.style.display = 'none';
+    stackBtn.style.display   = 'none';
     transferBtn.style.display = 'none';
     addChild.style.display   = 'none';
   }
@@ -761,7 +843,32 @@ function createTaskEl(todo) {
     tb.textContent = `← 来自 ${todo.transferredFrom}`;
     rowItems.push(tb);
   }
-  rowItems.push(dueDateWrap, meta, ring, addStepBtn, transferBtn, addChild, del);
+
+  // Current stack-top chip — surfaces "当前要完成的工作" at a glance
+  if (stackHasItems) {
+    const topEntry = todo.stack[todo.stack.length - 1];
+    const topChip  = document.createElement('span');
+    topChip.className = 'stack-top-chip';
+    topChip.title     = `工作栈栈顶（当前工作）· 共 ${todo.stack.length} 项 — 点击展开`;
+
+    const chipIcon = document.createElement('span');
+    chipIcon.className   = 'stack-top-chip-icon';
+    chipIcon.textContent = '⌖';
+
+    const chipText = document.createElement('span');
+    chipText.className   = 'stack-top-chip-text';
+    chipText.textContent = topEntry.text;
+
+    const chipCount = document.createElement('span');
+    chipCount.className   = 'stack-top-chip-count';
+    chipCount.textContent = todo.stack.length;
+
+    topChip.append(chipIcon, chipText, chipCount);
+    topChip.addEventListener('click', (e) => { e.stopPropagation(); openStack(todo.id); });
+    rowItems.push(topChip);
+  }
+
+  rowItems.push(dueDateWrap, meta, ring, stackBtn, addStepBtn, transferBtn, addChild, del);
   row.append(...rowItems);
   li.appendChild(row);
 
@@ -900,6 +1007,149 @@ function createTaskEl(todo) {
     li.appendChild(stepsSection);
   }
 
+  // ── Stack section (堆栈器 / 工作栈) ────────────────────────
+  const stackCount   = todo.stack ? todo.stack.length : 0;
+  const stackVisible = stackCount > 0 || todo.stackOpen;
+  if (stackVisible) {
+    const stackSection = document.createElement('div');
+    stackSection.className = 'task-stack';
+
+    // Header
+    const sHeader = document.createElement('div');
+    sHeader.className = 'stack-header';
+
+    const sTgl = document.createElement('span');
+    sTgl.className   = 'stack-toggle';
+    sTgl.textContent = todo.stackCollapsed ? '▶' : '▼';
+    sTgl.addEventListener('click', (e) => { e.stopPropagation(); toggleStackCollapsed(todo.id); });
+
+    const sLbl = document.createElement('span');
+    sLbl.className   = 'stack-label';
+    sLbl.textContent = '▤ 工作栈';
+    sLbl.addEventListener('click', (e) => { e.stopPropagation(); toggleStackCollapsed(todo.id); });
+
+    const sCount = document.createElement('span');
+    sCount.className   = 'stack-count';
+    sCount.textContent = `(${stackCount})`;
+
+    const sHint = document.createElement('span');
+    sHint.className   = 'stack-hint';
+    sHint.textContent = stackCount > 0 ? '栈顶 = 当前工作' : '压入第一项工作开始';
+
+    const sSpacer = document.createElement('span');
+    sSpacer.className = 'stack-spacer';
+
+    sHeader.append(sTgl, sLbl, sCount, sHint, sSpacer);
+
+    // Close (dismiss) button — only meaningful for an empty, opened panel
+    if (stackCount === 0 && !isTransferred) {
+      const sClose = document.createElement('button');
+      sClose.className = 'stack-close';
+      sClose.innerHTML = '✕';
+      sClose.title     = '关闭工作栈';
+      sClose.addEventListener('click', (e) => { e.stopPropagation(); closeStack(todo.id); });
+      sHeader.appendChild(sClose);
+    }
+
+    stackSection.appendChild(sHeader);
+
+    if (!todo.stackCollapsed) {
+      const sBody = document.createElement('div');
+      sBody.className = 'stack-body';
+
+      // Push input row (hidden on transferred/locked items)
+      if (!isTransferred) {
+        const pushRow = document.createElement('div');
+        pushRow.className = 'stack-push-row';
+
+        const input = document.createElement('input');
+        input.type        = 'text';
+        input.className    = 'stack-input';
+        input.placeholder  = '压入一项要先完成的工作…';
+        input.maxLength    = 200;
+        input.addEventListener('mousedown', (e) => e.stopPropagation());
+
+        const pushBtn = document.createElement('button');
+        pushBtn.className = 'stack-push-btn';
+        pushBtn.innerHTML = '压入 ↧';
+        pushBtn.title     = '压入栈顶，成为当前工作 (push)';
+
+        const doPush = () => { const v = input.value; input.value = ''; pushStack(todo.id, v); };
+        pushBtn.addEventListener('click', (e) => { e.stopPropagation(); doPush(); });
+        input.addEventListener('keydown', (e) => {
+          e.stopPropagation();
+          if (e.key === 'Enter') { e.preventDefault(); doPush(); }
+        });
+
+        pushRow.append(input, pushBtn);
+        sBody.appendChild(pushRow);
+      }
+
+      if (stackCount > 0) {
+        const cards = document.createElement('div');
+        cards.className = 'stack-cards';
+
+        // Render from top (last element) down to bottom (first)
+        for (let i = todo.stack.length - 1; i >= 0; i--) {
+          const entry        = todo.stack[i];
+          const isTop        = i === todo.stack.length - 1;
+          const depthFromTop = (todo.stack.length - 1) - i;
+
+          const card = document.createElement('div');
+          card.className        = `stack-card${isTop ? ' stack-card--top' : ' stack-card--buried'}`;
+          card.dataset.stackId  = entry.id;
+
+          const cBadge = document.createElement('span');
+          cBadge.className   = 'stack-card-badge';
+          cBadge.textContent = isTop ? '当前' : `↑${depthFromTop}`;
+
+          const cText = document.createElement('span');
+          cText.className   = 'stack-card-text';
+          cText.textContent = entry.text;
+
+          const cMeta = document.createElement('span');
+          cMeta.className   = 'stack-card-meta';
+          cMeta.textContent = entry.createdAt;
+
+          card.append(cBadge, cText, cMeta);
+
+          // Pop button only on the top card (true LIFO) — hidden when locked
+          if (isTop && !isTransferred) {
+            const popBtn = document.createElement('button');
+            popBtn.className = 'stack-pop-btn';
+            popBtn.innerHTML = '✓ 弹出';
+            popBtn.title     = '完成并弹出栈顶 (pop)';
+            popBtn.addEventListener('click', (e) => {
+              e.stopPropagation();
+              popBtn.disabled = true;
+              card.classList.add('stack-card--popping');   // play pop animation…
+              setTimeout(() => popStack(todo.id), 200);     // …then mutate + re-render
+            });
+            card.appendChild(popBtn);
+          }
+
+          cards.appendChild(card);
+        }
+        sBody.appendChild(cards);
+      } else {
+        const empty = document.createElement('div');
+        empty.className   = 'stack-empty';
+        empty.textContent = '栈为空 — 压入一项工作，它将成为当前要完成的内容';
+        sBody.appendChild(empty);
+      }
+
+      stackSection.appendChild(sBody);
+    } else if (stackCount > 0) {
+      // Collapsed: still surface the current top
+      const preview = document.createElement('div');
+      preview.className   = 'stack-collapsed-preview';
+      preview.textContent = `⌖ 当前：${todo.stack[todo.stack.length - 1].text}`;
+      stackSection.appendChild(preview);
+    }
+
+    li.appendChild(stackSection);
+  }
+
   // ── Collapsed preview ─────────────────────────────────────
   if (hasChildren && todo.collapsed) {
     const preview = document.createElement('div');
@@ -1033,12 +1283,18 @@ function rFmt(sec) {
   return `${String(Math.floor(sec / 60)).padStart(2, '0')}:${String(sec % 60).padStart(2, '0')}`;
 }
 
-function rNotify(title, body) {
-  if (!window.Notification) return;
-  const send = () => new Notification(title, { body, silent: false });
-  Notification.permission === 'granted'
-    ? send()
-    : Notification.requestPermission().then(p => p === 'granted' && send());
+function rNotify(title, body, phase) {
+  // 系统通知
+  if (window.Notification) {
+    const send = () => new Notification(title, { body, silent: false });
+    Notification.permission === 'granted'
+      ? send()
+      : Notification.requestPermission().then(p => p === 'granted' && send());
+  }
+  // 置顶强提醒窗口（覆盖所有应用最上层）
+  if (window.electronAPI && window.electronAPI.showReminderAlert) {
+    window.electronAPI.showReminderAlert({ title, body, phase });
+  }
 }
 
 function rUpdateUI() {
@@ -1098,13 +1354,13 @@ function rTick() {
   rState.remaining--;
   if (rState.remaining <= 0) {
     if (rState.phase === 'work') {
-      rNotify('休息一下 ☕', `专注结束，休息 ${rSettings.breakMin} 分钟`);
+      rNotify('休息一下 ☕', `专注结束，休息 ${rSettings.breakMin} 分钟`, 'break');
       if (rSettings.loop) {
         rState.phase     = 'break';
         rState.remaining = rState.total = rSettings.breakMin * 60;
       } else { rStop(); return; }
     } else {
-      rNotify('继续工作 💪', `休息结束，开始专注 ${rSettings.workMin} 分钟`);
+      rNotify('继续工作 💪', `休息结束，开始专注 ${rSettings.workMin} 分钟`, 'work');
       if (rSettings.loop) {
         rState.phase     = 'work';
         rState.remaining = rState.total = rSettings.workMin * 60;
@@ -1470,6 +1726,7 @@ function gConnect() {
           existing.priority        = msg.todo.priority;
           existing.dueDate         = msg.todo.dueDate ?? null;
           existing.steps           = (msg.todo.steps || []).map(s => ({ id: s.id, text: s.text || '', createdAt: s.createdAt || '' }));
+          existing.stack           = (msg.todo.stack || []).map(s => ({ id: s.id, text: s.text || '', createdAt: s.createdAt || '' }));
           existing.transferredTo   = null;
           existing.transferredFrom = msg.fromName;
           existing.transferHistory = newHistory;
@@ -1579,6 +1836,10 @@ function renderTodoTreeRO(list, depth) {
     const steps = (t.steps || []).map(s =>
       `<div class="ro-step" style="padding-left:${indent + 32}px">· ${gEsc(s.text)}</div>`
     ).join('');
+    const stackTop = (t.stack && t.stack.length) ? t.stack[t.stack.length - 1] : null;
+    const stackLine = stackTop
+      ? `<div class="ro-step ro-stack-top" style="padding-left:${indent + 32}px">⌖ 当前：${gEsc(stackTop.text)}${t.stack.length > 1 ? `　(栈 ${t.stack.length} 项)` : ''}</div>`
+      : '';
 
     // Transfer status badge (mirrors main list)
     let transferBadge = '';
@@ -1599,7 +1860,7 @@ function renderTodoTreeRO(list, depth) {
         <span class="ro-meta">${pri}</span>
         <span class="ro-pct">${Math.round(pct)}%</span>
       </div>
-      ${steps}${children}`;
+      ${stackLine}${steps}${children}`;
   }).join('');
 }
 
@@ -1632,6 +1893,9 @@ function hideUserTodosOverlay() {
 const TOOLS = [
   { id: 'test-tool', name: '测试工具', icon: '🧪', title: '测试工具', width: 420, height: 400 },
   { id: 'objlist-merge', name: '对象列表合并', icon: '🧩', title: '对象列表合并 · SeqVar_ObjectList', width: 900, height: 680 },
+  { id: 'teleport-chain', name: 'Teleport链生成', icon: '🌀', title: 'Teleport 链生成 · SeqAct_Teleport', width: 940, height: 700 },
+  { id: 'prop-list', name: '属性列表生成', icon: '📋', title: '属性列表生成 · 属性面板字符串', width: 900, height: 640 },
+  { id: 'quiz', name: '题库测验', icon: '📝', title: '题库测验 · 检验掌握程度', width: 760, height: 760 },
 ];
 
 let toolsVisible = false;

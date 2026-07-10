@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'" />
+  <title>题库测验</title>
+  <style>
+    :root {
+      --accent: #667eea; --bg: #f5f6fa; --card: #ffffff; --text: #2c2f3a;
+      --muted: #8a90a6; --border: #e2e5f0;
+      --ok: #2f9e5f; --ok-bg: #e9f7ef; --err: #d14343; --err-bg: #fdecec;
+    }
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0; font-family: "Segoe UI", "Microsoft YaHei", sans-serif;
+      background: var(--bg); color: var(--text); display: flex; flex-direction: column;
+    }
+    .toolbar {
+      display: flex; align-items: center; flex-wrap: wrap; gap: 8px 12px;
+      padding: 10px 14px; border-bottom: 1px solid var(--border); background: var(--card);
+    }
+    .toolbar h1 { margin: 0 4px 0 0; font-size: 15px; font-weight: 700; }
+    select {
+      border: 1px solid var(--border); border-radius: 6px; padding: 5px 8px;
+      font-size: 12px; color: var(--text); background: #fff; outline: none; max-width: 300px;
+    }
+    select:focus { border-color: var(--accent); }
+    .spacer { flex: 1; }
+    .score { font-size: 13px; font-weight: 700; color: var(--accent); min-width: 66px; text-align: right; }
+    button {
+      border: none; border-radius: 7px; padding: 7px 14px; font-size: 13px;
+      cursor: pointer; transition: filter .15s, background .15s;
+    }
+    button:disabled { opacity: .5; cursor: not-allowed; }
+    .btn-primary { background: var(--accent); color: #fff; }
+    .btn-primary:hover:not(:disabled) { filter: brightness(1.08); }
+    .btn-ghost { background: #eef0f8; color: #4a4f70; }
+    .btn-ghost:hover:not(:disabled) { background: #e2e5f3; }
+
+    .quiz { flex: 1; overflow: auto; padding: 14px; display: flex; flex-direction: column; gap: 12px; }
+    .empty { color: var(--muted); font-size: 13px; text-align: center; margin-top: 44px; line-height: 1.8; }
+
+    .q-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 13px 16px; }
+    .q-head { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--muted); margin-bottom: 8px; }
+    .q-idx { font-weight: 700; color: var(--text); }
+    .tag { border-radius: 5px; padding: 1px 7px; font-size: 11px; font-weight: 600; }
+    .tag.choice { background: #eef0ff; color: #5561d6; }
+    .tag.blank  { background: #fff2e6; color: #c9781f; }
+    .tag.diff   { background: #f0f1f6; color: #6b708c; }
+    .q-stem { font-size: 14px; line-height: 1.8; margin-bottom: 10px; }
+
+    .options { display: flex; flex-direction: column; gap: 7px; }
+    .opt {
+      display: flex; align-items: flex-start; gap: 8px; padding: 7px 10px;
+      border: 1px solid var(--border); border-radius: 8px; cursor: pointer; font-size: 13px; line-height: 1.5;
+    }
+    .opt:hover { border-color: var(--accent); }
+    .opt input { margin-top: 3px; }
+    .opt .k { font-weight: 700; }
+    .opt.correct { background: var(--ok-bg); border-color: var(--ok); }
+    .opt.wrong   { background: var(--err-bg); border-color: var(--err); }
+
+    .blank-inp {
+      border: none; border-bottom: 1.5px solid var(--accent); background: #f7f8ff;
+      min-width: 72px; font-size: 14px; padding: 1px 6px; margin: 0 3px;
+      color: var(--text); outline: none; text-align: center; font-family: inherit;
+    }
+    .blank-inp.correct { border-color: var(--ok); background: var(--ok-bg); color: var(--ok); }
+    .blank-inp.wrong   { border-color: var(--err); background: var(--err-bg); color: var(--err); }
+
+    .fb { margin-top: 10px; padding: 8px 11px; border-radius: 8px; font-size: 12.5px; line-height: 1.65; display: none; }
+    .fb.show { display: block; }
+    .fb.ok { background: var(--ok-bg);  color: #1f7a49; }
+    .fb.no { background: var(--err-bg); color: #b23131; }
+    .fb .lead { font-weight: 700; }
+    .fb .miss { margin-top: 3px; }
+    .fb .exp  { margin-top: 3px; color: var(--text); }
+
+    .status { padding: 6px 14px; font-size: 12px; color: var(--muted); border-top: 1px solid var(--border); background: var(--card); }
+  </style>
+</head>
+<body>
+  <div class="toolbar">
+    <h1>📝 题库测验</h1>
+    <select id="bank-select"><option>加载中…</option></select>
+    <button id="reload-btn" class="btn-ghost" title="重新扫描 question-bank/">↻</button>
+    <div class="spacer"></div>
+    <span class="score" id="score"></span>
+    <button id="submit-btn" class="btn-primary" disabled>交卷</button>
+    <button id="retry-btn" class="btn-ghost" disabled>重做</button>
+  </div>
+
+  <div class="quiz" id="quiz">
+    <div class="empty" id="empty">正在读取 question-bank/ …</div>
+  </div>
+
+  <div class="status" id="status"></div>
+
+  <script src="quiz.js"></script>
+</body>
+</html>

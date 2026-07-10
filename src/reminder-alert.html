@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'" />
+  <title>久坐提醒</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; }
+    body {
+      font-family: "Segoe UI", "Microsoft YaHei", sans-serif;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      user-select: none;
+      overflow: hidden;
+      /* -webkit-app-region lets the user drag the frameless window */
+      -webkit-app-region: drag;
+    }
+    body.work  { background: radial-gradient(circle at 50% 0%, #3a4bd8, #1b1e2b 75%); }
+    body.break { background: radial-gradient(circle at 50% 0%, #1f9d63, #16241d 75%); }
+
+    .card {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+      padding: 28px;
+      text-align: center;
+      animation: pulse 1.1s ease-in-out infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50%      { transform: scale(1.035); }
+    }
+
+    .emoji {
+      font-size: 62px;
+      line-height: 1;
+      animation: bob 1.1s ease-in-out infinite;
+    }
+    @keyframes bob {
+      0%, 100% { transform: translateY(0); }
+      50%      { transform: translateY(-8px); }
+    }
+
+    .title { font-size: 30px; font-weight: 800; letter-spacing: 0.02em; }
+    .body  { font-size: 16px; opacity: 0.9; line-height: 1.5; max-width: 440px; }
+
+    .btn-row { display: flex; gap: 12px; margin-top: 6px; -webkit-app-region: no-drag; }
+    button {
+      border: none;
+      border-radius: 10px;
+      padding: 11px 26px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      color: #fff;
+      background: rgba(255,255,255,0.16);
+      transition: background .15s, transform .1s;
+    }
+    button:hover  { background: rgba(255,255,255,0.28); }
+    button:active { transform: translateY(1px); }
+    button.primary { background: #fff; color: #1b1e2b; }
+    button.primary:hover { background: #eaeaf2; }
+
+    .hint {
+      position: absolute;
+      bottom: 10px;
+      font-size: 11px;
+      opacity: 0.5;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="emoji" id="emoji">⏰</div>
+    <div class="title" id="title">久坐提醒</div>
+    <div class="body"  id="body"></div>
+    <div class="btn-row">
+      <button class="primary" id="ok-btn">我知道了</button>
+    </div>
+  </div>
+  <div class="hint">按 Esc 或点击「我知道了」关闭 · 窗口可拖动</div>
+
+  <script src="reminder-alert.js"></script>
+</body>
+</html>

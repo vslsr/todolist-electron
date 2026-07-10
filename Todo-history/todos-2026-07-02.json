@@ -18,7 +18,7 @@
             "id": "1781249078974h39r",
             "uuid": "feeebf5d-301b-41fb-b939-76d5175c1afa",
             "text": "引擎卡死崩溃的问题",
-            "status": "in-progress",
+            "status": "completed",
             "priority": "high",
             "createdAt": "6月12日",
             "children": [],
@@ -40,7 +40,7 @@
                 "createdAt": "6月29日"
               }
             ],
-            "stepsCollapsed": false,
+            "stepsCollapsed": true,
             "transferHistory": [],
             "transferredTo": null,
             "transferredFrom": null,
@@ -74,7 +74,7 @@
                 "id": "1782467060250ih0k",
                 "uuid": "7e7bd1a1-b422-49b9-aed8-35589e8187cd",
                 "text": "团灭失败后，玩家会被送到出生点而不是准备区。",
-                "status": "pending",
+                "status": "in-progress",
                 "priority": "normal",
                 "createdAt": "6月26日",
                 "children": [],
@@ -90,7 +90,7 @@
                 "id": "1782901233734pyvq",
                 "uuid": "56d3430a-7351-4fb1-8e4c-9e304a3343ad",
                 "text": "玩家进入任务的准备区开启倒计时。玩家进入任务区，结束倒计时，传送玩家到任务区域内的点。复活时，使用的是任务区域外的复活点",
-                "status": "pending",
+                "status": "in-progress",
                 "priority": "normal",
                 "createdAt": "7月1日",
                 "children": [],
@@ -102,7 +102,7 @@
                     "createdAt": "7月1日"
                   }
                 ],
-                "stepsCollapsed": false,
+                "stepsCollapsed": true,
                 "transferHistory": [],
                 "transferredTo": null,
                 "transferredFrom": null,
@@ -122,7 +122,7 @@
                 "createdAt": "6月26日"
               }
             ],
-            "stepsCollapsed": false,
+            "stepsCollapsed": true,
             "transferHistory": [],
             "transferredTo": null,
             "transferredFrom": null,
@@ -158,7 +158,7 @@
                 "createdAt": "6月17日"
               }
             ],
-            "stepsCollapsed": false,
+            "stepsCollapsed": true,
             "transferHistory": [],
             "transferredTo": null,
             "transferredFrom": null,
@@ -174,7 +174,7 @@
             "createdAt": "6月12日"
           }
         ],
-        "stepsCollapsed": true,
+        "stepsCollapsed": false,
         "transferHistory": [],
         "transferredTo": null,
         "transferredFrom": null,
@@ -200,7 +200,7 @@
         "id": "1782467072467o3ck",
         "uuid": "3e9f1126-a5f8-4f43-ada4-0646032a538b",
         "text": "完成任务后并不会出现下一个区域的白点指引提示。",
-        "status": "pending",
+        "status": "completed",
         "priority": "normal",
         "createdAt": "6月26日",
         "children": [],
@@ -238,10 +238,27 @@
         "id": "1782702988544yfy2",
         "uuid": "d450e76e-45e8-4f1a-952f-ddb402aa7207",
         "text": "创建Main层",
-        "status": "in-progress",
+        "status": "completed",
         "priority": "high",
         "createdAt": "6月29日",
-        "children": [],
+        "children": [
+          {
+            "id": "1782978402045hr96",
+            "uuid": "dd5d241d-45d6-4e40-b5f7-40ecd6c8e335",
+            "text": "测试并跑通Main层",
+            "status": "completed",
+            "priority": "high",
+            "createdAt": "7月2日",
+            "children": [],
+            "collapsed": false,
+            "steps": [],
+            "stepsCollapsed": false,
+            "transferHistory": [],
+            "transferredTo": null,
+            "transferredFrom": null,
+            "dueDate": null
+          }
+        ],
         "collapsed": false,
         "steps": [
           {
@@ -268,7 +285,7 @@
             "id": "17829010466053c88",
             "uuid": "efa50371-5c9d-4457-bb89-c131c50628be",
             "text": "Boss区逻辑：任务2完成后，直接播放CG，CG完成后所有玩家直接传送到天上的准备区。之后准备区正常15秒倒计时，之后播放bossCG，完成后传送进入战斗区域。",
-            "status": "pending",
+            "status": "completed",
             "priority": "normal",
             "createdAt": "7月1日",
             "children": [],
@@ -377,7 +394,7 @@
         "id": "1781486920437l20s",
         "uuid": "985d4da3-ef01-48e1-ab1e-7f85b35c1cc1",
         "text": "障碍物轰炸破坏反馈",
-        "status": "in-progress",
+        "status": "completed",
         "priority": "normal",
         "createdAt": "6月15日",
         "children": [],
@@ -428,6 +445,22 @@
         "status": "pending",
         "priority": "normal",
         "createdAt": "7月1日",
+        "children": [],
+        "collapsed": false,
+        "steps": [],
+        "stepsCollapsed": false,
+        "transferHistory": [],
+        "transferredTo": null,
+        "transferredFrom": null,
+        "dueDate": null
+      },
+      {
+        "id": "1782987760436ecj3",
+        "uuid": "5351d871-9b3f-493b-9958-96d6826d2109",
+        "text": "固定轰炸点在玩家离得较远的时候，看不见爆炸特效",
+        "status": "in-progress",
+        "priority": "normal",
+        "createdAt": "7月2日",
         "children": [],
         "collapsed": false,
         "steps": [],

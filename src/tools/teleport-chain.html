@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'" />
+  <title>Teleport 链生成</title>
+  <style>
+    :root {
+      --accent: #667eea;
+      --bg: #f5f6fa;
+      --card: #ffffff;
+      --text: #2c2f3a;
+      --muted: #8a90a6;
+      --border: #e2e5f0;
+    }
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      font-family: "Segoe UI", "Microsoft YaHei", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .toolbar {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px 12px;
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--border);
+      background: var(--card);
+    }
+    .toolbar h1 { margin: 0 6px 0 0; font-size: 15px; font-weight: 700; }
+    .field { display: flex; align-items: center; gap: 5px; font-size: 12px; color: var(--muted); }
+    .field input {
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 5px 8px;
+      font-size: 12px;
+      color: var(--text);
+      outline: none;
+    }
+    .field input:focus { border-color: var(--accent); }
+    .field input.num { width: 58px; }
+    .field input.wide { width: 240px; }
+    .field input.mid { width: 150px; }
+    .spacer { flex: 1; }
+
+    button {
+      border: none; border-radius: 7px; padding: 7px 15px;
+      font-size: 13px; cursor: pointer; transition: filter .15s, background .15s;
+    }
+    .btn-primary { background: var(--accent); color: #fff; }
+    .btn-primary:hover { filter: brightness(1.08); }
+    .btn-ghost { background: #eef0f8; color: #4a4f70; }
+    .btn-ghost:hover { background: #e2e5f3; }
+
+    .panes {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1px;
+      background: var(--border);
+      min-height: 0;
+    }
+    .pane { display: flex; flex-direction: column; background: var(--card); min-height: 0; }
+    .pane-head {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 7px 12px; font-size: 12px; font-weight: 600; color: #4a4f70;
+      border-bottom: 1px solid var(--border);
+    }
+    .pane-count { color: var(--accent); font-weight: 700; }
+    textarea {
+      flex: 1; border: none; outline: none; resize: none; padding: 12px;
+      font-family: Consolas, "Courier New", monospace; font-size: 12px; line-height: 1.5;
+      color: var(--text); background: transparent; white-space: pre; overflow: auto;
+    }
+    #output { background: #fbfcff; }
+    .status {
+      padding: 6px 14px; font-size: 12px; color: var(--muted);
+      border-top: 1px solid var(--border); background: var(--card);
+    }
+    .status.err { color: #d14343; }
+    .status.ok { color: #2f9e5f; }
+  </style>
+</head>
+<body>
+  <div class="toolbar">
+    <h1>🌀 Teleport 链生成</h1>
+    <label class="field">Teleport 起始ID <input id="tele-start" class="num" type="number" value="0" min="0" /></label>
+    <label class="field">Player 起始ID <input id="player-start" class="num" type="number" value="0" min="0" /></label>
+    <label class="field" title="仅 Actor/地图模式：新建 SeqVar_Object 的起始编号">SeqVar 起始ID <input id="seqvar-start" class="num" type="number" value="0" min="0" /></label>
+    <label class="field" title="仅 Actor/地图模式：SeqVar_Object 起始 X 坐标">SeqVar起始X <input id="seqvar-x" class="num" type="number" value="3696" /></label>
+    <label class="field" title="仅 Actor/地图模式：相邻 SeqVar_Object 的 X 间距">间距 <input id="seqvar-gap" class="num" type="number" value="272" /></label>
+    <label class="field">链尾终点 <input id="terminal" class="wide" type="text" value="SeqAct_SetPhysics'SeqAct_SetPhysics_4'" placeholder="留空则链尾不连出" /></label>
+    <label class="field">ParentSequence <input id="parent-seq" class="mid" type="text" placeholder="自动检测" /></label>
+    <div class="spacer"></div>
+    <button id="gen-btn" class="btn-primary">生成链 →</button>
+    <button id="copy-btn" class="btn-ghost">复制结果</button>
+    <button id="clear-btn" class="btn-ghost">清空</button>
+  </div>
+
+  <div class="panes">
+    <div class="pane">
+      <div class="pane-head">
+        <span>输入（SeqVar_Object 列表 或 地图 Actor）</span>
+        <span class="pane-count" id="in-count">0 个对象</span>
+      </div>
+      <textarea id="input" spellcheck="false" placeholder="粘贴 SeqVar_Object 块，或直接粘贴含 Begin Actor 的地图文本（自动生成 SeqVar_Object）…"></textarea>
+    </div>
+    <div class="pane">
+      <div class="pane-head">
+        <span>输出（Teleport + Player + 原对象）</span>
+        <span class="pane-count" id="out-count"></span>
+      </div>
+      <textarea id="output" spellcheck="false" readonly placeholder="点击“生成链”后在此显示结果…"></textarea>
+    </div>
+  </div>
+
+  <div id="status" class="status">按输入顺序为每个 SeqVar_Object 生成一个 Teleport 与 Player，串成链并附带原对象。</div>
+
+  <script src="teleport-chain.js"></script>
+</body>
+</html>

@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'" />
+  <title>属性列表生成</title>
+  <style>
+    :root {
+      --accent: #667eea;
+      --bg: #f5f6fa;
+      --card: #ffffff;
+      --text: #2c2f3a;
+      --muted: #8a90a6;
+      --border: #e2e5f0;
+    }
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      font-family: "Segoe UI", "Microsoft YaHei", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      display: flex;
+      flex-direction: column;
+    }
+    .toolbar {
+      display: flex; align-items: center; flex-wrap: wrap; gap: 8px 12px;
+      padding: 10px 14px; border-bottom: 1px solid var(--border); background: var(--card);
+    }
+    .toolbar h1 { margin: 0 6px 0 0; font-size: 15px; font-weight: 700; }
+    .field { display: flex; align-items: center; gap: 5px; font-size: 12px; color: var(--muted); }
+    .field input {
+      border: 1px solid var(--border); border-radius: 6px; padding: 5px 8px;
+      font-size: 12px; color: var(--text); outline: none;
+    }
+    .field input:focus { border-color: var(--accent); }
+    .field input.prop  { width: 320px; }
+    .field input.level { width: 280px; }
+    .spacer { flex: 1; }
+    button {
+      border: none; border-radius: 7px; padding: 7px 15px;
+      font-size: 13px; cursor: pointer; transition: filter .15s, background .15s;
+    }
+    .btn-primary { background: var(--accent); color: #fff; }
+    .btn-primary:hover { filter: brightness(1.08); }
+    .btn-ghost { background: #eef0f8; color: #4a4f70; }
+    .btn-ghost:hover { background: #e2e5f3; }
+
+    .panes { flex: 1; display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--border); min-height: 0; }
+    .pane { display: flex; flex-direction: column; background: var(--card); min-height: 0; }
+    .pane-head {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 7px 12px; font-size: 12px; font-weight: 600; color: #4a4f70;
+      border-bottom: 1px solid var(--border);
+    }
+    .pane-count { color: var(--accent); font-weight: 700; }
+    textarea {
+      flex: 1; border: none; outline: none; resize: none; padding: 12px;
+      font-family: Consolas, "Courier New", monospace; font-size: 12px; line-height: 1.5;
+      color: var(--text); background: transparent; overflow: auto;
+    }
+    #input  { white-space: pre; }
+    #output { background: #fbfcff; white-space: pre-wrap; word-break: break-all; }
+    .status {
+      padding: 6px 14px; font-size: 12px; color: var(--muted);
+      border-top: 1px solid var(--border); background: var(--card);
+    }
+    .status.err { color: #d14343; }
+    .status.ok { color: #2f9e5f; }
+  </style>
+</head>
+<body>
+  <div class="toolbar">
+    <h1>📋 属性列表生成</h1>
+    <label class="field">属性 <input id="prop" class="prop" type="text" value="Object.TGADBaseCheckPointTeleportVolume.TeleportPoints" /></label>
+    <label class="field">关卡路径 <input id="level" class="level" type="text" value="Europe_44_PBR_A_Script.TheWorld:PersistentLevel" /></label>
+    <div class="spacer"></div>
+    <button id="gen-btn" class="btn-primary">生成 →</button>
+    <button id="copy-btn" class="btn-ghost">复制结果</button>
+    <button id="clear-btn" class="btn-ghost">清空</button>
+  </div>
+
+  <div class="panes">
+    <div class="pane">
+      <div class="pane-head">
+        <span>输入（地图 Actor 文本）</span>
+        <span class="pane-count" id="in-count">0 个对象</span>
+      </div>
+      <textarea id="input" spellcheck="false" placeholder="粘贴含 Begin Actor … End Actor 的地图文本…"></textarea>
+    </div>
+    <div class="pane">
+      <div class="pane-head">
+        <span>输出（属性面板可粘贴字符串）</span>
+        <span class="pane-count" id="out-count"></span>
+      </div>
+      <textarea id="output" spellcheck="false" readonly placeholder="点击“生成”后在此显示结果…"></textarea>
+    </div>
+  </div>
+
+  <div id="status" class="status">提取所有 Actor，拼成 &lt;属性&gt; (类'关卡路径.名字',…) 形式的属性面板字符串。</div>
+
+  <script src="prop-list.js"></script>
+</body>
+</html>

@@ -1808,6 +1808,301 @@ body {
 .step-item:hover .step-del { opacity: 1; }
 .step-del:hover { background: #fdf0f0; color: #e05252; }
 
+/* ── Stack row button (堆栈器) ── */
+.task-stack-btn {
+  width: 24px;
+  height: 24px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: #ccc;
+  font-size: 13px;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s;
+  flex-shrink: 0;
+  opacity: 0;
+}
+.task-row:hover .task-stack-btn { opacity: 1; }
+.task-stack-btn:hover { background: #eef1ff; color: #667eea; }
+.task-stack-btn--active { opacity: 1; color: #667eea; }
+
+/* ── Row current-top chip (栈顶 = 当前工作) ── */
+.stack-top-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  max-width: 200px;
+  min-width: 0;
+  flex-shrink: 1;
+  padding: 2px 8px 2px 6px;
+  border-radius: 10px;
+  background: rgba(102, 126, 234, 0.10);
+  border: 1px solid rgba(102, 126, 234, 0.20);
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+.stack-top-chip:hover {
+  background: rgba(102, 126, 234, 0.18);
+  border-color: rgba(102, 126, 234, 0.35);
+}
+.stack-top-chip-icon { font-size: 11px; color: #667eea; flex-shrink: 0; line-height: 1; }
+.stack-top-chip-text {
+  font-size: 11.5px;
+  color: #5560b0;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+.stack-top-chip-count {
+  flex-shrink: 0;
+  font-size: 9.5px;
+  font-weight: 700;
+  color: #fff;
+  background: #667eea;
+  border-radius: 8px;
+  padding: 1px 5px;
+  line-height: 1.5;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── Stack section (堆栈器 / 工作栈) ── */
+.task-stack {
+  margin: 2px 0 6px 36px;
+  padding: 6px 8px 8px 10px;
+  border-left: 2px solid #d9dcf3;
+  background: linear-gradient(90deg, rgba(102, 126, 234, 0.035), transparent 55%);
+  border-radius: 0 8px 8px 0;
+}
+
+.stack-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  user-select: none;
+  padding-bottom: 5px;
+}
+
+.stack-toggle {
+  font-size: 8px;
+  color: #b9bee0;
+  width: 10px;
+  flex-shrink: 0;
+  cursor: pointer;
+  line-height: 1;
+}
+.stack-toggle:hover { color: #667eea; }
+
+.stack-label {
+  font-size: 11.5px;
+  color: #8b90b8;
+  font-weight: 600;
+  cursor: pointer;
+  letter-spacing: 0.02em;
+}
+.stack-label:hover { color: #667eea; }
+
+.stack-count {
+  font-size: 11px;
+  color: #a9aed0;
+  font-variant-numeric: tabular-nums;
+}
+
+.stack-hint {
+  font-size: 10.5px;
+  color: #b7bcd8;
+  font-style: italic;
+}
+
+.stack-spacer { flex: 1; }
+
+.stack-close {
+  width: 18px;
+  height: 18px;
+  border: none;
+  border-radius: 4px;
+  background: transparent;
+  color: #c2c6dc;
+  font-size: 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  transition: all 0.12s;
+}
+.stack-close:hover { background: #fdf0f0; color: #e05252; }
+
+.stack-body { padding-top: 1px; }
+
+.stack-push-row {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.stack-input {
+  flex: 1;
+  min-width: 0;
+  height: 30px;
+  padding: 0 11px;
+  border: 1px solid #dfe2f0;
+  border-radius: 7px;
+  font-size: 12.5px;
+  color: #444;
+  background: #fff;
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.stack-input:focus {
+  border-color: #a9b3ef;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.10);
+}
+.stack-input::placeholder { color: #b8bcd0; }
+
+.stack-push-btn {
+  flex-shrink: 0;
+  height: 30px;
+  padding: 0 13px;
+  border: none;
+  border-radius: 7px;
+  background: #667eea;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.15s, transform 0.06s;
+}
+.stack-push-btn:hover { background: #566ad4; }
+.stack-push-btn:active { transform: translateY(1px); }
+
+.stack-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.stack-card {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  overflow: hidden;
+  transition: opacity 0.18s, box-shadow 0.18s, transform 0.06s;
+}
+
+.stack-card--top {
+  background: #fff;
+  border: 1px solid #d7ddf7;
+  border-left: 3px solid #667eea;
+  box-shadow: 0 2px 10px rgba(102, 126, 234, 0.14);
+}
+
+.stack-card--buried {
+  background: #f4f5f9;
+  border: 1px solid #ebedf4;
+  border-left: 3px solid #d5d8e6;
+  margin-left: 12px;        /* indent to convey depth beneath the top */
+  opacity: 0.7;
+}
+.stack-card--buried:hover { opacity: 0.95; }
+
+.stack-card-badge {
+  flex-shrink: 0;
+  font-size: 9.5px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 5px;
+  letter-spacing: 0.03em;
+  line-height: 1.4;
+  font-variant-numeric: tabular-nums;
+}
+.stack-card--top .stack-card-badge   { background: #667eea; color: #fff; }
+.stack-card--buried .stack-card-badge { background: #e4e6ef; color: #9297b5; }
+
+.stack-card-text {
+  flex: 1;
+  min-width: 0;
+  font-size: 13px;
+  line-height: 1.4;
+  color: #3d4155;
+  word-break: break-word;
+}
+.stack-card--top .stack-card-text   { font-weight: 600; color: #2c3040; }
+.stack-card--buried .stack-card-text { color: #7c8098; }
+
+.stack-card-meta {
+  flex-shrink: 0;
+  font-size: 10px;
+  color: #c2c6d8;
+  white-space: nowrap;
+}
+
+.stack-pop-btn {
+  flex-shrink: 0;
+  height: 26px;
+  padding: 0 12px;
+  border: none;
+  border-radius: 6px;
+  background: #5a9e35;
+  color: #fff;
+  font-size: 11.5px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.15s, transform 0.06s;
+}
+.stack-pop-btn:hover { background: #4e8b2d; }
+.stack-pop-btn:active { transform: translateY(1px); }
+.stack-pop-btn:disabled { opacity: 0.6; cursor: default; }
+
+.stack-empty {
+  font-size: 12px;
+  color: #b0b5c8;
+  font-style: italic;
+  padding: 4px 2px 2px;
+}
+
+.stack-collapsed-preview {
+  font-size: 12px;
+  color: #8489a8;
+  padding: 1px 2px 2px 16px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Pop animation — top card lifts, fades, and collapses out */
+@keyframes stack-pop-out {
+  0%   { transform: translateY(0) scale(1);       opacity: 1; }
+  35%  { transform: translateY(-7px) scale(1.02); opacity: 1; }
+  100% {
+    transform: translateY(-24px) scale(0.95);
+    opacity: 0;
+    max-height: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    margin-bottom: -5px;
+  }
+}
+.stack-card--popping {
+  animation: stack-pop-out 0.22s ease forwards;
+  pointer-events: none;
+}
+
+/* Read-only overlay: current stack top */
+.ro-stack-top {
+  color: #667eea !important;
+  font-weight: 500;
+}
+
 /* ── Collapsed child preview ── */
 .children-preview {
   font-size: 11.5px;

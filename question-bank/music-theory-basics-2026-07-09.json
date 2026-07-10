@@ -1,0 +1,180 @@
+{
+  "bankId": "music-theory-basics-2026-07-09",
+  "title": "乐理入门测验",
+  "sources": ["knowledge/music-theory-basics.md"],
+  "generatedAt": "2026-07-09",
+  "schemaVersion": 1,
+  "questions": [
+    {
+      "id": "q-20260709-0001",
+      "kpId": "kp-overtone-role",
+      "type": "single_choice",
+      "difficulty": "easy",
+      "bloom": "understand",
+      "stem": "泛音对声音的哪一个要素起决定性作用?",
+      "options": [
+        { "key": "A", "text": "音色", "correct": true, "misconception": null },
+        { "key": "B", "text": "音高", "correct": false, "misconception": "把决定音色误认为决定音高" },
+        { "key": "C", "text": "音强(响度)", "correct": false, "misconception": "把音色与音量/响度混淆" },
+        { "key": "D", "text": "音长(时值)", "correct": false, "misconception": "把音色与时值混淆" }
+      ],
+      "blanks": null,
+      "explanation": "泛音对音色具有决定性作用:通过增减各泛音的音量,可以明显改变音色。",
+      "source": { "file": "knowledge/music-theory-basics.md", "heading": "泛音", "lines": [5, 5] },
+      "status": "validated"
+    },
+    {
+      "id": "q-20260709-0002",
+      "kpId": "kp-overtone-concept",
+      "type": "single_choice",
+      "difficulty": "medium",
+      "bloom": "understand",
+      "stem": "以弦的振动来说,下列关于泛音的说法正确的是?",
+      "options": [
+        { "key": "A", "text": "只有整根弦在振动,不存在分段振动", "correct": false, "misconception": "只考虑整体振动,忽略分段振动" },
+        { "key": "B", "text": "除整根弦外,其二分之一、三分之一等各段也同时振动,共同发音", "correct": true, "misconception": null },
+        { "key": "C", "text": "泛音是比基音更低的一系列音", "correct": false, "misconception": "误以为泛音低于基音" },
+        { "key": "D", "text": "泛音与音色无关,只影响音高", "correct": false, "misconception": "否认泛音对音色的作用" }
+      ],
+      "blanks": null,
+      "explanation": "泛音是物体局部振动产生的复合音的总和:弦除整体振动外,其 1/2、1/3…各段也在振动,共同发音。",
+      "source": { "file": "knowledge/music-theory-basics.md", "heading": "泛音", "lines": [4, 4] },
+      "status": "validated"
+    },
+    {
+      "id": "q-20260709-0003",
+      "kpId": "kp-scale-def",
+      "type": "single_choice",
+      "difficulty": "medium",
+      "bloom": "understand",
+      "stem": "关于音阶的排列方式,下列描述正确的是?",
+      "options": [
+        { "key": "A", "text": "调式中由主音到主音,按高低次序(上下行)排列起来", "correct": true, "misconception": null },
+        { "key": "B", "text": "把一组音同时叠置发响(即和弦)", "correct": false, "misconception": "把音阶(横向)与和弦(纵向)混淆" },
+        { "key": "C", "text": "任意挑选一组音随意排列", "correct": false, "misconception": "忽略音阶需按高低次序、由主音到主音" },
+        { "key": "D", "text": "只能从低到高单向排列,不能下行", "correct": false, "misconception": "忽略音阶包含上行与下行" }
+      ],
+      "blanks": null,
+      "explanation": "音阶是调式中由主音到主音、按高低次序(含上行与下行)排列起来的音列。",
+      "source": { "file": "knowledge/music-theory-basics.md", "heading": "音阶", "lines": [8, 8] },
+      "status": "validated"
+    },
+    {
+      "id": "q-20260709-0004",
+      "kpId": "kp-natural-notes",
+      "type": "single_choice",
+      "difficulty": "easy",
+      "bloom": "remember",
+      "stem": "唱名 La 对应的音名(字母)是?",
+      "options": [
+        { "key": "A", "text": "A", "correct": true, "misconception": null },
+        { "key": "B", "text": "B", "correct": false, "misconception": "与 Si(=B)对应关系错位" },
+        { "key": "C", "text": "G", "correct": false, "misconception": "与 Sol(=G)对应关系错位" },
+        { "key": "D", "text": "D", "correct": false, "misconception": "与 Re(=D)对应关系错位" }
+      ],
+      "blanks": null,
+      "explanation": "Do Re Mi Fa Sol La Si 依次对应 C D E F G A B,故 La 对应 A。",
+      "source": { "file": "knowledge/music-theory-basics.md", "heading": "基本音级", "lines": [16, 16] },
+      "status": "validated"
+    },
+    {
+      "id": "q-20260709-0005",
+      "kpId": "kp-altered-notes",
+      "type": "single_choice",
+      "difficulty": "easy",
+      "bloom": "understand",
+      "stem": "钢琴上的黑键属于下列哪一类?",
+      "options": [
+        { "key": "A", "text": "变化音级", "correct": true, "misconception": null },
+        { "key": "B", "text": "基本音级", "correct": false, "misconception": "把黑键(变化音级)误当白键(基本音级)" },
+        { "key": "C", "text": "泛音", "correct": false, "misconception": "混淆键盘音级与泛音概念" },
+        { "key": "D", "text": "等音", "correct": false, "misconception": "把音级分类与等音概念混淆" }
+      ],
+      "blanks": null,
+      "explanation": "变化音级是升高或降低基本音级所得的音,钢琴上用黑键表示;白键则是基本音级。",
+      "source": { "file": "knowledge/music-theory-basics.md", "heading": "变化音级", "lines": [20, 20] },
+      "status": "validated"
+    },
+    {
+      "id": "q-20260709-0006",
+      "kpId": "kp-enharmonic",
+      "type": "single_choice",
+      "difficulty": "medium",
+      "bloom": "apply",
+      "stem": "#C 与 bD 的关系是?",
+      "options": [
+        { "key": "A", "text": "音高相同、记法与意义不同,互为等音", "correct": true, "misconception": null },
+        { "key": "B", "text": "两者相差一个半音", "correct": false, "misconception": "误以为等音之间相差半音" },
+        { "key": "C", "text": "两者相差一个八度", "correct": false, "misconception": "把等音误当八度关系" },
+        { "key": "D", "text": "两者是同一个基本音级", "correct": false, "misconception": "忽略 #C 源自 C、bD 源自 D 属不同基本音级" }
+      ],
+      "blanks": null,
+      "explanation": "音高相同而意义和记法不同的音叫等音,#C 与 bD 即为一例。",
+      "source": { "file": "knowledge/music-theory-basics.md", "heading": "变化音级标注法", "lines": [27, 27] },
+      "status": "validated"
+    },
+    {
+      "id": "q-20260709-0007",
+      "kpId": "kp-natural-notes",
+      "type": "fill_blank",
+      "difficulty": "easy",
+      "bloom": "remember",
+      "stem": "唱名 Do Re Mi Fa Sol La Si 依次对应音名 {{1}} D E F G A {{2}}。",
+      "options": null,
+      "blanks": [
+        { "id": 1, "accept": ["C"], "caseSensitive": false },
+        { "id": 2, "accept": ["B"], "caseSensitive": false }
+      ],
+      "explanation": "七个基本音级唱名与音名的对应为 C D E F G A B,故首为 C(Do)、末为 B(Si)。",
+      "source": { "file": "knowledge/music-theory-basics.md", "heading": "基本音级", "lines": [16, 16] },
+      "status": "validated"
+    },
+    {
+      "id": "q-20260709-0008",
+      "kpId": "kp-accidental-notation",
+      "type": "fill_blank",
+      "difficulty": "medium",
+      "bloom": "remember",
+      "stem": "在变化音级的标注法中,升记号写作 {{1}},降记号写作 {{2}}。",
+      "options": null,
+      "blanks": [
+        { "id": 1, "accept": ["#"], "caseSensitive": false },
+        { "id": 2, "accept": ["b"], "caseSensitive": false }
+      ],
+      "explanation": "升用 #,降用 b;此外重升用 x,重降用 bb。",
+      "source": { "file": "knowledge/music-theory-basics.md", "heading": "变化音级标注法", "lines": [23, 24] },
+      "status": "validated"
+    },
+    {
+      "id": "q-20260709-0009",
+      "kpId": "kp-octave-count",
+      "type": "fill_blank",
+      "difficulty": "medium",
+      "bloom": "remember",
+      "stem": "一个八度音阶共有 7 个基本音级和 {{1}} 个变化音级,合计 {{2}} 个音(十二平均律)。",
+      "options": null,
+      "blanks": [
+        { "id": 1, "accept": ["5", "五"], "caseSensitive": false },
+        { "id": 2, "accept": ["12", "十二"], "caseSensitive": false }
+      ],
+      "explanation": "一个八度含 7 个基本音级 + 5 个变化音级 = 12 个音,即十二平均律。",
+      "source": { "file": "knowledge/music-theory-basics.md", "heading": "基本音级", "lines": [17, 17] },
+      "status": "validated"
+    },
+    {
+      "id": "q-20260709-0010",
+      "kpId": "kp-pitchlevel-concept",
+      "type": "fill_blank",
+      "difficulty": "easy",
+      "bloom": "remember",
+      "stem": "乐音体系中的各个音称为音级。钢琴有 88 个不同音高的音,因此它的音级数为 {{1}}。",
+      "options": null,
+      "blanks": [
+        { "id": 1, "accept": ["88"], "caseSensitive": false }
+      ],
+      "explanation": "音级即乐音体系中的各个音;钢琴 88 个不同音高 → 88 个音级。",
+      "source": { "file": "knowledge/music-theory-basics.md", "heading": "音级", "lines": [11, 11] },
+      "status": "validated"
+    }
+  ]
+}
