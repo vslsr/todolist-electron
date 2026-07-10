@@ -264,6 +264,20 @@
     drumMap: {}, sf: {}, drumIn: null, sfIn: {},
   };
 
+  // ── 调试日志 (排查加载/导出卡顿); 排查完成后可将 DBG 置为 false ─────────────
+  var DBG = true, _dbgT0 = (typeof performance !== 'undefined' && performance.now) ? performance.now() : 0;
+  function tms() { return Math.round(((typeof performance !== 'undefined' && performance.now) ? performance.now() : 0) - _dbgT0); }
+  function LOG() { if (!DBG) return; try { console.log.apply(console, ['%c[arranger +' + tms() + 'ms]', 'color:#4ea1ff;font-weight:bold'].concat([].slice.call(arguments))); } catch (e) {} }
+  // 给可能永远挂起的异步任务加超时护栏 + 日志; 返回的 promise 永不 reject
+  function withTimeout(label, promise, ms) {
+    LOG('▶ 开始加载:', label); var started = tms(), timer = null;
+    var guard = new Promise(function (resolve) { timer = setTimeout(function () { LOG('⏱ 超时未完成 (' + ms + 'ms):', label, '— 跳过, 导出将回退合成音'); resolve('timeout'); }, ms); });
+    return Promise.race([
+      Promise.resolve(promise).then(function (v) { LOG('✔ 完成:', label, '用时', tms() - started, 'ms'); return v; }, function (e) { LOG('✖ 失败:', label, e); return 'error'; }),
+      guard,
+    ]).finally(function () { if (timer) clearTimeout(timer); });
+  }
+
   async function ensureAudio() {
     if (A.ready) return;
     await Tone.start();
@@ -363,27 +377,28 @@
   // ── smplr 采样懒加载 ────────────────────────────────────────────────────
   async function ensureSmplr() {
     if (A.smplrMod) return A.smplrMod;
-    setLoad('加载 smplr 采样引擎…');
+    setLoad('加载 smplr 采样引擎…'); LOG('ensureSmplr: import ./vendor/smplr.mjs …');
     A.smplrMod = await import('./vendor/smplr.mjs');
     A.storage = safe(() => new A.smplrMod.CacheStorage(), null);
-    setLoad('');
+    setLoad(''); LOG('ensureSmplr: smplr 模块就绪');
     return A.smplrMod;
   }
   function smplrEntry(bus) { const g = Tone.getContext().rawContext.createGain(); safe(() => Tone.connect(g, bus)); return g; }
   async function loadDrumMachine(name) {
+    LOG('loadDrumMachine: 请求', name);
     let smplr;
-    try { smplr = await ensureSmplr(); } catch (e) { toast('无法加载采样引擎(需联网)'); fallbackDrums(); return; }
-    if (A.drumMachine && A.drumMachineName === name && A.drumMachineReady) return;
+    try { smplr = await ensureSmplr(); } catch (e) { LOG('✖ loadDrumMachine: 采样引擎不可用', e); toast('无法加载采样引擎(需联网)'); fallbackDrums(); return; }
+    if (A.drumMachine && A.drumMachineName === name && A.drumMachineReady) { LOG('loadDrumMachine: 命中缓存', name); return; }
     A.drumMachineReady = false; setLoad('加载鼓机 ' + name + ' …');
     try {
       const ctx = Tone.getContext().rawContext;
       if (!A.drumIn) A.drumIn = smplrEntry(A.bus.drums);
       if (A.drumMachine) safe(() => A.drumMachine.disconnect());
       const dm = new smplr.DrumMachine(ctx, { instrument: name, destination: A.drumIn, storage: A.storage || undefined });
-      await dm.load;
+      LOG('loadDrumMachine: 等待 CDN 下载/解码', name, '…'); await dm.load;
       A.drumMachine = dm; A.drumMachineName = name; A.drumMachineReady = true;
-      remapDrumSamples(dm); setLoad(''); toast('鼓机已加载: ' + name);
-    } catch (e) { setLoad(''); toast('鼓机加载失败,已回退合成音'); fallbackDrums(); }
+      remapDrumSamples(dm); setLoad(''); toast('鼓机已加载: ' + name); LOG('loadDrumMachine: 完成', name);
+    } catch (e) { setLoad(''); LOG('✖ loadDrumMachine: 失败', name, e); toast('鼓机加载失败,已回退合成音'); fallbackDrums(); }
   }
   function fallbackDrums() {
     P().layers.drums.engine = 'synth';
@@ -403,18 +418,19 @@
     });
   }
   async function loadSoundfont(name, layer) {
+    LOG('loadSoundfont: 请求', name, '(' + layer + ')');
     let smplr;
-    try { smplr = await ensureSmplr(); } catch (e) { toast('无法加载采样引擎(需联网),使用合成音'); return; }
-    if (A.sf[name] && A.sf[name]._ready) return A.sf[name];
+    try { smplr = await ensureSmplr(); } catch (e) { LOG('✖ loadSoundfont: 采样引擎不可用', e); toast('无法加载采样引擎(需联网),使用合成音'); return; }
+    if (A.sf[name] && A.sf[name]._ready) { LOG('loadSoundfont: 命中缓存', name); return A.sf[name]; }
     setLoad('加载音色 ' + name + ' …');
     try {
       const ctx = Tone.getContext().rawContext;
       if (!A.sfIn[layer]) A.sfIn[layer] = smplrEntry(busForLayer(layer));
       const sf = new smplr.Soundfont(ctx, { instrument: name, destination: A.sfIn[layer], storage: A.storage || undefined });
-      await sf.load; sf._ready = true;
-      A.sf[name] = sf; setLoad(''); toast('音色已加载: ' + name);
+      LOG('loadSoundfont: 等待 CDN 下载/解码', name, '…'); await sf.load; sf._ready = true;
+      A.sf[name] = sf; setLoad(''); toast('音色已加载: ' + name); LOG('loadSoundfont: 完成', name);
       return sf;
-    } catch (e) { setLoad(''); toast('音色加载失败,回退合成: ' + name); return null; }
+    } catch (e) { setLoad(''); LOG('✖ loadSoundfont: 失败', name, e); toast('音色加载失败,回退合成: ' + name); return null; }
   }
 
   // 依据传入 pattern 的乐器设定发声 (sf 优先, 失败回退合成)
@@ -601,8 +617,15 @@
     const pl = document.createElement('div'); pl.className = 'playline';
     wrap.appendChild(pl); A.playlines.push({ el: pl, head: headW }); return pl;
   }
-  function updatePlayhead(step) { A.playlines.forEach((p) => { p.el.style.display = 'block'; p.el.style.left = (p.head + (step + 0.5) * CELL) + 'px'; }); }
-  function hidePlayhead() { A.playlines.forEach((p) => (p.el.style.display = 'none')); }
+  function updatePlayhead(step) {
+    A.playlines.forEach((p) => { p.el.style.display = 'block'; p.el.style.left = (p.head + (step + 0.5) * CELL) + 'px'; });
+    const bar = Math.floor(step / STEPS_PER_BAR);   // 和声标签是按小节的卡片 → 高亮当前小节的和弦槽
+    document.querySelectorAll('#chord-track .chord-slot').forEach((el, i) => el.classList.toggle('playing', i === bar));
+  }
+  function hidePlayhead() {
+    A.playlines.forEach((p) => (p.el.style.display = 'none'));
+    document.querySelectorAll('#chord-track .chord-slot.playing').forEach((el) => el.classList.remove('playing'));
+  }
   function updateSongPlayhead(g) {
     if (!A.songTL) return;
     const gbar = Math.floor(g / STEPS_PER_BAR);
@@ -936,36 +959,68 @@
       if (typeof v === 'string' && v.startsWith('sf:') && !seen.has(layer + '|' + v)) {
         seen.add(layer + '|' + v);
         if (!A.inst[layer]) setLayerSynth(layer, defaultKind(layer));
-        jobs.push(loadSoundfont(v.slice(3), layer));
+        jobs.push(withTimeout('音色 ' + v + ' (' + layer + ')', loadSoundfont(v.slice(3), layer), 20000));
       }
     }));
     const dm = project.patterns.find((pt) => pt.layers.drums.engine === 'sample');
-    if (dm) jobs.push(loadDrumMachine(dm.layers.drums.machine));
+    if (dm) jobs.push(withTimeout('鼓机 ' + dm.layers.drums.machine, loadDrumMachine(dm.layers.drums.machine), 20000));
+    LOG('prewarmForExport: 需要预热的采样任务数 =', jobs.length, jobs.length ? '' : '(纯合成器工程, 无需联网, 应瞬间完成)');
     await Promise.allSettled(jobs);
+    LOG('prewarmForExport: 全部结算完成');
+  }
+  // WAV 捕获备用方案: 部分 Tone 构建的 rawContext(standardized-audio-context)不含
+  // createScriptProcessor, 改用 AudioWorklet 抓取 PCM。模块只需注册一次。
+  async function ensureWavWorklet() {
+    if (A._wavWorkletReady) return;
+    const code = [
+      'class WavCap extends AudioWorkletProcessor {',
+      '  constructor() { super(); this._buf = []; }',
+      '  process(inputs) {',
+      '    const i = inputs[0];',
+      '    if (i && i.length) {',
+      '      this._buf.push({ l: i[0].slice(0), r: (i[1] || i[0]).slice(0), mono: i.length < 2 });',
+      '      if (this._buf.length >= 16) { this.port.postMessage(this._buf); this._buf = []; }',
+      '    }',
+      '    return true;',
+      '  }',
+      '}',
+      "registerProcessor('wav-capture', WavCap);",
+    ].join('\n');
+    const url = URL.createObjectURL(new Blob([code], { type: 'text/javascript' }));
+    try {
+      await Tone.getContext().rawContext.audioWorklet.addModule(url);
+      A._wavWorkletReady = true; LOG('ensureWavWorklet: AudioWorklet 采集模块已注册');
+    } finally { setTimeout(() => URL.revokeObjectURL(url), 4000); }
   }
   async function exportAudio(fmt) {
-    if (A.exporting) return;
+    LOG('exportAudio: 点击导出, fmt =', fmt);
+    if (A.exporting) { LOG('exportAudio: 已在导出中 (A.exporting=true), 忽略本次点击 — 若上次卡死请刷新页面'); return; }
     const tl = songTimeline();
     if (!tl.totalBars) { toast('歌曲结构为空 — 请在“结构”标签添加段落再导出音频'); return; }
-    try { await ensureAudio(); } catch (e) { toast('音频启动失败'); return; }
+    try { await ensureAudio(); } catch (e) { LOG('✖ exportAudio: ensureAudio 失败', e); toast('音频启动失败'); return; }
+    LOG('exportAudio: ensureAudio OK, audioCtx.state =', Tone.getContext().rawContext.state, '| A.ready =', A.ready, '| 段落数 =', project.song.sections.length, '| totalBars =', tl.totalBars);
     if (A.playing) stop();
     const btn = $('export-audio'), name = (ext) => `song-${project.tempo.bpm}bpm-${tl.totalBars}bars.${ext}`;
     A.exporting = true; if (btn) btn.disabled = true;
     const ctx = Tone.getContext().rawContext, rate = ctx.sampleRate;
     const totalSec = tl.totalBars * (60 / project.tempo.bpm) * 4, tail = 2.6;
-    setLoad('准备音色…'); await prewarmForExport();
+    LOG('exportAudio: 捕获能力 — ScriptProcessor=' + (typeof ctx.createScriptProcessor) + ', MediaStreamDest=' + (typeof ctx.createMediaStreamDestination) + ', AudioWorklet=' + !!ctx.audioWorklet + ', secureContext=' + (typeof window !== 'undefined' && window.isSecureContext) + ', sampleRate=' + rate);
+    setLoad('准备音色…'); LOG('exportAudio: 进入「准备音色」阶段 → prewarmForExport()…'); await prewarmForExport();
+    LOG('exportAudio: 「准备音色」完成, 开始搭建录制管线, totalSec =', totalSec.toFixed(1));
 
     let tap = null, sink = null, mrec = null, mparts = null, mmime = null, chunksL = [], chunksR = [], mono = false;
     const cleanup = () => { safe(() => A.limiter.disconnect(tap)); safe(() => tap && tap.disconnect()); safe(() => sink && sink.disconnect()); };
     const done = (ok, ext) => { A.exporting = false; if (btn) btn.disabled = false; setLoad(''); if (ok) toast('已导出音频 (.' + ext + ')'); };
 
+    try {
     if (fmt === 'opus') {
       mmime = pickOpusMime();
       if (!mmime) { toast('此环境不支持 Opus 录制,请改用 WAV'); done(false); return; }
       tap = ctx.createMediaStreamDestination(); safe(() => A.limiter.connect(tap));
       mparts = []; mrec = new MediaRecorder(tap.stream, { mimeType: mmime });
       mrec.ondataavailable = (e) => { if (e.data && e.data.size) mparts.push(e.data); };
-    } else {
+    } else if (typeof ctx.createScriptProcessor === 'function') {
+      LOG('exportAudio: WAV 捕获使用 ScriptProcessor');
       tap = ctx.createScriptProcessor(4096, 2, 2); sink = ctx.createGain(); sink.gain.value = 0;
       tap.onaudioprocess = (e) => {
         const b = e.inputBuffer, l = b.getChannelData(0), r = b.numberOfChannels > 1 ? b.getChannelData(1) : l;
@@ -973,14 +1028,27 @@
         chunksL.push(new Float32Array(l)); chunksR.push(new Float32Array(r));
       };
       safe(() => A.limiter.connect(tap)); tap.connect(sink); sink.connect(ctx.destination);
+    } else {
+      LOG('exportAudio: rawContext 无 ScriptProcessor, WAV 捕获改用 AudioWorklet');
+      await ensureWavWorklet();
+      sink = ctx.createGain(); sink.gain.value = 0;
+      tap = Tone.getContext().createAudioWorkletNode('wav-capture', { numberOfInputs: 1, numberOfOutputs: 1, outputChannelCount: [2] });
+      tap.port.onmessage = (e) => { const arr = e.data; for (let k = 0; k < arr.length; k++) { const d = arr[k]; if (d.mono) mono = true; chunksL.push(d.l); chunksR.push(d.r); } };
+      safe(() => A.limiter.connect(tap)); tap.connect(sink); sink.connect(ctx.destination);
     }
 
     // 启动整首, 强制单遍不循环
     applyGlobals(); A.curSeg = null; A.soundPattern = null;
-    if (!buildSongSequence()) { cleanup(); done(false); return; }
+    LOG('exportAudio: buildSongSequence()…');
+    if (!buildSongSequence()) { LOG('✖ exportAudio: buildSongSequence 返回 false, 中止'); cleanup(); done(false); return; }
     A.seq.loop = false;
     if (mrec) safe(() => mrec.start());
     Tone.Transport.start(); A.playing = true; setPlayUI(true);
+    LOG('exportAudio: Transport 已启动, 开始实时录制, 约', (totalSec + tail).toFixed(1), 's 后结束');
+    } catch (e) {
+      LOG('✖ exportAudio: 录制管线搭建/启动异常, 已解除卡死状态:', e);
+      safe(() => cleanup()); done(false); toast('导出失败: ' + ((e && e.message) || e)); return;
+    }
 
     const prog = setInterval(() => {
       const pct = Math.min(99, Math.round((Tone.Transport.seconds / totalSec) * 100));
@@ -988,12 +1056,15 @@
     }, 200);
 
     setTimeout(() => {
+      LOG('exportAudio: 到达预定时长, 停止 Transport 并编码输出');
       clearInterval(prog); stop();
       if (fmt === 'opus') {
         mrec.onstop = () => { cleanup(); const ext = mmime.indexOf('ogg') >= 0 ? 'ogg' : 'webm'; downloadBlob(new Blob(mparts, { type: mmime }), name(ext)); done(true, ext); };
         safe(() => mrec.stop());
       } else {
-        if (tap) tap.onaudioprocess = null; cleanup();
+        if (tap && 'onaudioprocess' in tap) tap.onaudioprocess = null;
+        if (tap && tap.port) tap.port.onmessage = null;
+        cleanup();
         downloadBlob(encodeWav(mergeChunks(chunksL), mono ? null : mergeChunks(chunksR), rate), name('wav'));
         done(true, 'wav');
       }
