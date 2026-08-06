@@ -1082,7 +1082,7 @@
   }
   function importProjectFile(file) {
     const reader = new FileReader();
-    reader.onload = () => { let raw; try { raw = JSON.parse(reader.result); } catch (e) { toast('JSON 解析失败'); return; } if (raw && raw.format && raw.format !== 'todo-music-arranger') toast('格式不符,已尽力导入'); loadProject(coerceProject(raw)); toast('已导入'); };
+    reader.onload = () => { let raw; try { raw = JSON.parse(reader.result); } catch (e) { toast('JSON 解析失败'); return; } if (raw && raw.format && raw.format !== 'todo-music-arranger') toast('格式不符,已尽力导入'); const proj = coerceProject(raw); if (raw && raw.interactive) proj.interactive = raw.interactive; loadProject(proj); IM.scene = null; imDispose(); if ($('im-scenes')) imRender(); toast('已导入'); };
     reader.onerror = () => toast('读取文件失败');
     reader.readAsText(file);
   }
@@ -1229,11 +1229,170 @@
     document.querySelector('.stage').addEventListener('mouseup', updateStepInfo);
   }
 
+  // ═══════════════════════════════════════════════════════════════════════
+  //  多声道 / 场景 (Wwise 式互动音乐) —— 复用 vendored arrangement-core 库
+  // ═══════════════════════════════════════════════════════════════════════
+  const IM = { player: null, scene: null, raf: 0, rtpc: {}, curves: [] };
+  const imAvailable = () => !!(window.ArrangementCore && window.ArrangementInteractivePlayer && window.ArrangementInteractivePlayer.InteractiveMusicPlayer);
+  const imSnapshot = () => JSON.parse(JSON.stringify(project));
+  function imDispose() { if (IM.player) { try { IM.player.dispose(); } catch (e) {} IM.player = null; } }
+  function imScaffold() {
+    if (!imAvailable()) { toast('未加载 arrangement-core 库'); return; }
+    const AC = window.ArrangementCore;
+    project.interactive = AC.generateDefaultInteractive(AC.parseArrangement(imSnapshot()));
+    if (IM.player) { imDispose(); imPlay(); } else imRender();
+    toast('已从当前工程生成声道 / 场景');
+  }
+  async function imPlay() {
+    if (!imAvailable()) { toast('未加载 arrangement-core 库'); return; }
+    if (!project.interactive) { imScaffold(); if (!project.interactive) return; }
+    if (A.playing) stop();
+    imDispose();
+    try {
+      IM.player = new window.ArrangementInteractivePlayer.InteractiveMusicPlayer(imSnapshot(), { Tone, ArrangementCore: window.ArrangementCore });
+      await IM.player.play();
+      if (IM.scene && IM.player.listScenes().some((s) => s.id === IM.scene)) IM.player.setScene(IM.scene, { sync: 'immediate' });
+      IM.scene = IM.player.getScene();
+      setAudioStatus('ok', '场景试听中 · ' + (IM.scene || ''));
+      imRender(); imStartTick();
+    } catch (e) { toast('场景播放失败: ' + ((e && e.message) || e)); }
+  }
+  function imStop() { imStopTick(); if (IM.player) IM.player.stop(); setAudioStatus('', '已停止'); }
+  function imSetScene(id) { IM.scene = id; if (IM.player) IM.player.setScene(id); $('im-scene-now').textContent = imSceneName(id); imMarkScenes(); }
+  function imSceneName(id) { const it = project.interactive; const s = it && it.scenes.find((x) => x.id === id); return s ? s.name : '—'; }
+  function imMarkScenes() { document.querySelectorAll('#im-scenes .im-scene').forEach((b) => b.classList.toggle('active', b.dataset.id === IM.scene)); }
+  function imRender() {
+    const it = project.interactive, host = $('im-scenes'), chost = $('im-channels'), rhost = $('im-rtpc');
+    if (!host) return;
+    if (!it) { host.innerHTML = '<span class="hint">点上方“生成 / 刷新声道”从当前编曲自动拆出声道与场景。</span>'; chost.innerHTML = ''; rhost.innerHTML = ''; $('im-code').textContent = ''; return; }
+    if (!IM.scene) IM.scene = it['default'];
+    host.innerHTML = ''; chost.innerHTML = ''; rhost.innerHTML = '';
+    it.scenes.forEach((s) => {
+      const b = document.createElement('button'); b.className = 'im-scene'; b.dataset.id = s.id; b.textContent = s.name;
+      b.onclick = () => imSetScene(s.id); host.appendChild(b);
+    });
+    it.channels.forEach((c) => {
+      const row = document.createElement('label'); row.className = 'im-ch'; row.dataset.id = c.id;
+      const cb = document.createElement('input'); cb.type = 'checkbox'; cb.checked = true;
+      cb.onchange = () => { if (IM.player) IM.player.setChannel(c.id, cb.checked); };
+      const nm = document.createElement('span'); nm.textContent = c.name;
+      const src = document.createElement('span'); src.className = 'src'; src.textContent = c.sources.map((s) => s.pattern + '·' + s.layer).join(' + ') + (c.rtpc ? ' ⟿' + c.rtpc.param : '');
+      const meter = document.createElement('span'); meter.className = 'meter'; meter.innerHTML = '<i></i>';
+      row.appendChild(cb); row.appendChild(nm); row.appendChild(src); row.appendChild(meter); chost.appendChild(row);
+    });
+    imRenderStingers(it);
+    imRenderRtpc(it);
+    const sc = it.scenes[0], ch = it.channels[0], st = (it.stingers || [])[0];
+    $('im-code').innerHTML = '游戏用法:<code>const p = new InteractiveMusicPlayer(json, { Tone }); await p.play();</code><br>'
+      + '<code>p.setScene(\'' + (sc ? sc.id : 'sceneId') + '\')</code> · <code>p.setChannel(\'' + (ch ? ch.id : 'chId') + '\', false)</code>'
+      + (it.rtpc[0] ? ' · <code>p.setRTPC(\'' + it.rtpc[0].id + '\', 0.8)</code>' : '')
+      + (st ? ' · <code>p.triggerStinger(\'' + st.id + '\')</code>' : '')
+      + ' · <code>ArrangementCore.toMIDI(json)</code>';
+    $('im-scene-now').textContent = imSceneName(IM.scene);
+    imMarkScenes();
+  }
+  function imRenderStingers(it) {
+    const host = $('im-stingers'); if (!host) return;
+    const sts = it.stingers || [];
+    $('im-stinger-card').style.display = sts.length ? '' : 'none';
+    host.innerHTML = '';
+    sts.forEach((s) => {
+      const b = document.createElement('button'); b.className = 'im-scene'; b.textContent = '✸ ' + s.name;
+      b.title = s.sources.map((x) => x.pattern + '·' + x.layer).join(' + ') + ' · ' + s.sync;
+      b.onclick = () => { if (IM.player) IM.player.triggerStinger(s.id); else toast('先点 ▶ 试听场景'); };
+      host.appendChild(b);
+    });
+  }
+  function imRenderRtpc(it) {
+    const host = $('im-rtpc'); if (!host) return;
+    IM.curves = [];
+    if (!it.rtpc.length) { $('im-rtpc-card').style.display = 'none'; host.innerHTML = ''; return; }
+    $('im-rtpc-card').style.display = ''; host.innerHTML = '';
+    it.rtpc.forEach((r) => {
+      if (IM.rtpc[r.id] == null) IM.rtpc[r.id] = r['default'];
+      const wrap = document.createElement('div'); wrap.className = 'im-rtpc-row';
+      const lab = document.createElement('span'); lab.className = 'lbl'; lab.textContent = r.name;
+      const sl = document.createElement('input'); sl.type = 'range'; sl.min = r.min; sl.max = r.max; sl.step = (r.max - r.min) / 100; sl.value = IM.rtpc[r.id];
+      const val = document.createElement('span'); val.className = 'val'; val.textContent = (+IM.rtpc[r.id]).toFixed(2);
+      sl.oninput = () => { IM.rtpc[r.id] = +sl.value; val.textContent = (+sl.value).toFixed(2); if (IM.player) IM.player.setRTPC(r.id, +sl.value); };
+      wrap.appendChild(lab); wrap.appendChild(sl); wrap.appendChild(val); host.appendChild(wrap);
+    });
+    it.channels.filter((c) => c.rtpc).forEach((c) => {
+      const rdef = it.rtpc.find((r) => r.id === c.rtpc.param); if (!rdef) return;
+      const wrap = document.createElement('div'); wrap.className = 'im-rtpc-row';
+      const lab = document.createElement('span'); lab.className = 'lbl'; lab.textContent = c.name + ' ⟿ ' + rdef.name;
+      const editor = imBuildCurve(c, rdef);
+      wrap.appendChild(lab); wrap.appendChild(editor.el); host.appendChild(wrap);
+      IM.curves.push({ param: c.rtpc.param, rdef, update: editor.updateOp });
+    });
+  }
+  function imBuildCurve(channel, rdef) {
+    const W = 170, H = 84, PAD = 8, iw = W - 2 * PAD, ih = H - 2 * PAD, NS = 'http://www.w3.org/2000/svg';
+    const wrap = document.createElement('div');
+    const svg = document.createElementNS(NS, 'svg'); svg.setAttribute('class', 'im-curve'); svg.setAttribute('width', W); svg.setAttribute('height', H); svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
+    wrap.appendChild(svg);
+    const presets = document.createElement('div'); presets.style.marginTop = '4px';
+    const PRE = { '线性': [[0, 0], [1, 1]], '渐入': [[0, 0], [0.6, 0.12], [1, 1]], '渐出': [[0, 0], [0.4, 0.88], [1, 1]], 'S': [[0, 0], [0.35, 0.12], [0.65, 0.88], [1, 1]] };
+    Object.keys(PRE).forEach((k) => { const b = document.createElement('button'); b.className = 'im-preset'; b.textContent = k; b.onclick = () => { pts = PRE[k].map((p) => p.slice()); commit(); draw(); }; presets.appendChild(b); });
+    wrap.appendChild(presets);
+    let pts = (channel.rtpc.curve || [[0, 0], [1, 1]]).map((p) => p.slice()), opMarker = null, drag = -1;
+    const X = (x) => PAD + x * iw, Y = (y) => PAD + (1 - y) * ih;
+    const invX = (px) => Math.max(0, Math.min(1, (px - PAD) / iw)), invY = (py) => Math.max(0, Math.min(1, 1 - (py - PAD) / ih));
+    const toLocal = (e) => { const r = svg.getBoundingClientRect(); return [(e.clientX - r.left) * (W / r.width), (e.clientY - r.top) * (H / r.height)]; };
+    function draw() {
+      while (svg.firstChild) svg.removeChild(svg.firstChild);
+      [0, .5, 1].forEach((g) => { const l = document.createElementNS(NS, 'line'); l.setAttribute('class', 'grid'); l.setAttribute('x1', X(0)); l.setAttribute('x2', X(1)); l.setAttribute('y1', Y(g)); l.setAttribute('y2', Y(g)); svg.appendChild(l); });
+      const poly = document.createElementNS(NS, 'polyline'); poly.setAttribute('class', 'line'); poly.setAttribute('points', pts.map((p) => X(p[0]) + ',' + Y(p[1])).join(' ')); svg.appendChild(poly);
+      pts.forEach((p) => { const c = document.createElementNS(NS, 'circle'); c.setAttribute('class', 'pt'); c.setAttribute('cx', X(p[0])); c.setAttribute('cy', Y(p[1])); c.setAttribute('r', 4); svg.appendChild(c); });
+      opMarker = document.createElementNS(NS, 'circle'); opMarker.setAttribute('class', 'op'); opMarker.setAttribute('r', 3); opMarker.setAttribute('cx', X(0)); opMarker.setAttribute('cy', Y(pts[0][1])); svg.appendChild(opMarker);
+    }
+    function commit() { channel.rtpc.curve = pts.map((p) => p.slice()); if (IM.player) IM.player.setChannelCurve(channel.id, channel.rtpc.curve, { sync: 'immediate' }); }
+    svg.addEventListener('pointerdown', (e) => { const [px, py] = toLocal(e); const hit = pts.findIndex((p) => Math.hypot(X(p[0]) - px, Y(p[1]) - py) < 9); if (hit >= 0) { drag = hit; try { svg.setPointerCapture(e.pointerId); } catch (er) {} } });
+    svg.addEventListener('pointermove', (e) => { if (drag < 0) return; const [px, py] = toLocal(e); let x = invX(px); const y = invY(py); if (drag === 0) x = 0; else if (drag === pts.length - 1) x = 1; else x = Math.max(pts[drag - 1][0] + 0.01, Math.min(pts[drag + 1][0] - 0.01, x)); pts[drag] = [x, y]; draw(); commit(); });
+    svg.addEventListener('pointerup', () => { drag = -1; });
+    svg.addEventListener('dblclick', (e) => { const [px, py] = toLocal(e); const hit = pts.findIndex((p) => Math.hypot(X(p[0]) - px, Y(p[1]) - py) < 9); if (hit > 0 && hit < pts.length - 1) pts.splice(hit, 1); else if (hit < 0) { pts.push([invX(px), invY(py)]); pts.sort((a, b) => a[0] - b[0]); } draw(); commit(); });
+    draw();
+    return { el: wrap, updateOp: (norm) => { if (!opMarker) return; const AC = window.ArrangementCore, y = AC ? AC.evalCurve(pts, norm) : norm; opMarker.setAttribute('cx', X(norm)); opMarker.setAttribute('cy', Y(y)); } };
+  }
+  function imExportMIDI() {
+    if (!imAvailable()) { toast('未加载 arrangement-core 库'); return; }
+    try {
+      const bytes = window.ArrangementCore.toMIDI(imSnapshot());
+      const blob = new Blob([bytes], { type: 'audio/midi' }), url = URL.createObjectURL(blob), a = document.createElement('a');
+      a.href = url; a.download = 'song-' + project.tempo.bpm + 'bpm.mid'; document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 4000); toast('已导出 MIDI (' + bytes.length + ' 字节)');
+    } catch (e) { toast('MIDI 导出失败: ' + ((e && e.message) || e)); }
+  }
+  function imStartTick() { imStopTick(); IM.raf = setInterval(imTick, 120); }  // setInterval (not rAF) so meters update even when the panel/tab isn't focused
+  function imStopTick() { if (IM.raf) clearInterval(IM.raf); IM.raf = 0; }
+  function imTick() {
+    if (!IM.player) return;
+    const mix = IM.player.getMix(); if (!mix) return;
+    if (mix.sceneId && mix.sceneId !== IM.scene) { IM.scene = mix.sceneId; imMarkScenes(); $('im-scene-now').textContent = imSceneName(IM.scene); }
+    mix.channels.forEach((c) => {
+      const row = document.querySelector('#im-channels .im-ch[data-id="' + c.id + '"]'); if (!row) return;
+      const pct = Math.max(0, Math.min(100, (c.gainDb + 60) / 60 * 100));
+      row.querySelector('.meter i').style.width = pct + '%';
+      const cb = row.querySelector('input'); if (cb && document.activeElement !== cb) cb.checked = c.on;
+    });
+    if (IM.curves.length && IM.player.getRTPC) IM.curves.forEach((cv) => { const v = IM.player.getRTPC(cv.param); const norm = Math.max(0, Math.min(1, (v - cv.rdef.min) / (cv.rdef.max - cv.rdef.min))); cv.update(norm); });
+  }
+  function imInit() {
+    if ($('im-scaffold')) $('im-scaffold').onclick = imScaffold;
+    if ($('im-play')) $('im-play').onclick = imPlay;
+    if ($('im-stop')) $('im-stop').onclick = imStop;
+    if ($('im-midi')) $('im-midi').onclick = imExportMIDI;
+    const tab = document.querySelector('.tab[data-layer="scenes"]');
+    if (tab) tab.addEventListener('click', imRender);
+    imRender();
+  }
+
   function init() {
     syncControlsFromModel();
     bindTabs();
     bindControls();
     rebuildAll();
+    imInit();
     setAudioStatus('', '音频未启动 — 点击 ▶ 开始');
   }
 

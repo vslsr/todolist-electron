@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'" />
+  <title>补给点生成</title>
+  <style>
+    :root {
+      --accent: #667eea;
+      --accent-soft: #eef0ff;
+      --bg: #f5f6fa;
+      --card: #ffffff;
+      --text: #2c2f3a;
+      --muted: #7d8499;
+      --border: #e2e5f0;
+      --danger: #d14343;
+      --success: #238a52;
+    }
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      font-family: "Segoe UI", "Microsoft YaHei", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .toolbar {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--border);
+      background: var(--card);
+    }
+    .toolbar h1 { margin: 0 10px 0 0; font-size: 16px; }
+    button {
+      border: 0;
+      border-radius: 7px;
+      padding: 7px 14px;
+      font-size: 13px;
+      cursor: pointer;
+    }
+    .btn-primary { background: var(--accent); color: #fff; }
+    .btn-primary:hover { filter: brightness(1.08); }
+    .btn-ghost { background: #eef0f8; color: #4a4f70; }
+    .btn-ghost:hover { background: #e2e5f3; }
+    .spacer { flex: 1; }
+    .workspace {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 360px minmax(0, 1fr);
+      min-height: 0;
+    }
+    .controls {
+      padding: 14px;
+      overflow-y: auto;
+      border-right: 1px solid var(--border);
+      background: var(--card);
+    }
+    .section { margin-bottom: 16px; }
+    .section-title {
+      margin-bottom: 9px;
+      color: #4a4f70;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: .03em;
+      text-transform: uppercase;
+    }
+    .field-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; }
+    .field { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+    .field.full { grid-column: 1 / -1; }
+    .field label { color: var(--muted); font-size: 11px; }
+    input[type="number"], input[type="text"], select, textarea {
+      width: 100%;
+      border: 1px solid var(--border);
+      border-radius: 7px;
+      padding: 7px 8px;
+      background: #fff;
+      color: var(--text);
+      font-size: 12px;
+      outline: none;
+    }
+    input[type="number"]:focus, input[type="text"]:focus, select:focus, textarea:focus { border-color: var(--accent); }
+    #paste-coord {
+      height: 54px;
+      resize: vertical;
+      font: 12px/1.4 Consolas, "Courier New", monospace;
+      white-space: pre;
+      overflow: auto;
+    }
+    .machine-row {
+      display: grid;
+      grid-template-columns: 16px minmax(0, 1fr) 92px;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 8px;
+      margin-bottom: 6px;
+      border: 1px solid var(--border);
+      border-radius: 9px;
+      background: #fafbff;
+    }
+    .machine-row.on { border-color: var(--accent); background: var(--accent-soft); }
+    .machine-row input[type="checkbox"] {
+      width: 15px;
+      height: 15px;
+      margin: 0;
+      accent-color: var(--accent);
+      cursor: pointer;
+    }
+    .machine-name { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+    .machine-name strong { font-size: 13px; font-weight: 600; }
+    .machine-name em {
+      color: var(--muted);
+      font: 10px/1 Consolas, "Courier New", monospace;
+      font-style: normal;
+    }
+    .cost-cell { display: flex; flex-direction: column; gap: 3px; }
+    .cost-cell label { color: var(--muted); font-size: 10px; }
+    .check-row {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      padding: 3px 0;
+      font-size: 11px;
+      color: var(--text);
+    }
+    .check-row input[type="checkbox"] {
+      flex-shrink: 0;
+      width: 14px;
+      height: 14px;
+      margin: 0;
+      accent-color: var(--accent);
+      cursor: pointer;
+    }
+    .check-row label { cursor: pointer; color: var(--muted); }
+    .hint {
+      margin: 7px 0 0;
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.55;
+    }
+    .preview-card {
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+      background: #fafbff;
+    }
+    .preview-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 6px 9px;
+      border-bottom: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 11px;
+    }
+    .legend { display: flex; gap: 10px; }
+    .legend-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; vertical-align: middle; margin-right: 3px; }
+    canvas { display: block; width: 100%; height: 210px; }
+    .output-pane { display: flex; flex-direction: column; min-width: 0; min-height: 0; }
+    .output-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 12px;
+      border-bottom: 1px solid var(--border);
+      background: var(--card);
+      color: #4a4f70;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    #output {
+      flex: 1;
+      width: 100%;
+      min-height: 0;
+      resize: none;
+      border: 0;
+      outline: 0;
+      padding: 14px;
+      background: #fbfcff;
+      color: var(--text);
+      font: 12px/1.5 Consolas, "Courier New", monospace;
+      white-space: pre;
+      overflow: auto;
+    }
+    .status {
+      padding: 7px 14px;
+      border-top: 1px solid var(--border);
+      background: var(--card);
+      color: var(--muted);
+      font-size: 12px;
+    }
+    .status.err { color: var(--danger); }
+    .status.ok  { color: var(--success); }
+  </style>
+</head>
+<body>
+  <div class="toolbar">
+    <h1>🛒 补给点生成</h1>
+    <div class="spacer"></div>
+    <button id="generate-btn" class="btn-primary">生成 T3D</button>
+    <button id="copy-btn" class="btn-ghost">复制结果</button>
+    <button id="save-btn" class="btn-ghost">保存 .t3d</button>
+  </div>
+
+  <div class="workspace">
+    <aside class="controls">
+
+      <div class="section">
+        <div class="section-title">基准坐标</div>
+        <div class="field full">
+          <label for="paste-coord">粘贴坐标 / 整段对象 T3D（自动提取坐标，其余内容丢弃）</label>
+          <textarea id="paste-coord" spellcheck="false" placeholder="(X=-24676.304688,Y=46192.570313,Z=26108.546875)&#10;或直接粘贴 Begin Actor ... End Actor 整段"></textarea>
+        </div>
+        <div class="field-grid" style="margin-top:9px">
+          <div class="field"><label for="base-x">X</label><input id="base-x" type="number" step="1" value="0" /></div>
+          <div class="field"><label for="base-y">Y</label><input id="base-y" type="number" step="1" value="0" /></div>
+          <div class="field full"><label for="base-z">Z</label><input id="base-z" type="number" step="1" value="0" /></div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">补给点类型（勾选要输出的）</div>
+
+        <div class="machine-row" id="row-shop">
+          <input type="checkbox" id="use-shop" checked />
+          <span class="machine-name"><strong>商店</strong><em>MT_Custom2</em></span>
+          <span class="cost-cell">
+            <label for="cost-shop">Cost</label>
+            <input id="cost-shop" type="number" min="0" step="1" value="0" />
+          </span>
+        </div>
+
+        <div class="machine-row" id="row-health">
+          <input type="checkbox" id="use-health" checked />
+          <span class="machine-name"><strong>加血</strong><em>MT_Custom1</em></span>
+          <span class="cost-cell">
+            <label for="cost-health">Cost</label>
+            <input id="cost-health" type="number" min="0" step="1" value="200" />
+          </span>
+        </div>
+
+        <div class="machine-row" id="row-ammo">
+          <input type="checkbox" id="use-ammo" checked />
+          <span class="machine-name"><strong>加子弹</strong><em>MT_Custom</em></span>
+          <span class="cost-cell">
+            <label for="cost-ammo">Cost</label>
+            <input id="cost-ammo" type="number" min="0" step="1" value="400" />
+          </span>
+        </div>
+
+        <p class="hint">Cost 为 0 时不输出该行（沿用类默认值）。</p>
+      </div>
+
+      <div class="section">
+        <div class="section-title">多选时的排布</div>
+        <div class="field-grid">
+          <div class="field">
+            <label for="spacing">间距</label>
+            <input id="spacing" type="number" step="10" value="300" />
+          </div>
+          <div class="field">
+            <label for="spacing-axis">偏移轴向</label>
+            <select id="spacing-axis">
+              <option value="y" selected>Y 轴</option>
+              <option value="x">X 轴</option>
+            </select>
+          </div>
+        </div>
+        <p class="hint">第一个补给点落在基准坐标，其余沿所选轴依次偏移。</p>
+      </div>
+
+      <div class="section">
+        <div class="section-title">触发盒尺寸（半径）</div>
+        <div class="field-grid">
+          <div class="field"><label for="half-x">X 半宽</label><input id="half-x" type="number" min="1" step="1" value="90" /></div>
+          <div class="field"><label for="half-y">Y 半宽</label><input id="half-y" type="number" min="1" step="1" value="90" /></div>
+          <div class="field full"><label for="half-z">Z 半高</label><input id="half-z" type="number" min="1" step="1" value="128" /></div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">提示特效</div>
+        <div class="check-row">
+          <input type="checkbox" id="use-emitter" checked />
+          <label for="use-emitter">为每个补给点生成头顶提示 Emitter</label>
+        </div>
+        <div class="field-grid" style="margin-top:6px">
+          <div class="field"><label for="fx-offset-z">特效 Z 偏移</label><input id="fx-offset-z" type="number" step="1" value="0" /></div>
+          <div class="field"><label for="fx-yaw">特效 Yaw</label><input id="fx-yaw" type="number" step="256" value="0" /></div>
+          <div class="field full"><label for="fx-group">编辑器分组名 Group</label><input id="fx-group" type="text" value="补给" /></div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">命名</div>
+        <div class="field-grid">
+          <div class="field">
+            <label for="volume-start">Volume 起始序号</label>
+            <input id="volume-start" type="number" min="0" step="1" value="0" />
+          </div>
+          <div class="field">
+            <label for="emitter-start">Emitter 起始序号</label>
+            <input id="emitter-start" type="number" min="0" step="1" value="0" />
+          </div>
+        </div>
+        <p class="hint">Actor 名：PVEVendingMachineVolume_&lt;序号&gt; / Emitter_&lt;序号&gt;，同一批内部件名互不重复。</p>
+      </div>
+
+      <div class="preview-card">
+        <div class="preview-head">
+          <span class="legend">
+            <span><span class="legend-dot" style="background:#e67e22"></span>商店</span>
+            <span><span class="legend-dot" style="background:#2ecc71"></span>加血</span>
+            <span><span class="legend-dot" style="background:#667eea"></span>加子弹</span>
+          </span>
+          <span id="preview-label">俯视预览</span>
+        </div>
+        <canvas id="preview"></canvas>
+      </div>
+
+    </aside>
+
+    <main class="output-pane">
+      <div class="output-head">
+        <span>PVEVendingMachineVolume T3D</span>
+        <span id="output-count">0 个 Actor</span>
+      </div>
+      <textarea id="output" readonly spellcheck="false"></textarea>
+    </main>
+  </div>
+
+  <div id="status" class="status">填入坐标、勾选补给点类型，即可生成可粘进 Unreal Editor 的 T3D。</div>
+  <script src="supply-point.js"></script>
+</body>
+</html>

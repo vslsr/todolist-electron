@@ -3,9 +3,10 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; connect-src ws: wss:" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' file: data:; connect-src ws: wss:" />
   <title>工作项目列表</title>
   <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="wiki.css" />
 </head>
 <body>
   <div class="app">
@@ -18,13 +19,14 @@
 
     <div class="input-area">
       <div class="input-row">
-        <input
-          type="text"
+        <textarea
           id="new-task-input"
           class="task-input"
-          placeholder="添加新任务... (按 Enter 确认)"
-          maxlength="200"
-        />
+          rows="1"
+          placeholder="添加新任务... (Enter 确认 · Shift+Enter 换行 · 多行则每行一个任务)"
+          maxlength="4000"
+          spellcheck="false"
+        ></textarea>
         <select id="priority-select" class="priority-select">
           <option value="normal">普通</option>
           <option value="high">重要</option>
@@ -81,6 +83,7 @@
       <button id="text-tab-btn"  class="filter-btn">文本</button>
       <button id="group-tab-btn" class="filter-btn">工作组</button>
       <button id="draw-tab-btn"  class="filter-btn">✏ 绘图</button>
+      <button id="wiki-tab-btn"  class="filter-btn">📖 Wiki</button>
       <button id="tools-tab-btn" class="filter-btn">🧰 工具</button>
       <div class="filter-divider"></div>
       <button id="import-btn" class="btn btn-ghost-icon" title="从 JSON 文件导入">导入</button>
@@ -228,7 +231,61 @@
       <div id="ds-props-panel" class="ds-props-panel"></div>
     </div>
 
+    <!-- ══ Wiki board (replaces content-row when active) ══ -->
+    <div id="wiki-board" class="wiki-board hidden">
+
+      <!-- Left sidebar: document tree -->
+      <div class="wiki-sidebar">
+        <div class="wiki-sidebar-header">
+          <span class="wiki-sidebar-title">📖 Wiki</span>
+          <div class="wiki-sidebar-actions">
+            <button id="wiki-new-root-btn" class="wiki-icon-btn" title="新建根文档">＋</button>
+          </div>
+        </div>
+
+        <div class="wiki-search-wrap">
+          <input id="wiki-search" class="wiki-search" type="text" placeholder="🔍 搜索文档..." spellcheck="false" />
+        </div>
+
+        <div id="wiki-tree" class="wiki-tree"></div>
+      </div>
+
+      <!-- Right: editor -->
+      <div class="wiki-editor-wrap">
+        <!-- Toolbar with breadcrumb and action buttons -->
+        <div class="wiki-editor-toolbar">
+          <div id="wiki-breadcrumb" class="wiki-breadcrumb"></div>
+          <button id="wiki-new-child-btn"  class="wiki-toolbar-btn" title="在当前文档下新建子文档">＋ 子文档</button>
+          <button id="wiki-export-md-btn"  class="wiki-toolbar-btn" title="将当前文档导出为 Markdown 文件">⬇ 导出 MD</button>
+          <button id="wiki-export-json-btn" class="wiki-toolbar-btn" title="导出全部文档为 JSON">⬇ 导出全库</button>
+        </div>
+
+        <!-- Empty state -->
+        <div id="wiki-empty-state" class="wiki-empty-state">
+          <div class="wiki-empty-icon">📄</div>
+          <div class="wiki-empty-text">从左侧选择文档，或新建一篇</div>
+          <button class="wiki-new-btn" id="wiki-empty-new-btn">＋ 新建文档</button>
+        </div>
+
+        <!-- Editor area (hidden until a doc is selected) -->
+        <div id="wiki-editor-area" class="wiki-editor-area hidden">
+          <div id="wiki-doc-title" class="wiki-doc-title" contenteditable="true" spellcheck="false"></div>
+          <div id="wiki-editor-holder"></div>
+        </div>
+      </div>
+    </div>
+
   </div><!-- /.app -->
+
+  <!-- Wiki right-click context menu -->
+  <div id="wiki-context-menu" class="wiki-context-menu hidden">
+    <button class="wiki-ctx-item" data-action="new-child">＋ 新建子文档</button>
+    <button class="wiki-ctx-item" data-action="rename">✎ 重命名</button>
+    <div class="wiki-ctx-divider"></div>
+    <button class="wiki-ctx-item" data-action="export-md">⬇ 导出为 MD</button>
+    <div class="wiki-ctx-divider"></div>
+    <button class="wiki-ctx-item wiki-ctx-item--danger" data-action="delete">✕ 删除</button>
+  </div>
 
   <!-- Right-click context menu (drawing board) -->
   <div id="ds-context-menu" class="ds-context-menu hidden">
@@ -254,7 +311,14 @@
     <div id="user-todos-content" class="user-todos-content"></div>
   </div>
 
+  <script src="vendor/editorjs/editor.umd.js"></script>
+  <script src="vendor/editorjs/@editorjs/header.umd.js"></script>
+  <script src="vendor/editorjs/@editorjs/list.umd.js"></script>
+  <script src="vendor/editorjs/@editorjs/checklist.umd.js"></script>
+  <script src="vendor/editorjs/@editorjs/code.umd.js"></script>
+  <script src="vendor/editorjs/editorjs-undo.js"></script>
   <script src="renderer.js"></script>
   <script src="draw.js"></script>
+  <script src="wiki.js"></script>
 </body>
 </html>

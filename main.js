@@ -161,11 +161,53 @@ ipcMain.handle('store:set', (_event, key, value) => {
   store.set(key, value);
 });
 
+ipcMain.handle('dialog:pickFolder', async () => {
+  const { canceled, filePaths } = await dialog.showOpenDialog(mainWindow, {
+    title: '选择 .udk 文件夹',
+    properties: ['openDirectory'],
+  });
+  if (canceled || filePaths.length === 0) return { success: false };
+  return { success: true, dir: filePaths[0] };
+});
+
+ipcMain.handle('fs:listUdk', (_event, dir) => {
+  try {
+    const files = fs.readdirSync(dir)
+      .filter(f => f.toLowerCase().endsWith('.udk'))
+      .sort((a, b) => a.localeCompare(b, undefined, { numeric: true, sensitivity: 'base' }));
+    return { success: true, files };
+  } catch (e) {
+    return { success: false, error: e.message };
+  }
+});
+
 ipcMain.handle('dialog:exportJson', async (_event, data) => {
   const { canceled, filePath } = await dialog.showSaveDialog(mainWindow, {
     title: '导出 TODO 数据',
     defaultPath: `todos-${new Date().toISOString().slice(0, 10)}.json`,
     filters: [{ name: 'JSON 文件', extensions: ['json'] }],
+  });
+  if (canceled || !filePath) return { success: false };
+  fs.writeFileSync(filePath, data, 'utf-8');
+  return { success: true };
+});
+
+ipcMain.handle('dialog:exportWikiJson', async (_event, data) => {
+  const { canceled, filePath } = await dialog.showSaveDialog(mainWindow, {
+    title: '导出 Wiki 文档库',
+    defaultPath: `wiki-${new Date().toISOString().slice(0, 10)}.json`,
+    filters: [{ name: 'JSON 文件', extensions: ['json'] }],
+  });
+  if (canceled || !filePath) return { success: false };
+  fs.writeFileSync(filePath, data, 'utf-8');
+  return { success: true };
+});
+
+ipcMain.handle('dialog:exportMd', async (_event, data, defaultName) => {
+  const { canceled, filePath } = await dialog.showSaveDialog(mainWindow, {
+    title: '导出 Markdown 文档',
+    defaultPath: defaultName || `wiki-${new Date().toISOString().slice(0, 10)}.md`,
+    filters: [{ name: 'Markdown 文件', extensions: ['md'] }],
   });
   if (canceled || !filePath) return { success: false };
   fs.writeFileSync(filePath, data, 'utf-8');
@@ -227,6 +269,39 @@ ipcMain.handle('quiz:loadBank', (_event, file) => {
   } catch (e) {
     return { success: false, error: e.message };
   }
+});
+
+// ── Wiki image file management ────────────────────────────────────────────────
+function wikiImagesDir() {
+  return app.isPackaged
+    ? path.join(path.dirname(app.getPath('exe')), 'wiki-images')
+    : path.join(app.getAppPath(), 'wiki-images');
+}
+
+// Receive base64 image data from renderer, write to wiki-images/, return filename
+ipcMain.handle('wiki:saveImageData', (_event, base64Data, mimeType) => {
+  const extMap = { 'image/png': 'png', 'image/jpeg': 'jpg', 'image/gif': 'gif', 'image/webp': 'webp' };
+  const ext = extMap[mimeType] || 'png';
+  const filename = `wiki-img-${Date.now()}-${Math.random().toString(36).slice(2, 6)}.${ext}`;
+  const dir = wikiImagesDir();
+  try {
+    fs.mkdirSync(dir, { recursive: true });
+    fs.writeFileSync(path.join(dir, filename), Buffer.from(base64Data, 'base64'));
+    const fullPath = path.join(dir, filename).replace(/\\/g, '/');
+    return { success: true, filename, url: `file://${fullPath}` };
+  } catch (e) {
+    return { success: false, error: e.message };
+  }
+});
+
+// Delete one or more image files by filename (bare name only, no path traversal)
+ipcMain.handle('wiki:deleteImages', (_event, filenames) => {
+  const dir = wikiImagesDir();
+  for (const f of (filenames || [])) {
+    if (typeof f !== 'string' || f !== path.basename(f)) continue;
+    try { fs.unlinkSync(path.join(dir, f)); } catch (_) {}
+  }
+  return { success: true };
 });
 
 ipcMain.handle('quiz:importBank', async () => {

@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'" />
+  <title>创建出生点</title>
+  <style>
+    :root {
+      --accent: #667eea;
+      --accent-soft: #eef0ff;
+      --bg: #f5f6fa;
+      --card: #ffffff;
+      --text: #2c2f3a;
+      --muted: #7d8499;
+      --border: #e2e5f0;
+      --danger: #d14343;
+      --success: #238a52;
+    }
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      font-family: "Segoe UI", "Microsoft YaHei", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .toolbar {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--border);
+      background: var(--card);
+    }
+    .toolbar h1 { margin: 0 10px 0 0; font-size: 16px; }
+    button {
+      border: 0;
+      border-radius: 7px;
+      padding: 7px 14px;
+      font-size: 13px;
+      cursor: pointer;
+    }
+    .btn-primary { background: var(--accent); color: #fff; }
+    .btn-primary:hover { filter: brightness(1.08); }
+    .btn-ghost { background: #eef0f8; color: #4a4f70; }
+    .btn-ghost:hover { background: #e2e5f3; }
+    .spacer { flex: 1; }
+    .workspace {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 330px minmax(0, 1fr);
+      min-height: 0;
+    }
+    .controls {
+      padding: 14px;
+      overflow-y: auto;
+      border-right: 1px solid var(--border);
+      background: var(--card);
+    }
+    .section { margin-bottom: 18px; }
+    .section-title {
+      margin-bottom: 9px;
+      color: #4a4f70;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: .03em;
+    }
+    .shape-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 7px;
+    }
+    .shape-option input { position: absolute; opacity: 0; pointer-events: none; }
+    .shape-option span {
+      display: flex;
+      min-height: 58px;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 3px;
+      border: 1px solid var(--border);
+      border-radius: 9px;
+      color: #555c72;
+      font-size: 12px;
+      cursor: pointer;
+    }
+    .shape-option strong { font-size: 20px; line-height: 1; }
+    .shape-option input:checked + span {
+      border-color: var(--accent);
+      background: var(--accent-soft);
+      color: var(--accent);
+      box-shadow: 0 0 0 1px var(--accent);
+    }
+    .field-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; }
+    .field { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+    .field.full { grid-column: 1 / -1; }
+    .field label { color: var(--muted); font-size: 11px; }
+    input, select {
+      width: 100%;
+      border: 1px solid var(--border);
+      border-radius: 7px;
+      padding: 7px 8px;
+      background: #fff;
+      color: var(--text);
+      font-size: 12px;
+      outline: none;
+    }
+    input:focus, select:focus { border-color: var(--accent); }
+    .hidden { display: none !important; }
+    .hint {
+      margin: 8px 0 0;
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.55;
+    }
+    .preview-card {
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+      background: #fafbff;
+    }
+    .preview-head {
+      display: flex;
+      justify-content: space-between;
+      padding: 7px 9px;
+      border-bottom: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 11px;
+    }
+    canvas { display: block; width: 100%; height: 210px; }
+    .output-pane { display: flex; flex-direction: column; min-width: 0; min-height: 0; }
+    .output-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 12px;
+      border-bottom: 1px solid var(--border);
+      background: var(--card);
+      color: #4a4f70;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    #output {
+      flex: 1;
+      width: 100%;
+      min-height: 0;
+      resize: none;
+      border: 0;
+      outline: 0;
+      padding: 14px;
+      background: #fbfcff;
+      color: var(--text);
+      font: 12px/1.5 Consolas, "Courier New", monospace;
+      white-space: pre;
+      overflow: auto;
+    }
+    .status {
+      padding: 7px 14px;
+      border-top: 1px solid var(--border);
+      background: var(--card);
+      color: var(--muted);
+      font-size: 12px;
+    }
+    .status.err { color: var(--danger); }
+    .status.ok { color: var(--success); }
+    @media (max-width: 760px) {
+      .workspace { grid-template-columns: 280px minmax(0, 1fr); }
+    }
+  </style>
+</head>
+<body>
+  <div class="toolbar">
+    <h1>🚩 创建出生点</h1>
+    <div class="spacer"></div>
+    <button id="generate-btn" class="btn-primary">生成 T3D</button>
+    <button id="copy-btn" class="btn-ghost">复制结果</button>
+    <button id="save-btn" class="btn-ghost">保存 .t3d</button>
+  </div>
+
+  <div class="workspace">
+    <aside class="controls">
+      <div class="section">
+        <div class="section-title">排列形状</div>
+        <div class="shape-grid">
+          <label class="shape-option">
+            <input type="radio" name="shape" value="square" checked />
+            <span><strong>□</strong>方形</span>
+          </label>
+          <label class="shape-option">
+            <input type="radio" name="shape" value="circle" />
+            <span><strong>○</strong>圈型</span>
+          </label>
+          <label class="shape-option">
+            <input type="radio" name="shape" value="other" />
+            <span><strong>◇</strong>其他形状</span>
+          </label>
+        </div>
+        <div id="other-shape-field" class="field full hidden" style="margin-top: 9px;">
+          <label for="other-shape">其他形状</label>
+          <select id="other-shape">
+            <option value="triangle">三角形</option>
+            <option value="line">直线</option>
+            <option value="polygon">自定义正多边形</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">数量与范围</div>
+        <div class="field-grid">
+          <div class="field">
+            <label for="count">出生点数量</label>
+            <input id="count" type="number" min="1" max="256" step="1" value="8" />
+          </div>
+          <div class="field">
+            <label for="size">范围半径 / 半边长</label>
+            <input id="size" type="number" min="1" step="1" value="600" />
+          </div>
+          <div id="polygon-sides-field" class="field full hidden">
+            <label for="polygon-sides">正多边形边数</label>
+            <input id="polygon-sides" type="number" min="3" max="32" step="1" value="5" />
+          </div>
+        </div>
+        <p class="hint">方形按半边长计算；圈型和多边形按中心到边界的半径计算；直线总长为范围值的两倍。</p>
+      </div>
+
+      <div class="section">
+        <div class="section-title">中心位置</div>
+        <div class="field-grid">
+          <div class="field"><label for="center-x">中心 X</label><input id="center-x" type="number" step="1" value="-8951.363281" /></div>
+          <div class="field"><label for="center-y">中心 Y</label><input id="center-y" type="number" step="1" value="-10050.235352" /></div>
+          <div class="field full"><label for="center-z">高度 Z</label><input id="center-z" type="number" step="1" value="50.999996" /></div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">名称与朝向</div>
+        <div class="field-grid">
+          <div class="field">
+            <label for="start-id">Actor 起始 ID</label>
+            <input id="start-id" type="number" min="0" step="1" value="0" />
+          </div>
+          <div class="field">
+            <label for="rotation-mode">朝向方式</label>
+            <select id="rotation-mode">
+              <option value="fixed">固定</option>
+              <option value="inward">朝向中心</option>
+              <option value="outward">背向中心</option>
+              <option value="tangent">沿排列切线</option>
+            </select>
+          </div>
+          <div id="fixed-yaw-field" class="field">
+            <label for="fixed-yaw">固定 Yaw</label>
+            <input id="fixed-yaw" type="number" step="1" value="-4096" />
+          </div>
+          <div class="field">
+            <label for="yaw-offset">Yaw 偏移</label>
+            <input id="yaw-offset" type="number" step="1" value="0" />
+          </div>
+        </div>
+        <p class="hint">Yaw 使用 UE3 旋转单位：65536 = 360°。</p>
+      </div>
+
+      <div class="preview-card">
+        <div class="preview-head"><span>俯视预览</span><span id="preview-label">8 个出生点</span></div>
+        <canvas id="preview"></canvas>
+      </div>
+    </aside>
+
+    <main class="output-pane">
+      <div class="output-head"><span>UTTeamPlayerStart T3D</span><span id="output-count">0 个 Actor</span></div>
+      <textarea id="output" readonly spellcheck="false"></textarea>
+    </main>
+  </div>
+
+  <div id="status" class="status">选择形状并设置参数，然后生成可导入 Unreal Editor 的 T3D。</div>
+  <script src="player-start-creator.js"></script>
+</body>
+</html>

@@ -1,0 +1,161 @@
+{
+  "format": "todo-music-arranger",
+  "version": 2,
+  "tempo": { "bpm": 132, "swing": 0 },
+  "grid": { "bars": 4, "stepsPerBar": 16 },
+  "master": { "volume": -8, "filter": 20000, "reverb": 0.18 },
+  "activePattern": 0,
+  "playMode": "song",
+  "patterns": [
+    {
+      "id": "p1",
+      "name": "A · 潜行",
+      "layers": {
+        "drums": {
+          "engine": "synth",
+          "machine": "TR-808",
+          "tracks": [
+            { "id": "kick",  "name": "底鼓 Kick",  "color": "--kick",  "sample": "kick",        "steps": [2,0,0,0,0,0,1,0,2,0,0,0,0,0,1,0,2,0,0,0,0,0,1,0,2,0,0,0,0,0,1,0,2,0,0,0,0,0,1,0,2,0,0,0,0,0,1,0,2,0,0,0,0,0,1,0,2,0,0,0,0,0,1,0], "gain": 0, "mute": false, "solo": false },
+            { "id": "snare", "name": "军鼓 Snare", "color": "--snare", "sample": "snare",       "steps": [0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0], "gain": 0, "mute": false, "solo": false },
+            { "id": "clap",  "name": "拍手 Clap",  "color": "--clap",  "sample": "clap",        "steps": [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], "gain": 0, "mute": false, "solo": false },
+            { "id": "chh",   "name": "闭镲 CH",    "color": "--hat",   "sample": "hihat-close", "steps": [1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0], "gain": 0, "mute": false, "solo": false },
+            { "id": "ohh",   "name": "开镲 OH",    "color": "--hat",   "sample": "hihat-open",  "steps": [0,0,0,0,0,0,0,2,0,0,0,0,0,0,0,2,0,0,0,0,0,0,0,2,0,0,0,0,0,0,0,2,0,0,0,0,0,0,0,2,0,0,0,0,0,0,0,2,0,0,0,0,0,0,0,2,0,0,0,0,0,0,0,2], "gain": 0, "mute": false, "solo": false },
+            { "id": "perc",  "name": "打击 Perc",  "color": "--perc",  "sample": "tom",         "steps": [0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1], "gain": 0, "mute": false, "solo": false }
+          ]
+        },
+        "bass": {
+          "instrument": "MonoSynth",
+          "sidechain": { "on": true, "source": "kick", "amount": 0.7 },
+          "notes": [
+            { "step": 0,  "len": 2, "midi": 33 }, { "step": 3,  "len": 2, "midi": 33 }, { "step": 6,  "len": 2, "midi": 33 }, { "step": 8,  "len": 2, "midi": 33 }, { "step": 11, "len": 2, "midi": 33 }, { "step": 14, "len": 2, "midi": 33 },
+            { "step": 16, "len": 2, "midi": 29 }, { "step": 19, "len": 2, "midi": 29 }, { "step": 22, "len": 2, "midi": 29 }, { "step": 24, "len": 2, "midi": 29 }, { "step": 27, "len": 2, "midi": 29 }, { "step": 30, "len": 2, "midi": 29 },
+            { "step": 32, "len": 2, "midi": 31 }, { "step": 35, "len": 2, "midi": 31 }, { "step": 38, "len": 2, "midi": 31 }, { "step": 40, "len": 2, "midi": 31 }, { "step": 43, "len": 2, "midi": 31 }, { "step": 46, "len": 2, "midi": 31 },
+            { "step": 48, "len": 2, "midi": 28 }, { "step": 51, "len": 2, "midi": 28 }, { "step": 54, "len": 2, "midi": 28 }, { "step": 56, "len": 2, "midi": 28 }, { "step": 59, "len": 2, "midi": 28 }, { "step": 62, "len": 2, "midi": 28 }
+          ]
+        },
+        "harmony": {
+          "instrument": "poly-saw",
+          "mode": "pluck",
+          "rate": "16n",
+          "octave": 3,
+          "reverb": 0.25,
+          "chorus": 0.1,
+          "chords": [
+            { "root": "A", "quality": "min" },
+            { "root": "F", "quality": "maj" },
+            { "root": "G", "quality": "maj" },
+            { "root": "E", "quality": "maj" }
+          ]
+        },
+        "melody": {
+          "instrument": "sf:kalimba",
+          "key": "A",
+          "scale": "penta-min",
+          "reverb": 0.2,
+          "notes": [
+            { "step": 0,  "len": 2, "midi": 69 },
+            { "step": 2,  "len": 2, "midi": 67 },
+            { "step": 4,  "len": 4, "midi": 64 },
+            { "step": 12, "len": 2, "midi": 69 },
+            { "step": 16, "len": 2, "midi": 72 },
+            { "step": 18, "len": 2, "midi": 69 },
+            { "step": 20, "len": 4, "midi": 67 },
+            { "step": 32, "len": 2, "midi": 74 },
+            { "step": 34, "len": 2, "midi": 72 },
+            { "step": 36, "len": 4, "midi": 67 },
+            { "step": 48, "len": 2, "midi": 69 },
+            { "step": 50, "len": 2, "midi": 64 },
+            { "step": 52, "len": 4, "midi": 62 }
+          ]
+        },
+        "fx": { "events": [] }
+      }
+    },
+    {
+      "id": "p2",
+      "name": "B · 交战",
+      "layers": {
+        "drums": {
+          "engine": "synth",
+          "machine": "TR-808",
+          "tracks": [
+            { "id": "kick",  "name": "底鼓 Kick",  "color": "--kick",  "sample": "kick",        "steps": [2,0,0,0,0,0,1,0,2,0,0,1,0,0,1,0,2,0,0,0,0,0,1,0,2,0,0,1,0,0,1,0,2,0,0,0,0,0,1,0,2,0,0,1,0,0,1,0,2,0,0,0,0,0,1,0,2,0,0,1,0,0,1,0], "gain": 0, "mute": false, "solo": false },
+            { "id": "snare", "name": "军鼓 Snare", "color": "--snare", "sample": "snare",       "steps": [0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,1,0,2,1], "gain": 0, "mute": false, "solo": false },
+            { "id": "clap",  "name": "拍手 Clap",  "color": "--clap",  "sample": "clap",        "steps": [0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0], "gain": 0, "mute": false, "solo": false },
+            { "id": "chh",   "name": "闭镲 CH",    "color": "--hat",   "sample": "hihat-close", "steps": [1,1,2,1,1,1,2,1,1,1,2,1,1,1,2,1,1,1,2,1,1,1,2,1,1,1,2,1,1,1,2,1,1,1,2,1,1,1,2,1,1,1,2,1,1,1,2,1,1,1,2,1,1,1,2,1,1,1,2,1,1,1,2,1], "gain": 0, "mute": false, "solo": false },
+            { "id": "ohh",   "name": "开镲 OH",    "color": "--hat",   "sample": "hihat-open",  "steps": [0,0,2,0,0,0,2,0,0,0,2,0,0,0,2,0,0,0,2,0,0,0,2,0,0,0,2,0,0,0,2,0,0,0,2,0,0,0,2,0,0,0,2,0,0,0,2,0,0,0,2,0,0,0,2,0,0,0,2,0,0,0,2,0], "gain": 0, "mute": false, "solo": false },
+            { "id": "perc",  "name": "打击 Perc",  "color": "--perc",  "sample": "tom",         "steps": [0,0,0,1,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,1,0,0,0,0,1,1,1,1,1,1,1,1], "gain": 0, "mute": false, "solo": false }
+          ]
+        },
+        "bass": {
+          "instrument": "MonoSynth",
+          "sidechain": { "on": true, "source": "kick", "amount": 0.8 },
+          "notes": [
+            { "step": 0,  "len": 2, "midi": 33 }, { "step": 2,  "len": 2, "midi": 33 }, { "step": 4,  "len": 2, "midi": 33 }, { "step": 6,  "len": 2, "midi": 33 }, { "step": 8,  "len": 2, "midi": 33 }, { "step": 10, "len": 2, "midi": 33 }, { "step": 12, "len": 2, "midi": 33 }, { "step": 14, "len": 2, "midi": 33 },
+            { "step": 16, "len": 2, "midi": 29 }, { "step": 18, "len": 2, "midi": 29 }, { "step": 20, "len": 2, "midi": 29 }, { "step": 22, "len": 2, "midi": 29 }, { "step": 24, "len": 2, "midi": 29 }, { "step": 26, "len": 2, "midi": 29 }, { "step": 28, "len": 2, "midi": 29 }, { "step": 30, "len": 2, "midi": 29 },
+            { "step": 32, "len": 2, "midi": 31 }, { "step": 34, "len": 2, "midi": 31 }, { "step": 36, "len": 2, "midi": 31 }, { "step": 38, "len": 2, "midi": 31 }, { "step": 40, "len": 2, "midi": 31 }, { "step": 42, "len": 2, "midi": 31 }, { "step": 44, "len": 2, "midi": 31 }, { "step": 46, "len": 2, "midi": 31 },
+            { "step": 48, "len": 2, "midi": 28 }, { "step": 50, "len": 2, "midi": 28 }, { "step": 52, "len": 2, "midi": 28 }, { "step": 54, "len": 2, "midi": 28 }, { "step": 56, "len": 2, "midi": 28 }, { "step": 58, "len": 2, "midi": 28 }, { "step": 60, "len": 2, "midi": 28 }, { "step": 62, "len": 2, "midi": 28 }
+          ]
+        },
+        "harmony": {
+          "instrument": "poly-saw",
+          "mode": "pluck",
+          "rate": "16n",
+          "octave": 4,
+          "reverb": 0.25,
+          "chorus": 0.1,
+          "chords": [
+            { "root": "A", "quality": "min" },
+            { "root": "F", "quality": "maj" },
+            { "root": "G", "quality": "maj" },
+            { "root": "E", "quality": "maj" }
+          ]
+        },
+        "melody": {
+          "instrument": "sf:kalimba",
+          "key": "A",
+          "scale": "penta-min",
+          "reverb": 0.2,
+          "notes": [
+            { "step": 0,  "len": 2, "midi": 69 },
+            { "step": 2,  "len": 2, "midi": 72 },
+            { "step": 4,  "len": 2, "midi": 76 },
+            { "step": 6,  "len": 2, "midi": 72 },
+            { "step": 8,  "len": 2, "midi": 69 },
+            { "step": 10, "len": 2, "midi": 67 },
+            { "step": 12, "len": 4, "midi": 69 },
+            { "step": 16, "len": 2, "midi": 72 },
+            { "step": 18, "len": 2, "midi": 69 },
+            { "step": 20, "len": 2, "midi": 67 },
+            { "step": 22, "len": 2, "midi": 72 },
+            { "step": 24, "len": 4, "midi": 74 },
+            { "step": 28, "len": 4, "midi": 72 },
+            { "step": 32, "len": 2, "midi": 74 },
+            { "step": 34, "len": 2, "midi": 79 },
+            { "step": 36, "len": 2, "midi": 76 },
+            { "step": 38, "len": 2, "midi": 74 },
+            { "step": 40, "len": 4, "midi": 72 },
+            { "step": 44, "len": 4, "midi": 74 },
+            { "step": 48, "len": 2, "midi": 76 },
+            { "step": 50, "len": 2, "midi": 74 },
+            { "step": 52, "len": 2, "midi": 69 },
+            { "step": 54, "len": 2, "midi": 76 },
+            { "step": 56, "len": 8, "midi": 76 }
+          ]
+        },
+        "fx": { "events": [ { "type": "impact", "step": 0, "len": 2 } ] }
+      }
+    }
+  ],
+  "song": {
+    "loop": true,
+    "sections": [
+      { "id": "s1", "type": "intro", "pattern": "p1", "repeats": 1, "layers": { "drums": true, "bass": false, "harmony": true, "melody": true, "fx": false }, "dyn": { "filterFrom": 700, "filterTo": 7000, "fadeIn": true, "fadeOut": false, "autoRiser": false, "autoImpact": false } },
+      { "id": "s2", "type": "build", "pattern": "p1", "repeats": 2, "layers": { "drums": true, "bass": true, "harmony": true, "melody": true, "fx": true }, "dyn": { "filterFrom": 3000, "filterTo": 16000, "fadeIn": false, "fadeOut": false, "autoRiser": true, "autoImpact": false } },
+      { "id": "s3", "type": "drop", "pattern": "p2", "repeats": 4, "layers": { "drums": true, "bass": true, "harmony": true, "melody": true, "fx": true }, "dyn": { "filterFrom": 20000, "filterTo": 20000, "fadeIn": false, "fadeOut": false, "autoRiser": false, "autoImpact": true } },
+      { "id": "s4", "type": "break", "pattern": "p1", "repeats": 2, "layers": { "drums": true, "bass": false, "harmony": true, "melody": true, "fx": false }, "dyn": { "filterFrom": 9000, "filterTo": 9000, "fadeIn": false, "fadeOut": false, "autoRiser": false, "autoImpact": false } },
+      { "id": "s5", "type": "drop", "pattern": "p2", "repeats": 2, "layers": { "drums": true, "bass": true, "harmony": true, "melody": true, "fx": true }, "dyn": { "filterFrom": 20000, "filterTo": 20000, "fadeIn": false, "fadeOut": false, "autoRiser": false, "autoImpact": true } },
+      { "id": "s6", "type": "outro", "pattern": "p1", "repeats": 1, "layers": { "drums": true, "bass": true, "harmony": true, "melody": false, "fx": false }, "dyn": { "filterFrom": 8000, "filterTo": 500, "fadeIn": false, "fadeOut": true, "autoRiser": false, "autoImpact": false } }
+    ]
+  }
+}

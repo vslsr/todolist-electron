@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'" />
+  <title>SVN 演示动画</title>
+  <style>
+    :root {
+      --accent: #667eea;
+      --bg: #f5f6fa;
+      --card: #ffffff;
+      --text: #2c2f3a;
+      --muted: #8a90a6;
+      --border: #e2e5f0;
+      --repo: #7a5af8;
+      --local: #2f9e5f;
+      --st-m: #e08a2e;
+      --st-a: #2f9e5f;
+      --st-d: #d14343;
+      --st-c: #d14343;
+      --st-q: #9aa0b5;
+    }
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      font-family: "Segoe UI", "Microsoft YaHei", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* ── 顶部工具条 ─────────────────────────────────────── */
+    .toolbar {
+      display: flex; align-items: center; gap: 8px;
+      padding: 9px 14px;
+      border-bottom: 1px solid var(--border);
+      background: var(--card);
+      flex: none;
+    }
+    .toolbar h1 { margin: 0 10px 0 0; font-size: 15px; font-weight: 700; }
+    .spacer { flex: 1; }
+    button {
+      border: none; border-radius: 7px; padding: 6px 13px;
+      font-size: 13px; cursor: pointer; transition: filter .15s, background .15s;
+      font-family: inherit;
+    }
+    button:disabled { opacity: .4; cursor: default; }
+    .btn-primary { background: var(--accent); color: #fff; min-width: 82px; }
+    .btn-primary:hover:not(:disabled) { filter: brightness(1.08); }
+    .btn-ghost { background: #eef0f8; color: #4a4f70; }
+    .btn-ghost:hover:not(:disabled) { background: #e2e5f3; }
+    .field { display: flex; align-items: center; gap: 5px; font-size: 12px; color: var(--muted); }
+    select {
+      border: 1px solid var(--border); border-radius: 6px; padding: 5px 6px;
+      font-size: 12px; color: var(--text); background: #fff; outline: none; font-family: inherit;
+    }
+
+    /* ── 主体 ───────────────────────────────────────────── */
+    .main { flex: 1; display: flex; min-height: 0; }
+
+    .sidebar {
+      width: 208px; flex: none; background: var(--card);
+      border-right: 1px solid var(--border);
+      display: flex; flex-direction: column; min-height: 0;
+    }
+    .sidebar-head {
+      padding: 9px 12px; font-size: 12px; font-weight: 600; color: #4a4f70;
+      border-bottom: 1px solid var(--border);
+    }
+    .lesson-list { flex: 1; overflow: auto; padding: 6px; }
+    .lesson {
+      display: block; width: 100%; text-align: left; background: transparent;
+      border-radius: 8px; padding: 8px 10px; margin-bottom: 2px; color: var(--text);
+    }
+    .lesson:hover { background: #f2f4fb; }
+    .lesson.active { background: #eef0ff; box-shadow: inset 2px 0 0 var(--accent); }
+    .lesson-title { font-size: 13px; font-weight: 600; }
+    .lesson.active .lesson-title { color: var(--accent); }
+    .lesson-sub {
+      font-size: 11px; color: var(--muted); margin-top: 2px;
+      font-family: Consolas, "Courier New", monospace;
+    }
+    .tips {
+      flex: none; margin: 8px; padding: 9px 11px; border-radius: 8px;
+      background: #f7f8fd; border: 1px solid var(--border);
+      font-size: 11px; line-height: 1.7; color: #5a6080;
+    }
+    .tips b { color: var(--accent); }
+
+    .content { flex: 1; display: flex; flex-direction: column; min-width: 0; min-height: 0; }
+
+    /* ── 舞台 ───────────────────────────────────────────── */
+    .stage {
+      flex: 1; min-height: 0; display: grid;
+      grid-template-columns: 1fr 156px 1fr;
+      gap: 0; padding: 12px; align-items: stretch;
+    }
+    .panel {
+      background: var(--card); border: 1px solid var(--border); border-radius: 10px;
+      display: flex; flex-direction: column; min-height: 0; overflow: hidden;
+    }
+    .panel-head {
+      display: flex; align-items: center; gap: 7px; padding: 8px 11px;
+      border-bottom: 1px solid var(--border); flex: none;
+    }
+    .panel-head .dot { width: 8px; height: 8px; border-radius: 50%; flex: none; }
+    .panel-local .dot { background: var(--local); }
+    .panel-repo  .dot { background: var(--repo); }
+    .panel-title { font-size: 13px; font-weight: 700; }
+    .panel-path {
+      font-size: 11px; color: var(--muted);
+      font-family: Consolas, "Courier New", monospace;
+      overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
+    .rev-badge {
+      margin-left: auto; flex: none; font-size: 11px; font-weight: 700;
+      padding: 2px 8px; border-radius: 20px; background: #eef0ff; color: var(--accent);
+      font-family: Consolas, monospace;
+    }
+    .panel-repo .rev-badge { background: #f1ecff; color: var(--repo); }
+    .panel-body { flex: 1; overflow: auto; padding: 9px 10px; min-height: 0; }
+    .sec-label {
+      font-size: 10px; font-weight: 700; color: var(--muted); letter-spacing: .5px;
+      margin: 2px 0 6px; text-transform: uppercase;
+    }
+    .sec-label .val {
+      text-transform: none; color: var(--accent);
+      font-family: Consolas, "Courier New", monospace;
+    }
+    .sec-label + .sec-label, .file-list + .sec-label, .tree + .sec-label { margin-top: 12px; }
+
+    .empty { font-size: 12px; color: var(--muted); padding: 18px 4px; line-height: 1.8; }
+
+    /* 文件行 */
+    .file-row {
+      display: flex; align-items: center; gap: 8px; padding: 5px 7px;
+      border-radius: 6px; font-size: 12px;
+      font-family: Consolas, "Courier New", monospace;
+    }
+    .file-row + .file-row { margin-top: 2px; }
+    .file-row.flash { animation: flash .9s ease-out; }
+    @keyframes flash {
+      0%   { background: #fff3d6; }
+      100% { background: transparent; }
+    }
+    .st {
+      width: 18px; height: 18px; flex: none; border-radius: 4px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 11px; font-weight: 700; color: #fff; background: #dfe3ee;
+    }
+    .st.s-  { background: #e8ebf4; color: #a8aec2; }
+    .st.sM  { background: var(--st-m); }
+    .st.sA  { background: var(--st-a); }
+    .st.sD  { background: var(--st-d); }
+    .st.sC  { background: var(--st-c); animation: pulse 1.1s ease-in-out infinite; }
+    .st.sq  { background: var(--st-q); }
+    @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: .45; } }
+    .file-name { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .file-row.tmp .file-name { color: var(--muted); }
+    .st-word { font-size: 10px; color: var(--muted); font-family: "Segoe UI", sans-serif; flex: none; }
+
+    /* 版本库树 */
+    .tree { font-family: Consolas, "Courier New", monospace; font-size: 12px; }
+    .tree-row { padding: 3px 7px; border-radius: 5px; display: flex; gap: 6px; }
+    .tree-row.flash { animation: flash .9s ease-out; }
+    .tree-row .ico { flex: none; }
+    .tree-row.dir { color: #4a4f70; font-weight: 600; }
+
+    /* 版本卡片 */
+    .rev {
+      border: 1px solid var(--border); border-radius: 8px; padding: 7px 9px;
+      margin-bottom: 6px; background: #fbfbff;
+    }
+    .rev.flash { animation: revIn .8s ease-out; }
+    @keyframes revIn {
+      0%   { transform: translateY(-10px) scale(.96); opacity: 0; border-color: var(--repo); background: #f3edff; }
+      100% { transform: none; opacity: 1; }
+    }
+    .rev-top { display: flex; align-items: center; gap: 7px; }
+    .rev-n {
+      font-family: Consolas, monospace; font-size: 11px; font-weight: 700;
+      color: #fff; background: var(--repo); border-radius: 4px; padding: 1px 6px; flex: none;
+    }
+    .rev-msg { font-size: 12px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .rev-who { font-size: 11px; color: var(--muted); margin-left: auto; flex: none; }
+    .rev-files {
+      font-family: Consolas, monospace; font-size: 11px; color: var(--muted);
+      margin-top: 4px; line-height: 1.6;
+    }
+
+    /* 冲突预览 */
+    .conflict-box {
+      flex: none; border-top: 1px solid var(--border); background: #fffaf6;
+      padding: 8px 10px; max-height: 168px; overflow: auto;
+    }
+    .conflict-box .cf-title {
+      font-size: 11px; font-weight: 700; color: #d14343; margin-bottom: 5px;
+    }
+    .conflict-box pre {
+      margin: 0; font-family: Consolas, "Courier New", monospace;
+      font-size: 11px; line-height: 1.65; white-space: pre-wrap; color: #5a4030;
+    }
+    .conflict-box .mark { color: #d14343; font-weight: 700; }
+
+    /* ── 传输通道 ───────────────────────────────────────── */
+    .lane { position: relative; display: flex; flex-direction: column; justify-content: center; gap: 26px; }
+    .lane-row {
+      display: flex; flex-direction: column; align-items: center; gap: 3px;
+      font-size: 10px; color: var(--muted);
+    }
+    .chevrons { display: flex; gap: 3px; font-size: 15px; line-height: 1; color: #d5daea; }
+    .chevrons span { transition: color .12s; }
+    .chevrons span.lit { color: var(--accent); }
+    .lane-label { font-family: Consolas, monospace; font-size: 10px; }
+
+    .packet {
+      position: absolute; left: 50%; top: 50%;
+      transform: translate(-50%, -50%); opacity: 0; pointer-events: none;
+      background: var(--accent); color: #fff; border-radius: 8px;
+      padding: 6px 10px; min-width: 96px; text-align: center;
+      box-shadow: 0 5px 16px rgba(102,126,234,.4);
+    }
+    .packet .p-label { font-size: 11px; font-weight: 700; font-family: Consolas, monospace; }
+    .packet .p-files { font-size: 10px; opacity: .88; margin-top: 2px; line-height: 1.5;
+      font-family: Consolas, monospace; }
+    .packet.repo-color { background: var(--repo); box-shadow: 0 5px 16px rgba(122,90,248,.4); }
+    .packet.fly-wc   { animation: flyWC var(--dur) cubic-bezier(.45,.05,.55,.95) forwards; }
+    .packet.fly-repo { animation: flyRepo var(--dur) cubic-bezier(.45,.05,.55,.95) forwards; }
+    .packet.fly-top  { animation: flyTop var(--dur) cubic-bezier(.45,.05,.55,.95) forwards; }
+    @keyframes flyWC {   /* 版本库 → 工作副本（向左） */
+      0%   { transform: translate(60px, -50%)  scale(.7); opacity: 0; }
+      18%  { transform: translate(30px, -50%)  scale(1);  opacity: 1; }
+      75%  { transform: translate(-46px, -50%) scale(1);  opacity: 1; }
+      100% { transform: translate(-78px, -50%) scale(.7); opacity: 0; }
+    }
+    @keyframes flyRepo { /* 工作副本 → 版本库（向右） */
+      0%   { transform: translate(-70px, -50%) scale(.7); opacity: 0; }
+      18%  { transform: translate(-38px, -50%) scale(1);  opacity: 1; }
+      75%  { transform: translate(38px, -50%)  scale(1);  opacity: 1; }
+      100% { transform: translate(70px, -50%)  scale(.7); opacity: 0; }
+    }
+    @keyframes flyTop {  /* 别人从外部提交，落进版本库 */
+      0%   { transform: translate(-6px, -190px) scale(.7); opacity: 0; }
+      22%  { transform: translate(0, -110px)    scale(1);  opacity: 1; }
+      75%  { transform: translate(46px, -60%)   scale(1);  opacity: 1; }
+      100% { transform: translate(76px, -50%)   scale(.7); opacity: 0; }
+    }
+
+    /* ── 底部：终端 + 讲解 ──────────────────────────────── */
+    .bottom {
+      flex: none; height: 186px; display: grid;
+      grid-template-columns: 1.15fr 1fr; gap: 12px;
+      padding: 0 12px 10px;
+    }
+    .term {
+      background: #1e2130; border-radius: 10px; padding: 10px 12px;
+      overflow: auto; min-height: 0;
+      font-family: Consolas, "Courier New", monospace; font-size: 12px; line-height: 1.7;
+    }
+    .term .line { white-space: pre-wrap; word-break: break-all; }
+    .term .cmd { color: #e6e9f5; }
+    .term .cmd .prompt { color: #6ee7a8; margin-right: 6px; }
+    .term .out { color: #9aa3bd; }
+    .term .out.err { color: #ff8a8a; }
+    .term .note { color: #c9a227; font-style: normal; }
+    .term .caret {
+      display: inline-block; width: 7px; height: 14px; background: #6ee7a8;
+      vertical-align: -2px; animation: blink .9s step-end infinite;
+    }
+    @keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: 0; } }
+
+    .desc {
+      background: var(--card); border: 1px solid var(--border); border-radius: 10px;
+      padding: 11px 13px; overflow: auto; min-height: 0;
+      font-size: 13px; line-height: 1.85;
+    }
+    .desc .d-head { font-weight: 700; font-size: 13px; margin-bottom: 5px; color: var(--accent); }
+    .desc strong { color: #d14343; font-weight: 700; }
+    .desc code {
+      background: #f0f2fa; border-radius: 4px; padding: 1px 5px;
+      font-family: Consolas, "Courier New", monospace; font-size: 12px; color: #4a4f70;
+    }
+
+    /* ── 时间轴 ─────────────────────────────────────────── */
+    .timeline {
+      flex: none; display: flex; align-items: center; gap: 9px;
+      padding: 7px 14px; border-top: 1px solid var(--border); background: var(--card);
+    }
+    .dots { display: flex; align-items: center; gap: 5px; flex: 1; flex-wrap: wrap; }
+    .dot-btn {
+      width: 22px; height: 22px; border-radius: 50%; padding: 0; flex: none;
+      background: #e8ebf4; color: #9aa0b5; font-size: 10px; font-weight: 700;
+    }
+    .dot-btn:hover { background: #d9deee; }
+    .dot-btn.done { background: #cdd5f6; color: #5560a8; }
+    .dot-btn.cur  { background: var(--accent); color: #fff; box-shadow: 0 0 0 3px rgba(102,126,234,.2); }
+    .step-count { font-size: 12px; color: var(--muted); flex: none; font-family: Consolas, monospace; }
+
+    /* ── 速查表浮层 ─────────────────────────────────────── */
+    .sheet {
+      position: fixed; inset: 0; background: rgba(30,33,48,.45);
+      display: flex; align-items: center; justify-content: center; z-index: 20;
+      padding: 26px;
+    }
+    .sheet.hidden { display: none; }
+    .sheet-card {
+      background: var(--card); border-radius: 12px; width: 100%; max-width: 780px;
+      max-height: 100%; display: flex; flex-direction: column; overflow: hidden;
+      box-shadow: 0 18px 50px rgba(0,0,0,.28);
+    }
+    .sheet-head {
+      display: flex; align-items: center; padding: 11px 15px;
+      border-bottom: 1px solid var(--border); font-size: 14px; font-weight: 700;
+    }
+    .sheet-body { overflow: auto; padding: 6px 15px 15px; }
+    .sheet-body h3 {
+      font-size: 12px; color: var(--accent); margin: 14px 0 6px;
+      letter-spacing: .4px;
+    }
+    table { width: 100%; border-collapse: collapse; }
+    td { padding: 5px 8px; font-size: 12px; border-bottom: 1px solid #f0f2f8; vertical-align: top; }
+    td.c {
+      font-family: Consolas, "Courier New", monospace; color: #4a4f70;
+      white-space: nowrap; width: 45%;
+    }
+    td.d { color: #5a6080; line-height: 1.6; }
+  </style>
+</head>
+<body>
+  <div class="toolbar">
+    <h1>🗂️ SVN 演示动画</h1>
+    <button id="prev-btn" class="btn-ghost" title="上一步（←）">⏮ 上一步</button>
+    <button id="play-btn" class="btn-primary" title="播放 / 暂停（空格）">▶ 播放</button>
+    <button id="next-btn" class="btn-ghost" title="下一步（→）">下一步 ⏭</button>
+    <button id="replay-btn" class="btn-ghost" title="从头播放本课">↺ 重播</button>
+    <label class="field">速度
+      <select id="speed">
+        <option value="1.6">慢</option>
+        <option value="1" selected>正常</option>
+        <option value="0.6">快</option>
+      </select>
+    </label>
+    <div class="spacer"></div>
+    <button id="sheet-btn" class="btn-ghost">📖 命令速查表</button>
+  </div>
+
+  <div class="main">
+    <aside class="sidebar">
+      <div class="sidebar-head">课程</div>
+      <div class="lesson-list" id="lesson-list"></div>
+      <div class="tips">
+        <b>三句话记住 SVN</b><br />
+        1. 开工先 <code>update</code><br />
+        2. 提交必写 <code>-m "说明"</code><br />
+        3. 冲突别慌：改好再 <code>resolve</code>
+      </div>
+    </aside>
+
+    <div class="content">
+      <div class="stage">
+        <!-- 工作副本 -->
+        <section class="panel panel-local">
+          <div class="panel-head">
+            <span class="dot"></span>
+            <div style="min-width:0">
+              <div class="panel-title">工作副本 · 你的电脑</div>
+              <div class="panel-path" id="wc-path">—</div>
+            </div>
+            <span class="rev-badge" id="wc-rev">—</span>
+          </div>
+          <div class="panel-body" id="wc-body"></div>
+          <div class="conflict-box" id="conflict-box" style="display:none">
+            <div class="cf-title" id="cf-title"></div>
+            <pre id="cf-text"></pre>
+          </div>
+        </section>
+
+        <!-- 传输通道 -->
+        <div class="lane">
+          <div class="lane-row">
+            <div class="chevrons" id="chev-wc"><span>◀</span><span>◀</span><span>◀</span></div>
+            <div class="lane-label">checkout / update</div>
+          </div>
+          <div class="lane-row">
+            <div class="lane-label">commit</div>
+            <div class="chevrons" id="chev-repo"><span>▶</span><span>▶</span><span>▶</span></div>
+          </div>
+          <div class="packet" id="packet">
+            <div class="p-label" id="p-label"></div>
+            <div class="p-files" id="p-files"></div>
+          </div>
+        </div>
+
+        <!-- 版本库 -->
+        <section class="panel panel-repo">
+          <div class="panel-head">
+            <span class="dot"></span>
+            <div style="min-width:0">
+              <div class="panel-title">版本库 · 服务器</div>
+              <div class="panel-path" id="repo-path">—</div>
+            </div>
+            <span class="rev-badge" id="repo-rev">—</span>
+          </div>
+          <div class="panel-body" id="repo-body"></div>
+        </section>
+      </div>
+
+      <div class="bottom">
+        <div class="term" id="term"></div>
+        <div class="desc" id="desc"></div>
+      </div>
+
+      <div class="timeline">
+        <div class="dots" id="dots"></div>
+        <span class="step-count" id="step-count"></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 命令速查表 -->
+  <div class="sheet hidden" id="sheet">
+    <div class="sheet-card">
+      <div class="sheet-head">
+        📖 SVN 常用命令速查
+        <div class="spacer"></div>
+        <button id="sheet-close" class="btn-ghost">关闭</button>
+      </div>
+      <div class="sheet-body">
+        <h3>每天都会用到</h3>
+        <table>
+          <tr><td class="c">svn checkout &lt;URL&gt; [目录]</td><td class="d">检出工作副本。缩写 <code>co</code>，一个项目只做一次</td></tr>
+          <tr><td class="c">svn update</td><td class="d">把版本库的新内容拉到本地。缩写 <code>up</code>，开工第一件事</td></tr>
+          <tr><td class="c">svn status</td><td class="d">看本地改了什么，不联网。缩写 <code>st</code>；加 <code>-u</code> 顺便跟服务器比一下</td></tr>
+          <tr><td class="c">svn add &lt;文件&gt;</td><td class="d">把新文件纳入版本控制，否则提交时会被跳过</td></tr>
+          <tr><td class="c">svn commit -m "说明"</td><td class="d">提交到版本库，版本号 +1。缩写 <code>ci</code>，不写 <code>-m</code> 会弹编辑器</td></tr>
+          <tr><td class="c">svn diff [文件]</td><td class="d">看具体改了哪几行；<code>-r 5:7</code> 比较任意两个版本</td></tr>
+        </table>
+
+        <h3>状态字母的含义</h3>
+        <table>
+          <tr><td class="c">?</td><td class="d">未纳入版本控制（新建的文件，需要 <code>add</code>）</td></tr>
+          <tr><td class="c">A / D</td><td class="d">已标记为新增 / 删除，等待提交</td></tr>
+          <tr><td class="c">M</td><td class="d">已修改，等待提交</td></tr>
+          <tr><td class="c">C</td><td class="d">冲突，必须手工处理后 <code>resolve</code></td></tr>
+          <tr><td class="c">!</td><td class="d">文件不见了（被资源管理器直接删掉了），用 <code>svn revert</code> 找回</td></tr>
+          <tr><td class="c">*（配合 -u）</td><td class="d">服务器上有更新的版本，你已过期</td></tr>
+        </table>
+
+        <h3>撤销与救命</h3>
+        <table>
+          <tr><td class="c">svn revert &lt;文件&gt;</td><td class="d">丢弃本地改动还原文件；<code>-R .</code> 递归全部还原。<b>改动无法找回</b></td></tr>
+          <tr><td class="c">svn resolve --accept working &lt;文件&gt;</td><td class="d">手工改完冲突后，告诉 SVN 已解决</td></tr>
+          <tr><td class="c">svn merge -c -6 .</td><td class="d">撤销已提交的 r6（注意负号），再 commit 一次</td></tr>
+          <tr><td class="c">svn cleanup</td><td class="d">工作副本被锁住（previous operation has not finished）时执行</td></tr>
+          <tr><td class="c">svn log -l 5 -v</td><td class="d">看最近 5 条提交历史，<code>-v</code> 显示每次改了哪些文件</td></tr>
+        </table>
+
+        <h3>分支与标签</h3>
+        <table>
+          <tr><td class="c">svn copy ^/trunk ^/branches/xx -m "说明"</td><td class="d">建分支 = 服务器端拷贝目录，<code>^/</code> 指版本库根</td></tr>
+          <tr><td class="c">svn switch ^/branches/xx</td><td class="d">把现有工作副本切到分支，不用重新检出</td></tr>
+          <tr><td class="c">svn merge ^/branches/xx</td><td class="d">在 trunk 工作副本里执行，把分支改动合并进来，检查后再提交</td></tr>
+          <tr><td class="c">svn copy ^/trunk ^/tags/v1.0 -m "发布"</td><td class="d">打标签，约定 tags 下的内容不再修改</td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <script src="svn-demo.js"></script>
+</body>
+</html>

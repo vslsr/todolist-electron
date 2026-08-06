@@ -1,0 +1,417 @@
+Begin Map
+   Begin Level
+      Begin Actor Class=PVEVendingMachineVolume Name=PVEVendingMachineVolume_0 Archetype=PVEVendingMachineVolume'PVEGame.Default__PVEVendingMachineVolume'
+         Begin Object Class=BrushComponent Name=BrushComponent0 ObjName=BrushComponent_18 Archetype=BrushComponent'PVEGame.Default__PVEVendingMachineVolume:BrushComponent0'
+            BRUSH=Model'Model_7'
+            BrushAggGeom=(ConvexElems=((VertexData=((X=90.244904,Y=-90.810982,Z=127.622307),(X=90.250618,Y=89.188332,Z=-128.377686),(X=90.250618,Y=89.188332,Z=127.622307),(X=-89.743980,Y=89.193954,Z=127.622307),(X=-89.743980,Y=89.193954,Z=-128.377686),(X=-89.749512,Y=-90.805412,Z=-128.377686),(X=-89.749512,Y=-90.805412,Z=127.622307),(X=90.244904,Y=-90.810982,Z=-128.377686)),PermutedVertexData=((W=-89.743980,X=90.244904,Y=90.250618,Z=90.250618),(W=89.193954,X=-90.810982,Y=89.188332,Z=89.188332),(W=127.622307,X=127.622307,Y=-128.377686,Z=127.622307),(W=90.244904,X=-89.743980,Y=-89.749512,Z=-89.749512),(W=-90.810982,X=89.193954,Y=-90.805412,Z=-90.805412),(W=-128.377686,X=-128.377686,Y=-128.377686,Z=127.622307)),FaceTriData=(7,2,1,7,0,2,3,1,2,3,4,1,6,2,0,6,3,2,4,7,1,4,5,7,4,6,5,4,3,6,6,7,5,6,0,7),EdgeDirections=((X=0.000000,Y=0.000000,Z=1.000000),(X=0.000032,Y=1.000000,Z=0.000000),(X=1.000000,Y=-0.000031,Z=0.000000)),FaceNormalDirections=((X=1.000000,Y=-0.000032,Z=0.000000),(X=0.000031,Y=1.000000,Z=0.000000),(X=-0.000000,Y=0.000000,Z=1.000000)),FacePlaneData=((W=90.247787,X=1.000000,Y=-0.000032,Z=0.000000),(W=89.191147,X=0.000031,Y=1.000000,Z=0.000000),(W=127.622299,X=-0.000000,Y=0.000000,Z=1.000000),(W=128.377670,X=0.000000,Y=0.000000,Z=-1.000000),(W=89.746719,X=-1.000000,Y=0.000031,Z=0.000000),(W=90.808189,X=-0.000031,Y=-1.000000,Z=-0.000000)),ElemBox=(Min=(X=-89.749512,Y=-90.810982,Z=-128.377686),Max=(X=90.250618,Y=89.193954,Z=127.622307),IsValid=1))))
+            ReplacementPrimitive=None
+            bAcceptsLights=True
+            CollideActors=True
+            BlockNonZeroExtent=True
+            bDisableAllRigidBody=True
+            AlwaysLoadOnClient=True
+            AlwaysLoadOnServer=True
+            LightingChannels=(bInitialized=True,Dynamic=True)
+            Name="BrushComponent_18"
+            ObjectArchetype=BrushComponent'PVEGame.Default__PVEVendingMachineVolume:BrushComponent0'
+         End Object
+         MachineType=MT_Custom2
+         bNeedCheckFacing=False
+         Begin Brush Name=Model_7
+            Begin PolyList
+               Begin Polygon Flags=3584 Link=0
+                  Origin   +00127.108902,-00128.883972,-00128.000000
+                  Normal   -00000.000031,-00001.000000,+00000.000000
+                  TextureU -00000.999971,+00000.006931,+00000.000000
+                  TextureV +00000.000000,+00000.000000,-00001.000000
+                  Vertex   +00090.244904,-00090.810989,-00128.377686
+                  Vertex   +00090.244904,-00090.810989,+00127.622314
+                  Vertex   -00089.749512,-00090.805412,+00127.622314
+                  Vertex   -00089.749512,-00090.805412,-00128.377686
+               End Polygon
+               Begin Polygon Flags=3584 Link=1
+                  Origin   -00128.883972,-00127.108902,-00128.000000
+                  Normal   -00001.000000,+00000.000031,+00000.000000
+                  TextureU +00000.006931,+00000.999971,+00000.000000
+                  TextureV +00000.000000,+00000.000000,-00001.000000
+                  Vertex   -00089.749512,-00090.805412,-00128.377686
+                  Vertex   -00089.749512,-00090.805412,+00127.622314
+                  Vertex   -00089.743988,+00089.193954,+00127.622314
+                  Vertex   -00089.743988,+00089.193954,-00128.377686
+               End Polygon
+               Begin Polygon Flags=3584 Link=2
+                  Origin   -00127.108902,+00128.883972,-00128.000000
+                  Normal   +00000.000031,+00001.000000,+00000.000000
+                  TextureU +00000.999971,-00000.006931,+00000.000000
+                  TextureV +00000.000000,+00000.000000,-00001.000000
+                  Vertex   -00089.743988,+00089.193954,-00128.377686
+                  Vertex   -00089.743988,+00089.193954,+00127.622314
+                  Vertex   +00090.250610,+00089.188339,+00127.622314
+                  Vertex   +00090.250610,+00089.188339,-00128.377686
+               End Polygon
+               Begin Polygon Flags=3584 Link=3
+                  Origin   +00128.883972,+00127.108902,-00128.000000
+                  Normal   +00001.000000,-00000.000032,+00000.000000
+                  TextureU -00000.006931,-00000.999971,+00000.000000
+                  TextureV +00000.000000,+00000.000000,-00001.000000
+                  Vertex   +00090.250610,+00089.188339,-00128.377686
+                  Vertex   +00090.250610,+00089.188339,+00127.622314
+                  Vertex   +00090.244904,-00090.810989,+00127.622314
+                  Vertex   +00090.244904,-00090.810989,-00128.377686
+               End Polygon
+               Begin Polygon Flags=3584 Link=4
+                  Origin   +00000.000000,+00000.000000,+00127.622314
+                  Normal   +00000.000000,+00000.000000,+00001.000000
+                  TextureU +00000.999996,-00000.000032,+00000.000000
+                  TextureV +00000.000032,+00000.999996,+00000.000000
+                  Vertex   -00089.743988,+00089.193954,+00127.622314
+                  Vertex   -00089.749512,-00090.805412,+00127.622314
+                  Vertex   +00090.244904,-00090.810989,+00127.622314
+                  Vertex   +00090.250610,+00089.188339,+00127.622314
+               End Polygon
+               Begin Polygon Flags=3584 Link=5
+                  Origin   +00000.000000,+00000.000000,-00128.377686
+                  Normal   +00000.000000,+00000.000000,-00001.000000
+                  TextureU -00000.999996,+00000.000032,+00000.000000
+                  TextureV +00000.000032,+00000.999996,+00000.000000
+                  Vertex   +00090.250610,+00089.188339,-00128.377686
+                  Vertex   +00090.244904,-00090.810989,-00128.377686
+                  Vertex   -00089.749512,-00090.805412,-00128.377686
+                  Vertex   -00089.743988,+00089.193954,-00128.377686
+               End Polygon
+            End PolyList
+         End Brush
+         BRUSH=Model'Model_7'
+         BrushComponent=BrushComponent'BrushComponent_18'
+         Components(0)=BrushComponent'BrushComponent_18'
+         Location=(X=-24676.304688,Y=46192.570313,Z=26108.546875)
+         Tag="PVEVendingMachineVolume"
+         CollisionComponent=BrushComponent'BrushComponent_18'
+         Name="PVEVendingMachineVolume_0"
+         ObjectArchetype=PVEVendingMachineVolume'PVEGame.Default__PVEVendingMachineVolume'
+      End Actor
+      Begin Actor Class=PVEVendingMachineVolume Name=PVEVendingMachineVolume_1 Archetype=PVEVendingMachineVolume'PVEGame.Default__PVEVendingMachineVolume'
+         Begin Object Class=BrushComponent Name=BrushComponent0 ObjName=BrushComponent_18 Archetype=BrushComponent'PVEGame.Default__PVEVendingMachineVolume:BrushComponent0'
+            BRUSH=Model'Model_7'
+            BrushAggGeom=(ConvexElems=((VertexData=((X=89.877357,Y=90.434128,Z=-128.000000),(X=89.871979,Y=-89.565331,Z=-128.000000),(X=-90.127289,Y=-89.560600,Z=-128.000000),(X=89.877357,Y=90.434128,Z=128.000000),(X=89.871979,Y=-89.565331,Z=128.000000),(X=-90.192345,Y=90.641609,Z=128.000000),(X=-90.192345,Y=90.641609,Z=-128.000000),(X=-90.127289,Y=-89.560600,Z=128.000000)),PermutedVertexData=((W=89.877357,X=89.877357,Y=89.871979,Z=-90.127289),(W=90.434128,X=90.434128,Y=-89.565331,Z=-89.560600),(W=128.000000,X=-128.000000,Y=-128.000000,Z=-128.000000),(W=-90.127289,X=89.871979,Y=-90.192345,Z=-90.192345),(W=-89.560600,X=-89.565331,Y=90.641609,Z=90.641609),(W=128.000000,X=128.000000,Y=128.000000,Z=-128.000000)),FaceTriData=(0,2,1,0,6,2,1,3,0,1,4,3,7,1,2,7,4,1,7,3,4,7,5,3,5,0,3,5,6,0,6,7,2,6,5,7),EdgeDirections=((X=-1.000000,Y=0.000026,Z=0.000000),(X=-0.000030,Y=-1.000000,Z=0.000000),(X=0.000000,Y=0.000000,Z=1.000000)),FaceNormalDirections=((X=0.000000,Y=0.000000,Z=-1.000000),(X=1.000000,Y=-0.000030,Z=0.000000),(X=-0.000026,Y=-1.000000,Z=-0.000000)),FacePlaneData=((W=128.000000,X=0.000000,Y=0.000000,Z=-1.000000),(W=89.874657,X=1.000000,Y=-0.000030,Z=0.000000),(W=89.562965,X=-0.000026,Y=-1.000000,Z=-0.000000),(W=128.000015,X=-0.000000,Y=0.000000,Z=1.000000),(W=90.537628,X=0.001152,Y=0.999999,Z=0.000000),(W=90.159622,X=-1.000000,Y=-0.000361,Z=0.000000)),ElemBox=(Min=(X=-90.192345,Y=-89.565331,Z=-128.000000),Max=(X=89.877357,Y=90.641609,Z=128.000000),IsValid=1))))
+            ReplacementPrimitive=None
+            bAcceptsLights=True
+            CollideActors=True
+            BlockNonZeroExtent=True
+            bDisableAllRigidBody=True
+            AlwaysLoadOnClient=True
+            AlwaysLoadOnServer=True
+            LightingChannels=(bInitialized=True,Dynamic=True)
+            Name="BrushComponent_18"
+            ObjectArchetype=BrushComponent'PVEGame.Default__PVEVendingMachineVolume:BrushComponent0'
+         End Object
+         Cost=200
+         MachineType=MT_Custom1
+         bNeedCheckFacing=False
+         Begin Brush Name=Model_7
+            Begin PolyList
+               Begin Polygon Flags=3584 Link=0
+                  Origin   -00127.994911,+00128.001831,-00128.000000
+                  Normal   +00000.001152,+00000.999999,+00000.000000
+                  TextureU +00000.999990,-00000.000027,+00000.000000
+                  TextureV +00000.000000,+00000.000000,-00001.000000
+                  Vertex   -00090.192352,+00090.641617,-00128.000000
+                  Vertex   -00090.192352,+00090.641617,+00128.000000
+                  Vertex   +00089.877365,+00090.434128,+00128.000000
+                  Vertex   +00089.877365,+00090.434128,-00128.000000
+               End Polygon
+               Begin Polygon Flags=3584 Link=1
+                  Origin   +00128.001831,+00127.994911,-00128.000000
+                  Normal   +00001.000000,-00000.000030,+00000.000000
+                  TextureU -00000.000027,-00000.999990,+00000.000000
+                  TextureV +00000.000000,+00000.000000,-00001.000000
+                  Vertex   +00089.877365,+00090.434128,-00128.000000
+                  Vertex   +00089.877365,+00090.434128,+00128.000000
+                  Vertex   +00089.871986,-00089.565331,+00128.000000
+                  Vertex   +00089.871986,-00089.565331,-00128.000000
+               End Polygon
+               Begin Polygon Flags=3584 Link=2
+                  Origin   +00127.994911,-00128.001831,-00128.000000
+                  Normal   -00000.000026,-00001.000000,+00000.000000
+                  TextureU -00000.999990,+00000.000027,+00000.000000
+                  TextureV +00000.000000,+00000.000000,-00001.000000
+                  Vertex   +00089.871986,-00089.565331,-00128.000000
+                  Vertex   +00089.871986,-00089.565331,+00128.000000
+                  Vertex   -00090.127296,-00089.560600,+00128.000000
+                  Vertex   -00090.127296,-00089.560600,-00128.000000
+               End Polygon
+               Begin Polygon Flags=3584 Link=3
+                  Origin   -00128.001831,-00127.994911,-00128.000000
+                  Normal   -00001.000000,-00000.000361,+00000.000000
+                  TextureU +00000.000027,+00000.999990,+00000.000000
+                  TextureV +00000.000000,+00000.000000,-00001.000000
+                  Vertex   -00090.127296,-00089.560600,-00128.000000
+                  Vertex   -00090.127296,-00089.560600,+00128.000000
+                  Vertex   -00090.192352,+00090.641617,+00128.000000
+                  Vertex   -00090.192352,+00090.641617,-00128.000000
+               End Polygon
+               Begin Polygon Flags=3584 Link=4
+                  Origin   +00128.001831,+00127.994911,+00128.000000
+                  Normal   +00000.000000,+00000.000000,+00001.000000
+                  TextureU -00000.000027,-00000.999990,+00000.000000
+                  TextureV +00000.999990,-00000.000027,+00000.000000
+                  Vertex   +00089.877365,+00090.434128,+00128.000000
+                  Vertex   -00090.192352,+00090.641617,+00128.000000
+                  Vertex   -00090.127296,-00089.560600,+00128.000000
+                  Vertex   +00089.871986,-00089.565331,+00128.000000
+               End Polygon
+               Begin Polygon Flags=3584 Link=5
+                  Origin   -00127.994911,+00128.001831,-00128.000000
+                  Normal   +00000.000000,+00000.000000,-00001.000000
+                  TextureU -00000.000027,-00000.999990,+00000.000000
+                  TextureV -00000.999990,+00000.000027,+00000.000000
+                  Vertex   -00090.192352,+00090.641617,-00128.000000
+                  Vertex   +00089.877365,+00090.434128,-00128.000000
+                  Vertex   +00089.871986,-00089.565331,-00128.000000
+                  Vertex   -00090.127296,-00089.560600,-00128.000000
+               End Polygon
+            End PolyList
+         End Brush
+         BRUSH=Model'Model_7'
+         BrushComponent=BrushComponent'BrushComponent_18'
+         Components(0)=BrushComponent'BrushComponent_18'
+         Location=(X=-25226.775391,Y=46132.230469,Z=26125.169922)
+         Tag="PVEVendingMachineVolume"
+         CollisionComponent=BrushComponent'BrushComponent_18'
+         Name="PVEVendingMachineVolume_1"
+         ObjectArchetype=PVEVendingMachineVolume'PVEGame.Default__PVEVendingMachineVolume'
+      End Actor
+      Begin Actor Class=PVEVendingMachineVolume Name=PVEVendingMachineVolume_2 Archetype=PVEVendingMachineVolume'PVEGame.Default__PVEVendingMachineVolume'
+         Begin Object Class=BrushComponent Name=BrushComponent0 ObjName=BrushComponent_18 Archetype=BrushComponent'PVEGame.Default__PVEVendingMachineVolume:BrushComponent0'
+            BRUSH=Model'Model_7'
+            BrushAggGeom=(ConvexElems=((VertexData=((X=90.291763,Y=89.775345,Z=-128.377686),(X=90.285889,Y=-90.223862,Z=-128.377686),(X=-89.713684,Y=-90.218658,Z=-128.377686),(X=90.291763,Y=89.775345,Z=127.622307),(X=90.285889,Y=-90.223862,Z=127.622307),(X=-89.707817,Y=89.780876,Z=127.622307),(X=-89.713684,Y=-90.218658,Z=127.622307),(X=-89.707817,Y=89.780876,Z=-128.377686)),PermutedVertexData=((W=90.291763,X=90.291763,Y=90.285889,Z=-89.713684),(W=89.775345,X=89.775345,Y=-90.223862,Z=-90.218658),(W=127.622307,X=-128.377686,Y=-128.377686,Z=-128.377686),(W=-89.707817,X=90.285889,Y=-89.707817,Z=-89.713684),(W=89.780876,X=-90.223862,Y=89.780876,Z=-90.218658),(W=-128.377686,X=127.622307,Y=127.622307,Z=127.622307)),FaceTriData=(0,2,1,0,7,2,1,3,0,1,4,3,6,1,2,6,4,1,6,3,4,6,5,3,5,0,3,5,7,0,6,7,5,6,2,7),EdgeDirections=((X=-1.000000,Y=0.000029,Z=0.000000),(X=-0.000033,Y=-1.000000,Z=0.000000),(X=0.000000,Y=0.000000,Z=1.000000)),FaceNormalDirections=((X=0.000000,Y=0.000000,Z=-1.000000),(X=1.000000,Y=-0.000033,Z=0.000000),(X=-0.000029,Y=-1.000000,Z=-0.000000)),FacePlaneData=((W=128.377670,X=0.000000,Y=0.000000,Z=-1.000000),(W=90.288834,X=1.000000,Y=-0.000033,Z=0.000000),(W=90.221252,X=-0.000029,Y=-1.000000,Z=-0.000000),(W=127.622299,X=-0.000000,Y=0.000000,Z=1.000000),(W=89.778122,X=0.000031,Y=1.000000,Z=0.000000),(W=89.710747,X=-1.000000,Y=0.000033,Z=0.000000)),ElemBox=(Min=(X=-89.713684,Y=-90.223862,Z=-128.377686),Max=(X=90.291763,Y=89.780876,Z=127.622307),IsValid=1))))
+            ReplacementPrimitive=None
+            bAcceptsLights=True
+            CollideActors=True
+            BlockNonZeroExtent=True
+            bDisableAllRigidBody=True
+            AlwaysLoadOnClient=True
+            AlwaysLoadOnServer=True
+            LightingChannels=(bInitialized=True,Dynamic=True)
+            Name="BrushComponent_18"
+            ObjectArchetype=BrushComponent'PVEGame.Default__PVEVendingMachineVolume:BrushComponent0'
+         End Object
+         Cost=400
+         MachineType=MT_Custom
+         bNeedCheckFacing=False
+         Begin Brush Name=Model_7
+            Begin PolyList
+               Begin Polygon Flags=3584 Link=0
+                  Origin   -00127.994904,+00128.002411,-00128.000000
+                  Normal   +00000.000031,+00001.000000,+00000.000000
+                  TextureU +00000.999992,-00000.000033,+00000.000000
+                  TextureV +00000.000000,+00000.000000,-00001.000000
+                  Vertex   -00089.707817,+00089.780884,-00128.377686
+                  Vertex   -00089.707817,+00089.780884,+00127.622314
+                  Vertex   +00090.291756,+00089.775352,+00127.622314
+                  Vertex   +00090.291756,+00089.775352,-00128.377686
+               End Polygon
+               Begin Polygon Flags=3584 Link=1
+                  Origin   +00128.002411,+00127.994904,-00128.000000
+                  Normal   +00001.000000,-00000.000033,+00000.000000
+                  TextureU -00000.000033,-00000.999992,+00000.000000
+                  TextureV +00000.000000,+00000.000000,-00001.000000
+                  Vertex   +00090.291756,+00089.775352,-00128.377686
+                  Vertex   +00090.291756,+00089.775352,+00127.622314
+                  Vertex   +00090.285896,-00090.223869,+00127.622314
+                  Vertex   +00090.285896,-00090.223869,-00128.377686
+               End Polygon
+               Begin Polygon Flags=3584 Link=2
+                  Origin   +00127.994904,-00128.002411,-00128.000000
+                  Normal   -00000.000029,-00001.000000,+00000.000000
+                  TextureU -00000.999992,+00000.000033,+00000.000000
+                  TextureV +00000.000000,+00000.000000,-00001.000000
+                  Vertex   +00090.285896,-00090.223869,-00128.377686
+                  Vertex   +00090.285896,-00090.223869,+00127.622314
+                  Vertex   -00089.713692,-00090.218658,+00127.622314
+                  Vertex   -00089.713692,-00090.218658,-00128.377686
+               End Polygon
+               Begin Polygon Flags=3584 Link=3
+                  Origin   -00128.002411,-00127.994904,-00128.000000
+                  Normal   -00001.000000,+00000.000033,+00000.000000
+                  TextureU +00000.000033,+00000.999992,+00000.000000
+                  TextureV +00000.000000,+00000.000000,-00001.000000
+                  Vertex   -00089.713692,-00090.218658,-00128.377686
+                  Vertex   -00089.713692,-00090.218658,+00127.622314
+                  Vertex   -00089.707817,+00089.780884,+00127.622314
+                  Vertex   -00089.707817,+00089.780884,-00128.377686
+               End Polygon
+               Begin Polygon Flags=3584 Link=4
+                  Origin   +00000.000000,+00000.000000,+00127.622299
+                  Normal   +00000.000000,+00000.000000,+00001.000000
+                  TextureU -00000.000034,-00000.999996,+00000.000000
+                  TextureV +00000.999996,-00000.000034,+00000.000000
+                  Vertex   +00090.285896,-00090.223869,+00127.622314
+                  Vertex   +00090.291756,+00089.775352,+00127.622314
+                  Vertex   -00089.707817,+00089.780884,+00127.622314
+                  Vertex   -00089.713692,-00090.218658,+00127.622314
+               End Polygon
+               Begin Polygon Flags=3584 Link=5
+                  Origin   +00000.000000,+00000.000000,-00128.377686
+                  Normal   +00000.000000,+00000.000000,-00001.000000
+                  TextureU +00000.000034,+00000.999996,+00000.000000
+                  TextureV +00000.999996,-00000.000034,+00000.000000
+                  Vertex   -00089.713692,-00090.218658,-00128.377686
+                  Vertex   -00089.707817,+00089.780884,-00128.377686
+                  Vertex   +00090.291756,+00089.775352,-00128.377686
+                  Vertex   +00090.285896,-00090.223869,-00128.377686
+               End Polygon
+            End PolyList
+         End Brush
+         BRUSH=Model'Model_7'
+         BrushComponent=BrushComponent'BrushComponent_18'
+         Components(0)=BrushComponent'BrushComponent_18'
+         Location=(X=-25216.300781,Y=46311.128906,Z=26131.546875)
+         Tag="PVEVendingMachineVolume"
+         CollisionComponent=BrushComponent'BrushComponent_18'
+         Name="PVEVendingMachineVolume_2"
+         ObjectArchetype=PVEVendingMachineVolume'PVEGame.Default__PVEVendingMachineVolume'
+      End Actor
+      Begin Actor Class=Emitter Name=Emitter_23 Archetype=Emitter'Engine.Default__Emitter'
+         Begin Object Class=ParticleSystemComponent Name=ParticleSystemComponent0 ObjName=ParticleSystemComponent_0 Archetype=ParticleSystemComponent'Engine.Default__Emitter:ParticleSystemComponent0'
+            Template=ParticleSystem'IFHUD.IF_Tip.Effects.P_IF_Tip_016'
+            bJustAttached=True
+            OldPosition=(X=-25248.851563,Y=46313.820313,Z=26114.152344)
+            ReplacementPrimitive=None
+            MaxDrawDistance=3600.000000
+            CachedMaxDrawDistance=3600.000000
+            LightingChannels=(bInitialized=True,Dynamic=True)
+            Scale=30.000000
+            Name="ParticleSystemComponent_0"
+            ObjectArchetype=ParticleSystemComponent'Engine.Default__Emitter:ParticleSystemComponent0'
+         End Object
+         Begin Object Class=SpriteComponent Name=Sprite ObjName=SpriteComponent_4894 Archetype=SpriteComponent'Engine.Default__Emitter:Sprite'
+            Sprite=Texture2D'EditorResources.S_Emitter'
+            bIsScreenSizeScaled=True
+            ScreenSize=0.002500
+            ReplacementPrimitive=None
+            HiddenGame=True
+            AlwaysLoadOnClient=False
+            AlwaysLoadOnServer=False
+            LightingChannels=(bInitialized=True,Dynamic=True)
+            Name="SpriteComponent_4894"
+            ObjectArchetype=SpriteComponent'Engine.Default__Emitter:Sprite'
+         End Object
+         Begin Object Class=ArrowComponent Name=ArrowComponent0 ObjName=ArrowComponent_2162 Archetype=ArrowComponent'Engine.Default__Emitter:ArrowComponent0'
+            ArrowColor=(B=128,G=255,R=0,A=255)
+            ArrowSize=1.500000
+            bTreatAsASprite=True
+            ReplacementPrimitive=None
+            LightingChannels=(bInitialized=True,Dynamic=True)
+            Name="ArrowComponent_2162"
+            ObjectArchetype=ArrowComponent'Engine.Default__Emitter:ArrowComponent0'
+         End Object
+         ParticleSystemComponent=ParticleSystemComponent'ParticleSystemComponent_0'
+         Components(0)=SpriteComponent'SpriteComponent_4894'
+         Components(1)=ParticleSystemComponent'ParticleSystemComponent_0'
+         Components(2)=ArrowComponent'ArrowComponent_2162'
+         Location=(X=-25248.851563,Y=46313.820313,Z=26114.152344)
+         Rotation=(Pitch=0,Yaw=-3072,Roll=32768)
+         DrawScale=0.700000
+         Tag="Emitter"
+         Group="补给"
+         Name="Emitter_23"
+         ObjectArchetype=Emitter'Engine.Default__Emitter'
+      End Actor
+      Begin Actor Class=Emitter Name=Emitter_24 Archetype=Emitter'Engine.Default__Emitter'
+         Begin Object Class=ParticleSystemComponent Name=ParticleSystemComponent0 ObjName=ParticleSystemComponent_5 Archetype=ParticleSystemComponent'Engine.Default__Emitter:ParticleSystemComponent0'
+            Template=ParticleSystem'IFHUD.IF_Tip.Effects.P_IF_Tip_017'
+            bJustAttached=True
+            OldPosition=(X=-25232.833984,Y=46156.562500,Z=26116.113281)
+            ReplacementPrimitive=None
+            MaxDrawDistance=3600.000000
+            CachedMaxDrawDistance=3600.000000
+            LightingChannels=(bInitialized=True,Dynamic=True)
+            Scale=30.000000
+            Name="ParticleSystemComponent_5"
+            ObjectArchetype=ParticleSystemComponent'Engine.Default__Emitter:ParticleSystemComponent0'
+         End Object
+         Begin Object Class=SpriteComponent Name=Sprite ObjName=SpriteComponent_4895 Archetype=SpriteComponent'Engine.Default__Emitter:Sprite'
+            Sprite=Texture2D'EditorResources.S_Emitter'
+            bIsScreenSizeScaled=True
+            ScreenSize=0.002500
+            ReplacementPrimitive=None
+            HiddenGame=True
+            AlwaysLoadOnClient=False
+            AlwaysLoadOnServer=False
+            LightingChannels=(bInitialized=True,Dynamic=True)
+            Name="SpriteComponent_4895"
+            ObjectArchetype=SpriteComponent'Engine.Default__Emitter:Sprite'
+         End Object
+         Begin Object Class=ArrowComponent Name=ArrowComponent0 ObjName=ArrowComponent_2163 Archetype=ArrowComponent'Engine.Default__Emitter:ArrowComponent0'
+            ArrowColor=(B=128,G=255,R=0,A=255)
+            ArrowSize=1.500000
+            bTreatAsASprite=True
+            ReplacementPrimitive=None
+            LightingChannels=(bInitialized=True,Dynamic=True)
+            Name="ArrowComponent_2163"
+            ObjectArchetype=ArrowComponent'Engine.Default__Emitter:ArrowComponent0'
+         End Object
+         ParticleSystemComponent=ParticleSystemComponent'ParticleSystemComponent_5'
+         Components(0)=SpriteComponent'SpriteComponent_4895'
+         Components(1)=ParticleSystemComponent'ParticleSystemComponent_5'
+         Components(2)=ArrowComponent'ArrowComponent_2163'
+         Location=(X=-25232.833984,Y=46156.562500,Z=26116.113281)
+         Rotation=(Pitch=0,Yaw=29696,Roll=32768)
+         DrawScale=0.700000
+         Tag="Emitter"
+         Group="补给"
+         Name="Emitter_24"
+         ObjectArchetype=Emitter'Engine.Default__Emitter'
+      End Actor
+      Begin Actor Class=Emitter Name=Emitter_25 Archetype=Emitter'Engine.Default__Emitter'
+         Begin Object Class=ParticleSystemComponent Name=ParticleSystemComponent0 ObjName=ParticleSystemComponent_5 Archetype=ParticleSystemComponent'Engine.Default__Emitter:ParticleSystemComponent0'
+            Template=ParticleSystem'PZHUD.PZ_Tip.Effects.P_PZ_HUD_Tip_Trolley'
+            bJustAttached=True
+            OldPosition=(X=-24666.781250,Y=46200.929688,Z=26119.003906)
+            ReplacementPrimitive=None
+            MaxDrawDistance=3600.000000
+            CachedMaxDrawDistance=3600.000000
+            LightingChannels=(bInitialized=True,Dynamic=True)
+            Scale=30.000000
+            Name="ParticleSystemComponent_5"
+            ObjectArchetype=ParticleSystemComponent'Engine.Default__Emitter:ParticleSystemComponent0'
+         End Object
+         Begin Object Class=SpriteComponent Name=Sprite ObjName=SpriteComponent_4896 Archetype=SpriteComponent'Engine.Default__Emitter:Sprite'
+            Sprite=Texture2D'EditorResources.S_Emitter'
+            bIsScreenSizeScaled=True
+            ScreenSize=0.002500
+            ReplacementPrimitive=None
+            HiddenGame=True
+            AlwaysLoadOnClient=False
+            AlwaysLoadOnServer=False
+            LightingChannels=(bInitialized=True,Dynamic=True)
+            Name="SpriteComponent_4896"
+            ObjectArchetype=SpriteComponent'Engine.Default__Emitter:Sprite'
+         End Object
+         Begin Object Class=ArrowComponent Name=ArrowComponent0 ObjName=ArrowComponent_2164 Archetype=ArrowComponent'Engine.Default__Emitter:ArrowComponent0'
+            ArrowColor=(B=128,G=255,R=0,A=255)
+            ArrowSize=1.500000
+            bTreatAsASprite=True
+            ReplacementPrimitive=None
+            LightingChannels=(bInitialized=True,Dynamic=True)
+            Name="ArrowComponent_2164"
+            ObjectArchetype=ArrowComponent'Engine.Default__Emitter:ArrowComponent0'
+         End Object
+         ParticleSystemComponent=ParticleSystemComponent'ParticleSystemComponent_5'
+         Components(0)=SpriteComponent'SpriteComponent_4896'
+         Components(1)=ParticleSystemComponent'ParticleSystemComponent_5'
+         Components(2)=ArrowComponent'ArrowComponent_2164'
+         Location=(X=-24666.781250,Y=46200.929688,Z=26119.003906)
+         Rotation=(Pitch=0,Yaw=0,Roll=32768)
+         DrawScale=0.700000
+         DrawScale3D=(X=-1.000000,Y=1.000000,Z=1.000000)
+         Tag="Emitter"
+         Group="补给"
+         Name="Emitter_25"
+         ObjectArchetype=Emitter'Engine.Default__Emitter'
+      End Actor
+   End Level
+Begin Surface
+End Surface
+End Map

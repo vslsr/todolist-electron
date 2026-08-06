@@ -249,14 +249,33 @@ async function saveTodos() {
 
 // ── CRUD ───────────────────────────────────────────────────────────────────
 
+// Split pasted/typed text into one entry per non-empty line.
+// Returns [] when nothing usable is left.
+function splitLines(text) {
+  return String(text == null ? '' : text)
+    .split(/\r\n|[\r\n\u2028\u2029]/)
+    .map(line => line.trim())
+    .filter(Boolean);
+}
+
 function addTodo() {
   const input = document.getElementById('new-task-input');
   const sel   = document.getElementById('priority-select');
-  const text  = input.value.trim();
-  if (!text) return;
-  todos.unshift(createTodo(text, sel.value));
+  const lines = splitLines(input.value);
+  if (lines.length === 0) return;
+  // Unshift in reverse so the first line ends up on top, matching read order.
+  for (let i = lines.length - 1; i >= 0; i--) {
+    todos.unshift(createTodo(lines[i], sel.value));
+  }
   input.value = '';
+  autoGrowInput(input);
   saveTodos(); render();
+}
+
+// Keep the new-task textarea just tall enough for its content (CSS caps the height).
+function autoGrowInput(el) {
+  el.style.height = 'auto';
+  el.style.height = el.scrollHeight + 'px';
 }
 
 function toggleTodo(id) {
@@ -302,9 +321,36 @@ function addChildTodo(parentId) {
   }
 }
 
+// Commit inline-edited text. Multi-line input becomes one node per line:
+// the edited node takes line 1, the rest are inserted after it as siblings.
+// Returns true when extra siblings were created (caller must re-render).
 function updateTodoText(id, newText) {
+  const lines = splitLines(newText);
+  if (lines.length === 0) return false;
+
   const t = findById(id);
-  if (t && newText.trim()) { t.text = newText.trim(); saveTodos(); }
+  if (!t) return false;
+  t.text = lines[0];
+
+  if (lines.length > 1) {
+    const siblings = findSiblingList(id);
+    const at = siblings.findIndex(s => s.id === id);
+    const extras = lines.slice(1).map(line => createTodo(line, t.priority));
+    siblings.splice(at + 1, 0, ...extras);
+  }
+
+  saveTodos();
+  return lines.length > 1;
+}
+
+// The array that directly holds `id` (the root list, or some node's children).
+function findSiblingList(id, list = todos) {
+  if (list.some(t => t.id === id)) return list;
+  for (const t of list) {
+    const found = findSiblingList(id, t.children);
+    if (found) return found;
+  }
+  return null;
 }
 
 function toggleCollapsed(id) {
@@ -706,17 +752,34 @@ function createTaskEl(todo) {
   textEl.contentEditable = isTransferred ? 'false' : 'true';
   textEl.spellcheck      = false;
   if (!isTransferred) {
-    textEl.addEventListener('blur', () => {
-      const typed = textEl.textContent.trim();
-      if (!typed && todo.text === '') {
+    // innerText (not textContent) so pasted/Shift+Enter line breaks survive as \n
+    const readText = () => textEl.innerText;
+    let committed = false;   // set once a re-render has taken over this element
+
+    const commit = () => {
+      if (committed) return;
+      committed = true;
+      const raw = readText();
+      if (!raw.trim() && todo.text === '') {
         deleteTodo(todo.id); // auto-inserted empty child left blank → remove
-      } else {
-        updateTodoText(todo.id, textEl.textContent);
+      } else if (updateTodoText(todo.id, raw)) {
+        render();            // extra lines became sibling nodes
       }
-    });
+    };
+
+    textEl.addEventListener('blur', commit);
     textEl.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter')  { e.preventDefault(); textEl.blur(); }
-      if (e.key === 'Escape') { textEl.textContent = todo.text; textEl.blur(); }
+      // Shift+Enter inserts a line break → becomes another node on commit
+      if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); textEl.blur(); }
+      if (e.key === 'Escape') { committed = true; textEl.textContent = todo.text; textEl.blur(); }
+    });
+    // Paste as plain text; a multi-line paste commits immediately as multiple nodes
+    textEl.addEventListener('paste', (e) => {
+      const pasted = (e.clipboardData || window.clipboardData).getData('text/plain');
+      if (!pasted) return;
+      e.preventDefault();
+      document.execCommand('insertText', false, pasted);
+      if (splitLines(readText()).length > 1) commit();
     });
   }
 
@@ -1176,8 +1239,15 @@ function createTaskEl(todo) {
 
 document.getElementById('add-btn').addEventListener('click', addTodo);
 
-document.getElementById('new-task-input').addEventListener('keydown', e => {
-  if (e.key === 'Enter') addTodo();
+const newTaskInput = document.getElementById('new-task-input');
+
+newTaskInput.addEventListener('keydown', e => {
+  // Enter confirms; Shift+Enter adds a line, and each line becomes its own task.
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); addTodo(); }
+});
+newTaskInput.addEventListener('input', () => autoGrowInput(newTaskInput));
+newTaskInput.addEventListener('paste', () => {
+  setTimeout(() => autoGrowInput(newTaskInput), 0);
 });
 
 document.getElementById('clear-completed-btn').addEventListener('click', clearCompleted);
@@ -1894,9 +1964,16 @@ const TOOLS = [
   { id: 'test-tool', name: '测试工具', icon: '🧪', title: '测试工具', width: 420, height: 400 },
   { id: 'objlist-merge', name: '对象列表合并', icon: '🧩', title: '对象列表合并 · SeqVar_ObjectList', width: 900, height: 680 },
   { id: 'teleport-chain', name: 'Teleport链生成', icon: '🌀', title: 'Teleport 链生成 · SeqAct_Teleport', width: 940, height: 700 },
+  { id: 'spawn-checker', name: '刷怪Checker生成', icon: '👾', title: '刷怪 Checker + Volume 生成 · 完整波次配置', width: 1200, height: 820 },
+  { id: 'player-start-creator', name: '创建出生点', icon: '🚩', title: '创建出生点 · UTTeamPlayerStart 形状排列', width: 1120, height: 780 },
   { id: 'prop-list', name: '属性列表生成', icon: '📋', title: '属性列表生成 · 属性面板字符串', width: 900, height: 640 },
+  { id: 'remote-event', name: '远程事件生成', icon: '📡', title: '远程事件生成 · SeqEvent_RemoteEvent', width: 940, height: 640 },
   { id: 'quiz', name: '题库测验', icon: '📝', title: '题库测验 · 检验掌握程度', width: 760, height: 760 },
   { id: 'music-arranger', name: '电子编曲', icon: '🎹', title: '电子音乐编曲器 · 五层编曲 (Tone.js + smplr)', width: 1180, height: 820 },
+  { id: 'svn-demo', name: 'SVN 演示', icon: '🗂️', title: 'SVN 演示动画 · 六课看懂日常工作流', width: 1180, height: 830 },
+  { id: 'guider-chain', name: '引导点链生成', icon: '🧭', title: '引导点链生成 · TGADBaseActorGuider 开链', width: 1120, height: 800 },
+  { id: 'supply-point', name: '补给点生成', icon: '🛒', title: '补给点生成 · PVEVendingMachineVolume 商店/加血/加子弹', width: 1160, height: 840 },
+  { id: 'udk-streaming', name: 'UDK Streaming生成', icon: '📦', title: 'UDK Streaming 生成 · SeqAct_MultiLevelStreaming', width: 1060, height: 720 },
 ];
 
 let toolsVisible = false;

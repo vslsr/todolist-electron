@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'" />
+  <title>刷怪 Checker + Volume 生成</title>
+  <style>
+    :root { --accent:#e0733a; --bg:#f5f6fa; --card:#ffffff; --text:#2c2f3a; --muted:#8a90a6; --border:#e2e5f0; }
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body { margin:0; font-family:"Segoe UI","Microsoft YaHei",sans-serif; background:var(--bg); color:var(--text); display:flex; flex-direction:column; }
+
+    .toolbar { display:flex; align-items:center; flex-wrap:wrap; gap:8px 12px; padding:10px 14px; border-bottom:1px solid var(--border); background:var(--card); }
+    .toolbar h1 { margin:0 6px 0 0; font-size:15px; font-weight:700; }
+    .spacer { flex:1; }
+    button { border:none; border-radius:7px; padding:7px 15px; font-size:13px; cursor:pointer; transition:filter .15s, background .15s; }
+    .btn-primary { background:var(--accent); color:#fff; } .btn-primary:hover { filter:brightness(1.08); }
+    .btn-ghost { background:#eef0f8; color:#4a4f70; } .btn-ghost:hover { background:#e2e5f3; }
+    .chk { display:inline-flex; align-items:center; gap:5px; font-size:12px; color:var(--text); cursor:pointer; user-select:none; }
+    .chk input, .cfg input[type=checkbox], .cfg input[type=radio] { accent-color:var(--accent); }
+
+    .main { flex:1; display:flex; min-height:0; }
+    .cfg { width:410px; flex:none; overflow:auto; border-right:1px solid var(--border); background:#fbfaf7; padding:10px 12px; }
+    .right { flex:1; display:flex; flex-direction:column; min-width:0; }
+    .pane { display:flex; flex-direction:column; min-height:0; background:var(--card); }
+    .pane.in { flex:0 0 34%; border-bottom:1px solid var(--border); }
+    .pane.out { flex:1; }
+    .pane-head { display:flex; align-items:center; justify-content:space-between; padding:6px 12px; font-size:12px; font-weight:600; color:#4a4f70; border-bottom:1px solid var(--border); }
+    .pane-count { color:var(--accent); font-weight:700; }
+    textarea { flex:1; border:none; outline:none; resize:none; padding:10px 12px; font-family:Consolas,"Courier New",monospace; font-size:12px; line-height:1.5; color:var(--text); background:transparent; white-space:pre; overflow:auto; }
+    #output { background:#fbfcff; }
+
+    .sec { border:1px solid var(--border); border-radius:8px; background:#fff; margin-bottom:10px; }
+    .sec > h2 { margin:0; font-size:12px; font-weight:700; color:#4a4f70; padding:7px 10px; border-bottom:1px solid var(--border); display:flex; align-items:center; gap:8px; }
+    .sec .body { padding:8px 10px; }
+    .row { display:flex; flex-wrap:wrap; gap:6px 10px; align-items:center; }
+    label.fld { display:flex; flex-direction:column; gap:2px; font-size:11px; color:var(--muted); }
+    label.fld input[type=text], label.fld input[type=number], label.fld select { border:1px solid var(--border); border-radius:5px; padding:4px 6px; font-size:12px; color:var(--text); outline:none; background:#fff; }
+    label.fld input:focus, label.fld select:focus { border-color:var(--accent); }
+    .grow { flex:1 1 100%; }
+    .w120 { width:120px; } .w90 { width:90px; } .w70 { width:70px; } .w56 { width:56px; }
+    input:disabled, select:disabled { opacity:.4; cursor:not-allowed; }
+    details.adv { margin-top:6px; } details.adv > summary { cursor:pointer; font-size:11px; color:var(--muted); }
+
+    .wave-card { border:1px solid var(--border); border-radius:7px; padding:7px 8px; margin-bottom:7px; background:#fbfcff; }
+    .wave-head { display:flex; align-items:center; justify-content:space-between; margin-bottom:5px; }
+    .wave-head b { font-size:12px; color:var(--accent); }
+    .grid2 { display:grid; grid-template-columns:1fr 1fr; gap:5px 8px; }
+    .fac-head { font-size:11px; color:var(--muted); margin:6px 0 3px; display:flex; align-items:center; gap:8px; }
+    .fac-row { display:grid; grid-template-columns:1fr 1fr 46px 22px; gap:4px; margin-top:4px; }
+    .fac-row input { border:1px solid var(--border); border-radius:5px; padding:3px 5px; font-size:11px; outline:none; }
+    .fac-row input:focus { border-color:var(--accent); }
+    .mini-btn { background:#eef0f8; color:#4a4f70; border-radius:5px; padding:3px 8px; font-size:11px; }
+    .mini-btn:hover { background:#e2e5f3; }
+    .mini-btn.danger { color:#c2453f; }
+
+    .status { padding:6px 14px; font-size:12px; color:var(--muted); border-top:1px solid var(--border); background:var(--card); }
+    .status.err { color:#d14343; } .status.ok { color:#2f9e5f; }
+  </style>
+</head>
+<body>
+  <div class="toolbar">
+    <h1>👾 刷怪 Checker + Volume 生成</h1>
+    <label class="chk" title="勾:输出用 Begin Map 包裹，可直接粘进视口"><input id="wrap" type="checkbox" checked /> Begin Map 包裹</label>
+    <label class="chk" title="Checker 的 Location：勾=点包围盒中心；不勾=质心(各点平均)"><input id="bbox" type="checkbox" /> Checker中心用包围盒</label>
+    <label class="chk" title="把原始点 Actor 一并附在输出里"><input id="incl-src" type="checkbox" /> 附带原始点</label>
+    <div class="spacer"></div>
+    <button id="gen-btn" class="btn-primary">生成 →</button>
+    <button id="copy-btn" class="btn-ghost">复制</button>
+    <button id="clear-btn" class="btn-ghost">清空输入</button>
+  </div>
+
+  <div class="main">
+    <!-- ============ 配置面板 ============ -->
+    <div class="cfg">
+      <div class="sec">
+        <h2>① Checker</h2>
+        <div class="body">
+          <div class="row">
+            <label class="fld grow">类名 <input id="cls" type="text" value="TGAD44RoomATask1ZombieCountChecker" /></label>
+            <label class="fld">包名 <input id="pkg" class="w120" type="text" value="TGAD44Game" /></label>
+            <label class="fld">实例ID <input id="inst-id" class="w56" type="number" value="0" min="0" /></label>
+            <label class="fld">Tag <input id="tag" class="w120" type="text" placeholder="留空不写" /></label>
+            <label class="fld">列表属性 <input id="list-prop" class="w120" type="text" value="ChaserSpawnPointList" /></label>
+          </div>
+          <div class="row" style="margin-top:6px">
+            <label class="chk" title="勾=bMissionChecker=True(靠Kismet NotifyMissionStart/Stop)；不勾=False(靠 SeqAct_Toggle 开关)"><input id="f-mission" type="checkbox" /> 任务式</label>
+            <label class="chk" title="bNeedPlayerIn：需要玩家在刷怪盒内才刷"><input id="f-playerin" type="checkbox" checked /> 需玩家在内</label>
+            <label class="chk" title="OneDifficulty：只用 Hard 一档配置"><input id="f-onediff" type="checkbox" /> 仅Hard档</label>
+          </div>
+          <details class="adv">
+            <summary>高级标志 / 参数</summary>
+            <div class="row" style="margin-top:6px">
+              <label class="chk"><input id="f-wander" type="checkbox" checked /> bNeedSpawnWanderZombie</label>
+              <label class="chk"><input id="f-count" type="checkbox" checked /> bNeedCountFromOtherCheckers</label>
+              <label class="chk"><input id="f-gri" type="checkbox" checked /> bNeedAssignToGRI</label>
+            </div>
+            <div class="row" style="margin-top:6px">
+              <label class="fld">WaveStartIndex <input id="wave-start" class="w70" type="number" value="1" min="0" /></label>
+              <label class="fld">TimerCheckInterval <input id="timer-int" class="w70" type="number" step="0.1" value="0.3" /></label>
+            </div>
+          </details>
+        </div>
+      </div>
+
+      <div class="sec">
+        <h2>② 难度（写入哪些 CheckerMonster_&lt;难度&gt;）</h2>
+        <div class="body row">
+          <label class="chk"><input id="d-easy" type="checkbox" checked /> 易 Easy</label>
+          <label class="chk"><input id="d-normal" type="checkbox" checked /> 普 Normal</label>
+          <label class="chk"><input id="d-hard" type="checkbox" checked /> 难 Hard</label>
+          <label class="chk"><input id="d-hell" type="checkbox" checked /> 地狱 Hell</label>
+        </div>
+      </div>
+
+      <div class="sec">
+        <h2>③ 波次 Waves <button id="add-wave" class="mini-btn" type="button" style="margin-left:auto">+ 添加波次</button></h2>
+        <div class="body"><div id="waves"></div></div>
+      </div>
+
+      <div class="sec">
+        <h2><label class="chk"><input id="vol-on" type="checkbox" checked /> ④ 生成 ZombieVolume（刷怪盒）</label></h2>
+        <div class="body">
+          <div class="row">
+            <label class="fld grow">Volume 类名 <input id="vol-cls" type="text" value="TGADBaseZombieVolume" /></label>
+            <label class="fld">包名 <input id="vol-pkg" class="w120" type="text" value="TGADBase" /></label>
+            <label class="fld">Tag <input id="vol-tag" class="w120" type="text" placeholder="留空不写" /></label>
+          </div>
+          <div class="row" style="margin-top:6px">
+            <label class="chk"><input type="radio" name="vol-size" id="vol-auto" checked /> 自动(包围盒+边距)</label>
+            <label class="chk"><input type="radio" name="vol-size" id="vol-manual" /> 手动半长</label>
+          </div>
+          <div class="row" id="vol-auto-row" style="margin-top:6px">
+            <label class="fld">边距 <input id="vol-pad" class="w70" type="number" value="400" /></label>
+            <label class="fld">最小半高 <input id="vol-minh" class="w70" type="number" value="400" /></label>
+          </div>
+          <div class="row" id="vol-manual-row" style="margin-top:6px">
+            <label class="fld">半长X <input id="vol-hx" class="w70" type="number" value="1200" /></label>
+            <label class="fld">半长Y <input id="vol-hy" class="w70" type="number" value="1200" /></label>
+            <label class="fld">半长Z <input id="vol-hz" class="w70" type="number" value="600" /></label>
+          </div>
+          <div style="font-size:11px;color:var(--muted);margin-top:6px">盒体中心取所有点的包围盒中心；落地/贴合请在编辑器里 End 落地、微调。</div>
+        </div>
+      </div>
+
+      <div class="sec">
+        <h2>⑤ 额外 ZombieVolume 引用（可选）</h2>
+        <div class="body">
+          <label class="fld grow">引用 <input id="zvol-ref" type="text" placeholder="TGADBaseZombieVolume'..._N'（逗号/换行分隔多个，接在生成盒之后）" /></label>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ 输入 / 输出 ============ -->
+    <div class="right">
+      <div class="pane in">
+        <div class="pane-head"><span>输入（点 Actor：含 Location 的 Begin Actor 块）</span><span class="pane-count" id="in-count">0 个点</span></div>
+        <textarea id="input" spellcheck="false" placeholder="粘贴含 Begin Actor … Location=(X=..,Y=..,Z=..) … End Actor 的点物件（如 TGADBaseNote_ChaserZombieSpawnPoint）…"></textarea>
+      </div>
+      <div class="pane out">
+        <div class="pane-head"><span>输出（Volume + Checker）</span><span class="pane-count" id="out-count"></span></div>
+        <textarea id="output" spellcheck="false" readonly placeholder="配置好后点「生成」…"></textarea>
+      </div>
+    </div>
+  </div>
+
+  <div id="status" class="status">粘贴刷怪点 → 配置波次/难度/Volume → 生成一个引用这些点、并（可选）自带刷怪盒的完整 checker。</div>
+
+  <script>
+  (function () {
+    'use strict';
+    // ===================== 生成核心（移植自 gen_actor.py，已 Node 逐字节验证） =====================
+    const f6 = (n) => Number(n).toFixed(6);
+    const vecT = (x, y, z) => `(X=${f6(x)},Y=${f6(y)},Z=${f6(z)})`;
+    function p13(n) { const sign = n < 0 ? '-' : '+'; let b = Math.abs(Number(n)).toFixed(6); while (sign.length + b.length < 13) b = '0' + b; return sign + b; }
+    const tri3 = (t) => `${p13(t[0])},${p13(t[1])},${p13(t[2])}`;
+
+    function boxCorners(mn, mx) { const [x0,y0,z0]=mn,[x1,y1,z1]=mx; return [[x0,y0,z0],[x1,y0,z0],[x1,y1,z0],[x0,y1,z0],[x0,y0,z1],[x1,y0,z1],[x1,y1,z1],[x0,y1,z1]]; }
+    const BOX_FACES = [[[0,0,-1],[0,3,2,1]],[[0,0,1],[4,5,6,7]],[[-1,0,0],[0,4,7,3]],[[1,0,0],[1,2,6,5]],[[0,-1,0],[0,1,5,4]],[[0,1,0],[3,7,6,2]]];
+    function tangents(n){ if(Math.abs(n[0])>0.5)return[[0,1,0],[0,0,-1]]; if(Math.abs(n[1])>0.5)return[[1,0,0],[0,0,-1]]; return[[1,0,0],[0,-1,0]]; }
+
+    function emitAggGeom(mn, mx) {
+      const c = boxCorners(mn, mx);
+      const vdata = c.map(q => vecT(q[0],q[1],q[2])).join(',');
+      const perm = [];
+      for (let blk=0; blk<c.length; blk+=4){ const g=c.slice(blk,blk+4); while(g.length<4)g.push(g[g.length-1]); for(let a=0;a<3;a++){ perm.push(`(W=${f6(g[0][a])},X=${f6(g[1][a])},Y=${f6(g[2][a])},Z=${f6(g[3][a])})`); } }
+      const tris=[]; for(const [,q] of BOX_FACES){ tris.push(q[0],q[1],q[2],q[0],q[2],q[3]); }
+      const ax='(X=1.000000,Y=0.000000,Z=0.000000),(X=0.000000,Y=1.000000,Z=0.000000),(X=0.000000,Y=0.000000,Z=1.000000)';
+      const [x0,y0,z0]=mn,[x1,y1,z1]=mx;
+      const planes=[[[-1,0,0],-x0],[[1,0,0],x1],[[0,-1,0],-y0],[[0,1,0],y1],[[0,0,-1],-z0],[[0,0,1],z1]];
+      const pl=planes.map(([n,w])=>`(W=${f6(w)},X=${f6(n[0])},Y=${f6(n[1])},Z=${f6(n[2])})`).join(',');
+      const eb=`(Min=${vecT(mn[0],mn[1],mn[2])},Max=${vecT(mx[0],mx[1],mx[2])},IsValid=1)`;
+      return `(ConvexElems=((VertexData=(${vdata}),PermutedVertexData=(${perm.join(',')}),FaceTriData=(${tris.join(',')}),EdgeDirections=(${ax}),FaceNormalDirections=(${ax}),FacePlaneData=(${pl}),ElemBox=${eb})))`;
+    }
+    function emitPolyList(mn, mx, flags, model) {
+      const c = boxCorners(mn, mx);
+      const L = [`   Begin Brush Name=${model}`, `      Begin PolyList`];
+      BOX_FACES.forEach(([n,quad],link)=>{ const [u,v]=tangents(n);
+        L.push(`         Begin Polygon Flags=${flags} Link=${link}`);
+        L.push(`            Origin   ${tri3(c[quad[0]])}`); L.push(`            Normal   ${tri3(n)}`);
+        L.push(`            TextureU ${tri3(u)}`); L.push(`            TextureV ${tri3(v)}`);
+        for(const i of quad) L.push(`            Vertex   ${tri3(c[i])}`);
+        L.push(`         End Polygon`); });
+      L.push(`      End PolyList`, `   End Brush`); return L.join('\n');
+    }
+    function buildVolume(cls, pkg, name, tag, cen, ext, flags) {
+      flags = flags==null?3584:flags; const [hx,hy,hz]=ext; const mn=[-hx,-hy,-hz],mx=[hx,hy,hz];
+      const comp='BrushComponent_0', model='Model_0';
+      const arch=`${cls}'${pkg}.Default__${cls}'`, ca=`BrushComponent'${pkg}.Default__${cls}:BrushComponent0'`;
+      const L=[];
+      L.push(`Begin Actor Class=${cls} Name=${name} Archetype=${arch}`);
+      L.push(`   Begin Object Class=BrushComponent Name=BrushComponent0 ObjName=${comp} Archetype=${ca}`);
+      L.push(`      BRUSH=Model'${model}'`); L.push(`      BrushAggGeom=${emitAggGeom(mn,mx)}`);
+      L.push(`      ReplacementPrimitive=None`); L.push(`      bAcceptsLights=True`); L.push(`      CollideActors=True`);
+      L.push(`      BlockNonZeroExtent=True`); L.push(`      bDisableAllRigidBody=True`);
+      L.push(`      AlwaysLoadOnClient=True`); L.push(`      AlwaysLoadOnServer=True`);
+      L.push(`      LightingChannels=(bInitialized=True,Dynamic=True)`); L.push(`      Name="${comp}"`); L.push(`      ObjectArchetype=${ca}`);
+      L.push(`   End Object`);
+      L.push(emitPolyList(mn,mx,flags,model));
+      L.push(`   BRUSH=Model'${model}'`); L.push(`   BrushComponent=BrushComponent'${comp}'`); L.push(`   Components(0)=BrushComponent'${comp}'`);
+      L.push(`   Location=${vecT(cen[0],cen[1],cen[2])}`); if(tag) L.push(`   Tag="${tag}"`);
+      L.push(`   CollisionComponent=BrushComponent'${comp}'`); L.push(`   Name="${name}"`); L.push(`   ObjectArchetype=${arch}`);
+      L.push(`End Actor`); return L.join('\n');
+    }
+
+    function parseActors(text) {
+      const re=/Begin[ \t]+Actor\b[^\n]*\r?\n[\s\S]*?\r?\n[ \t]*End[ \t]+Actor/gi; const items=[]; let m;
+      while((m=re.exec(text))!==null){ const block=m[0]; const h=/Begin[ \t]+Actor[ \t]+Class=(\S+)[ \t]+Name=(\S+)/i.exec(block); if(!h)continue;
+        const scope=block.replace(/Begin[ \t]+Object\b[\s\S]*?End[ \t]+Object/gi,''); const lm=/Location=\(([^)]*)\)/i.exec(scope);
+        let loc={x:0,y:0,z:0},hasLoc=false;
+        if(lm){ const gx=/X=(-?[\d.]+)/i.exec(lm[1]),gy=/Y=(-?[\d.]+)/i.exec(lm[1]),gz=/Z=(-?[\d.]+)/i.exec(lm[1]);
+          loc={x:gx?parseFloat(gx[1]):0,y:gy?parseFloat(gy[1]):0,z:gz?parseFloat(gz[1]):0}; hasLoc=true; }
+        items.push({cls:h[1],name:h[2],loc,hasLoc,block:block.trim()}); }
+      return items;
+    }
+    function bbox(pts){ const xs=pts.map(p=>p.loc.x),ys=pts.map(p=>p.loc.y),zs=pts.map(p=>p.loc.z);
+      return {min:[Math.min(...xs),Math.min(...ys),Math.min(...zs)],max:[Math.max(...xs),Math.max(...ys),Math.max(...zs)]}; }
+    function center(pts, useBBox){ if(useBBox){ const b=bbox(pts); return {x:(b.min[0]+b.max[0])/2,y:(b.min[1]+b.max[1])/2,z:(b.min[2]+b.max[2])/2}; }
+      const s=pts.reduce((a,p)=>({x:a.x+p.loc.x,y:a.y+p.loc.y,z:a.z+p.loc.z}),{x:0,y:0,z:0}); return {x:s.x/pts.length,y:s.y/pts.length,z:s.z/pts.length}; }
+    function bboxCenter(pts){ const b=bbox(pts); return [(b.min[0]+b.max[0])/2,(b.min[1]+b.max[1])/2,(b.min[2]+b.max[2])/2]; }
+    function autoVolume(pts, pad, minHalfH){ const b=bbox(pts);
+      return { center:[(b.min[0]+b.max[0])/2,(b.min[1]+b.max[1])/2,(b.min[2]+b.max[2])/2],
+        ext:[(b.max[0]-b.min[0])/2+pad,(b.max[1]-b.min[1])/2+pad,Math.max((b.max[2]-b.min[2])/2+pad,minHalfH)] }; }
+
+    const WAVE_DEF = { duration:10.0, spawnInterval:0.1 };
+    function buildFactory(f){ return `(PawnController=Class'${f.pawnController}',PawnClass=Class'${f.pawnClass}',Ratio=${f6(f.ratio==null?1:f.ratio)})`; }
+    function buildWave(w){ const p=[]; p.push(`WaveMonstetAmount=${w.amount|0}`); p.push(`MaxMonsterAlive=${w.maxAlive|0}`);
+      if(Number(w.spawnInterval)!==WAVE_DEF.spawnInterval) p.push(`WaveSpwanInterval=${f6(w.spawnInterval)}`);
+      if(Number(w.duration)!==WAVE_DEF.duration) p.push(`WaveDuration=${f6(w.duration)}`);
+      if(w.shareInterval) p.push(`bSpawnPointShareInterval=True`);
+      p.push(`WaveMonsterList=(${(w.factories||[]).map(buildFactory).join(',')})`);
+      p.push(`WaveEndOption=${w.endOption}`);
+      if(w.endOption==='EJumpToSpecificIndex'&&w.specificIndexNextWave!=null) p.push(`SpecificIndexNextWave=${w.specificIndexNextWave|0}`);
+      return `(${p.join(',')})`; }
+
+    const CDO = { bNeedPlayerIn:true,bNeedSpawnWanderZombie:true,bNeedCountFromOtherCheckers:true,bNeedAssignToGRI:true,OneDifficulty:false,WaveStartIndex:1,TimerCheckInterval:0.3 };
+    function buildChecker(cfg, pts, c){ const arche=`${cfg.cls}'${cfg.pkg}.Default__${cfg.cls}'`, inst=`${cfg.cls}_${cfg.id}`;
+      const L=[`Begin Actor Class=${cfg.cls} Name=${inst} Archetype=${arche}`]; const B=(k,v)=>L.push(`   ${k}=${v?'True':'False'}`);
+      B('bMissionChecker', cfg.flags.bMissionChecker);
+      if(cfg.flags.bNeedPlayerIn!==CDO.bNeedPlayerIn) B('bNeedPlayerIn',cfg.flags.bNeedPlayerIn);
+      if(cfg.flags.OneDifficulty!==CDO.OneDifficulty) B('OneDifficulty',cfg.flags.OneDifficulty);
+      if(cfg.flags.bNeedSpawnWanderZombie!==CDO.bNeedSpawnWanderZombie) B('bNeedSpawnWanderZombie',cfg.flags.bNeedSpawnWanderZombie);
+      if(cfg.flags.bNeedCountFromOtherCheckers!==CDO.bNeedCountFromOtherCheckers) B('bNeedCountFromOtherCheckers',cfg.flags.bNeedCountFromOtherCheckers);
+      if(cfg.flags.bNeedAssignToGRI!==CDO.bNeedAssignToGRI) B('bNeedAssignToGRI',cfg.flags.bNeedAssignToGRI);
+      if(Number(cfg.waveStartIndex)!==CDO.WaveStartIndex) L.push(`   WaveStartIndex=${cfg.waveStartIndex|0}`);
+      if(Number(cfg.timerCheckInterval)!==CDO.TimerCheckInterval) L.push(`   TimerCheckInterval=${f6(cfg.timerCheckInterval)}`);
+      const lits=(cfg.waves||[]).map(buildWave);
+      cfg.diffs.forEach(d=>lits.forEach((lit,i)=>L.push(`   CheckerMonster_${d}(${i})=${lit}`)));
+      (cfg.zvolRefs||[]).forEach((r,i)=>L.push(`   ZombieVolumeList(${i})=${r}`));
+      pts.forEach((p,i)=>L.push(`   ${cfg.listProp}(${i})=${p.cls}'${p.name}'`));
+      L.push(`   Location=${vecT(c.x,c.y,c.z)}`); if(cfg.tag) L.push(`   Tag="${cfg.tag}"`);
+      L.push(`   Name="${inst}"`); L.push(`   ObjectArchetype=${arche}`); L.push(`End Actor`); return L.join('\n'); }
+
+    function indent(b,pad){ return b.split('\n').map(l=>l.length?pad+l:l).join('\n'); }
+    function wrapMap(blocks){ return `Begin Map\n   Begin Level\n${blocks.map(b=>indent(b,'      ')).join('\n')}\n   End Level\nBegin Surface\nEnd Surface\nEnd Map`; }
+
+    // ===================== 表单 / DOM =====================
+    const $ = (id) => document.getElementById(id);
+    const inputEl=$('input'), outputEl=$('output'), statusEl=$('status');
+    const setStatus=(m,k)=>{ statusEl.textContent=m; statusEl.className='status'+(k?' '+k:''); };
+
+    const END_OPTS = [['EContinueNextWave','继续下一波'],['ERefreshFromStart','从头循环'],['EStopSpawn','停止刷怪'],['ERepeatCurrWave','重复本波'],['EJumpToSpecificIndex','跳到指定波']];
+
+    function makeFactory(f){ f=f||{}; const row=document.createElement('div'); row.className='fac-row';
+      row.innerHTML = `<input class="f-class" placeholder="Package.PawnClass"><input class="f-ctrl" placeholder="Package.Controller"><input class="f-ratio" type="number" step="0.5" title="Ratio(权重)"><button class="mini-btn danger f-del" type="button" title="删除">×</button>`;
+      row.querySelector('.f-class').value = f.pawnClass || 'TGAD44Game.TGAD44AIPawn_AbyssMon_S';
+      row.querySelector('.f-ctrl').value = f.pawnController || 'TGAD44Game.TGAD44AIPawn_AbyssMon_S_Controller';
+      row.querySelector('.f-ratio').value = f.ratio==null?1:f.ratio;
+      row.querySelector('.f-del').addEventListener('click',()=>row.remove());
+      return row; }
+
+    function makeWave(w){ w=w||{}; const card=document.createElement('div'); card.className='wave-card';
+      const opts = END_OPTS.map(([v,t])=>`<option value="${v}">${t}</option>`).join('');
+      card.innerHTML = `<div class="wave-head"><b class="wave-title">波次</b><button class="mini-btn danger w-del" type="button">删除本波</button></div>
+        <div class="grid2">
+          <label class="fld">数量 Amount<input class="w-amount" type="number" min="0"></label>
+          <label class="fld">同屏上限 MaxAlive<input class="w-maxalive" type="number" min="0"></label>
+          <label class="fld">出怪间隔<input class="w-spawn" type="number" step="0.05"></label>
+          <label class="fld">持续(s)<input class="w-dur" type="number" step="0.5"></label>
+          <label class="fld">结束方式<select class="w-end">${opts}</select></label>
+          <label class="chk" style="align-self:end"><input class="w-share" type="checkbox"> 共享刷怪点间隔</label>
+        </div>
+        <div class="fac-head">怪物 WaveMonsterList <button class="mini-btn add-fac" type="button">+ 加怪种</button></div>
+        <div class="factories"></div>`;
+      card.querySelector('.w-amount').value = w.amount==null?10:w.amount;
+      card.querySelector('.w-maxalive').value = w.maxAlive==null?10:w.maxAlive;
+      card.querySelector('.w-spawn').value = w.spawnInterval==null?0.1:w.spawnInterval;
+      card.querySelector('.w-dur').value = w.duration==null?10:w.duration;
+      card.querySelector('.w-end').value = w.endOption || 'ERefreshFromStart';
+      card.querySelector('.w-share').checked = !!w.shareInterval;
+      const facs = card.querySelector('.factories');
+      (w.factories && w.factories.length ? w.factories : [undefined]).forEach(ff=>facs.appendChild(makeFactory(ff)));
+      card.querySelector('.add-fac').addEventListener('click',()=>facs.appendChild(makeFactory()));
+      card.querySelector('.w-del').addEventListener('click',()=>{ card.remove(); renumberWaves(); });
+      return card; }
+
+    function renumberWaves(){ [...document.querySelectorAll('#waves .wave-card .wave-title')].forEach((el,i)=>el.textContent=`波次 ${i}`); }
+    function addWave(w){ $('waves').appendChild(makeWave(w)); renumberWaves(); }
+
+    function readWaves(){ return [...document.querySelectorAll('#waves .wave-card')].map(card=>({
+      amount:+card.querySelector('.w-amount').value||0, maxAlive:+card.querySelector('.w-maxalive').value||0,
+      spawnInterval:+card.querySelector('.w-spawn').value, duration:+card.querySelector('.w-dur').value,
+      shareInterval:card.querySelector('.w-share').checked, endOption:card.querySelector('.w-end').value,
+      factories:[...card.querySelectorAll('.fac-row')].map(fr=>({ pawnClass:fr.querySelector('.f-class').value.trim(),
+        pawnController:fr.querySelector('.f-ctrl').value.trim(), ratio:+fr.querySelector('.f-ratio').value })).filter(f=>f.pawnClass&&f.pawnController),
+    })); }
+
+    function collectDiffs(){ const d=[]; if($('d-easy').checked)d.push('Easy'); if($('d-normal').checked)d.push('Normal'); if($('d-hard').checked)d.push('Hard'); if($('d-hell').checked)d.push('Hell'); return d; }
+
+    function syncVol(){ const on=$('vol-on').checked, auto=$('vol-auto').checked;
+      ['vol-cls','vol-pkg','vol-tag','vol-auto','vol-manual','vol-pad','vol-minh','vol-hx','vol-hy','vol-hz'].forEach(id=>$(id).disabled=!on);
+      ['vol-pad','vol-minh'].forEach(id=>$(id).disabled=!on||!auto);
+      ['vol-hx','vol-hy','vol-hz'].forEach(id=>$(id).disabled=!on||auto); }
+
+    function updateInCount(){ $('in-count').textContent=`${parseActors(inputEl.value).length} 个点`; }
+
+    function generate(){
+      const pts = parseActors(inputEl.value);
+      if(!pts.length){ outputEl.value=''; $('out-count').textContent=''; return setStatus('未找到任何 Begin Actor 点。','err'); }
+      const cls=$('cls').value.trim(), pkg=$('pkg').value.trim();
+      if(!cls||!pkg) return setStatus('Checker 类名/包名不能为空。','err');
+      const diffs=collectDiffs(); if(!diffs.length) return setStatus('未选择任何难度。','err');
+      const waves=readWaves();
+      for(let i=0;i<waves.length;i++){ if(!waves[i].factories.length) return setStatus(`波次 ${i} 没有配置怪物（PawnClass/Controller）。`,'err'); }
+
+      const blocks=[], zvolRefs=[];
+      if($('vol-on').checked){
+        const vcls=$('vol-cls').value.trim(), vpkg=$('vol-pkg').value.trim();
+        if(!vcls||!vpkg) return setStatus('Volume 类名/包名不能为空。','err');
+        const vname=`${vcls}_0`; let cen, ext;
+        if($('vol-auto').checked){ const a=autoVolume(pts,+$('vol-pad').value||0,+$('vol-minh').value||0); cen=a.center; ext=a.ext; }
+        else { ext=[+$('vol-hx').value||1,+$('vol-hy').value||1,+$('vol-hz').value||1]; cen=bboxCenter(pts); }
+        blocks.push(buildVolume(vcls,vpkg,vname,$('vol-tag').value.trim(),cen,ext,3584));
+        zvolRefs.push(`${vcls}'${vname}'`);
+      }
+      $('zvol-ref').value.split(/[\n,;]+/).map(s=>s.trim()).filter(Boolean).forEach(r=>zvolRefs.push(r));
+
+      const cfg={ cls, pkg, id:parseInt($('inst-id').value,10)||0, tag:$('tag').value.trim(), listProp:$('list-prop').value.trim()||'ChaserSpawnPointList',
+        flags:{ bMissionChecker:$('f-mission').checked, bNeedPlayerIn:$('f-playerin').checked, OneDifficulty:$('f-onediff').checked,
+          bNeedSpawnWanderZombie:$('f-wander').checked, bNeedCountFromOtherCheckers:$('f-count').checked, bNeedAssignToGRI:$('f-gri').checked },
+        waveStartIndex:+$('wave-start').value, timerCheckInterval:+$('timer-int').value, diffs, waves, zvolRefs };
+
+      const c=center(pts,$('bbox').checked);
+      blocks.push(buildChecker(cfg,pts,c));
+      const outBlocks = $('incl-src').checked ? [...pts.map(p=>p.block), ...blocks] : blocks;
+      outputEl.value = $('wrap').checked ? wrapMap(outBlocks) : outBlocks.join('\n');
+
+      const noLoc=pts.filter(p=>!p.hasLoc).length;
+      $('out-count').textContent=`${pts.length}点 / ${waves.length}波 × ${diffs.length}难度${$('vol-on').checked?' / +Volume':''}`;
+      let msg=`已生成 '${cfg.cls}_${cfg.id}'：${pts.length} 点、${waves.length} 波 × ${diffs.length} 难度`+
+        `${$('vol-on').checked?'、含刷怪盒':''}${zvolRefs.length?`、ZombieVolume×${zvolRefs.length}`:''}，${cfg.flags.bMissionChecker?'任务式':'Toggle式'}。`;
+      if(noLoc) msg+=` 注意 ${noLoc} 个点无 Location（按0计，会拉偏中心/盒体）。`;
+      setStatus(msg, noLoc?'err':'ok');
+    }
+
+    $('gen-btn').addEventListener('click', generate);
+    $('add-wave').addEventListener('click', ()=>addWave());
+    $('vol-on').addEventListener('change', syncVol);
+    $('vol-auto').addEventListener('change', syncVol);
+    $('vol-manual').addEventListener('change', syncVol);
+    $('copy-btn').addEventListener('click', ()=>{ if(!outputEl.value) return setStatus('没有可复制的结果。','err');
+      (navigator.clipboard?navigator.clipboard.writeText(outputEl.value):Promise.reject()).then(()=>setStatus('已复制到剪贴板。','ok'))
+        .catch(()=>{ outputEl.select(); document.execCommand('copy'); setStatus('已复制到剪贴板。','ok'); }); });
+    $('clear-btn').addEventListener('click', ()=>{ inputEl.value=''; outputEl.value=''; $('out-count').textContent=''; updateInCount(); setStatus('已清空输入。',''); inputEl.focus(); });
+    inputEl.addEventListener('input', updateInCount);
+
+    addWave();     // 默认一波
+    syncVol();
+  })();
+  </script>
+</body>
+</html>

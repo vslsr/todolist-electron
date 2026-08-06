@@ -1,0 +1,438 @@
+/* ══════════════════════════════════════════════════════════════
+   Wiki Module Styles
+   色系与 styles.css 保持一致：主色 #667eea，背景 #f0f2f5
+   ══════════════════════════════════════════════════════════════ */
+
+/* ── Board layout ─────────────────────────────────────────────── */
+.wiki-board {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+  background: #fff;
+}
+
+/* ── Left sidebar: tree ───────────────────────────────────────── */
+.wiki-sidebar {
+  width: 240px;
+  min-width: 180px;
+  max-width: 320px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid #eef0f4;
+  background: #fafbfd;
+}
+
+.wiki-sidebar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 14px 8px;
+  border-bottom: 1px solid #eef0f4;
+  flex-shrink: 0;
+}
+
+.wiki-sidebar-title {
+  font-size: 12px;
+  font-weight: 700;
+  color: #667eea;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+}
+
+.wiki-sidebar-actions {
+  display: flex;
+  gap: 4px;
+}
+
+.wiki-icon-btn {
+  width: 26px;
+  height: 26px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: #888;
+  font-size: 15px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.12s, color 0.12s;
+  line-height: 1;
+}
+
+.wiki-icon-btn:hover {
+  background: #eef0f8;
+  color: #667eea;
+}
+
+/* Search */
+.wiki-search-wrap {
+  padding: 8px 10px;
+  flex-shrink: 0;
+  border-bottom: 1px solid #eef0f4;
+}
+
+.wiki-search {
+  width: 100%;
+  padding: 6px 10px;
+  border: 1.5px solid #e0e4ed;
+  border-radius: 8px;
+  font-size: 12px;
+  font-family: inherit;
+  background: #fff;
+  outline: none;
+  transition: border-color 0.15s;
+  color: #333;
+}
+
+.wiki-search:focus {
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+/* Tree */
+.wiki-tree {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 4px 0;
+}
+
+.wiki-tree-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  padding-right: 10px;
+  cursor: pointer;
+  border-radius: 6px;
+  margin: 1px 6px;
+  transition: background 0.12s;
+  user-select: none;
+  min-width: 0;
+}
+
+.wiki-tree-item:hover {
+  background: #eef0f8;
+}
+
+.wiki-tree-item.active {
+  background: #667eea;
+  color: #fff;
+}
+
+.wiki-tree-item.active .wiki-tree-title {
+  color: #fff;
+}
+
+.wiki-tree-item.active .wiki-tree-arrow {
+  color: rgba(255,255,255,0.8);
+}
+
+.wiki-tree-arrow {
+  font-size: 9px;
+  color: #aaa;
+  width: 14px;
+  flex-shrink: 0;
+  text-align: center;
+  transition: color 0.12s;
+}
+
+.wiki-tree-arrow.invisible {
+  visibility: hidden;
+}
+
+.wiki-tree-icon {
+  font-size: 13px;
+  flex-shrink: 0;
+}
+
+.wiki-tree-title {
+  font-size: 13px;
+  color: #444;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex: 1;
+  min-width: 0;
+}
+
+.wiki-tree-item mark {
+  background: #fff3b0;
+  color: #333;
+  border-radius: 2px;
+  padding: 0 1px;
+}
+
+.wiki-tree-item.active mark {
+  background: rgba(255,255,255,0.35);
+  color: #fff;
+}
+
+/* ── Right: editor area ───────────────────────────────────────── */
+.wiki-editor-wrap {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  min-width: 0;
+}
+
+.wiki-editor-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 20px;
+  border-bottom: 1px solid #eef0f4;
+  background: #fafbfd;
+  flex-shrink: 0;
+}
+
+.wiki-breadcrumb {
+  flex: 1;
+  font-size: 12px;
+  color: #999;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.wiki-bc-item {
+  color: #667eea;
+  cursor: pointer;
+}
+
+.wiki-bc-item:hover {
+  text-decoration: underline;
+}
+
+.wiki-bc-sep {
+  margin: 0 5px;
+  color: #ccc;
+}
+
+/* Toolbar buttons */
+.wiki-toolbar-btn {
+  padding: 5px 12px;
+  border: 1.5px solid #d0d5f5;
+  border-radius: 6px;
+  background: transparent;
+  color: #667eea;
+  font-size: 12px;
+  font-family: inherit;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.12s;
+}
+
+.wiki-toolbar-btn:hover {
+  background: #f0f2ff;
+}
+
+/* Editor content area */
+.wiki-editor-area {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.wiki-doc-title {
+  font-size: 24px;
+  font-weight: 700;
+  color: #1a1a2e;
+  padding: 24px 52px 8px;
+  outline: none;
+  border: none;
+  background: transparent;
+  line-height: 1.3;
+  cursor: text;
+}
+
+.wiki-doc-title:empty::before {
+  content: '未命名文档';
+  color: #ccc;
+}
+
+.wiki-doc-title:focus {
+  background: #f8f9ff;
+  border-radius: 4px;
+}
+
+/* Editor.js holder */
+#wiki-editor-holder {
+  flex: 1;
+  padding: 0 16px 40px;
+  min-height: 300px;
+}
+
+/* Editor.js override: widen content area */
+#wiki-editor-holder .codex-editor__redactor {
+  padding-bottom: 100px !important;
+}
+
+#wiki-editor-holder .ce-block__content,
+#wiki-editor-holder .ce-toolbar__content {
+  max-width: 720px;
+}
+
+/* Empty state */
+.wiki-empty-state {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #bbb;
+  gap: 12px;
+}
+
+.wiki-empty-icon {
+  font-size: 48px;
+  opacity: 0.5;
+}
+
+.wiki-empty-text {
+  font-size: 14px;
+  color: #aaa;
+}
+
+.wiki-empty-state .wiki-new-btn {
+  margin-top: 4px;
+  padding: 8px 20px;
+  border: none;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+
+.wiki-empty-state .wiki-new-btn:hover {
+  opacity: 0.88;
+}
+
+/* ── Context menu ─────────────────────────────────────────────── */
+.wiki-context-menu {
+  position: fixed;
+  z-index: 9999;
+  background: #fff;
+  border: 1px solid #e0e4ed;
+  border-radius: 8px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+  padding: 4px 0;
+  min-width: 150px;
+  font-size: 13px;
+}
+
+.wiki-ctx-item {
+  display: block;
+  width: 100%;
+  padding: 7px 16px;
+  border: none;
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+  color: #444;
+  font-size: 13px;
+  font-family: inherit;
+  transition: background 0.1s;
+  white-space: nowrap;
+}
+
+.wiki-ctx-item:hover {
+  background: #f0f2ff;
+  color: #667eea;
+}
+
+.wiki-ctx-item--danger {
+  color: #e05252;
+}
+
+.wiki-ctx-item--danger:hover {
+  background: #fdf0f0;
+  color: #e05252;
+}
+
+.wiki-ctx-divider {
+  height: 1px;
+  background: #eef0f4;
+  margin: 4px 0;
+}
+
+/* ── Drag & drop ──────────────────────────────────────────────── */
+.wiki-tree-item[draggable="true"] {
+  cursor: grab;
+}
+
+.wiki-tree-item.dragging {
+  opacity: 0.4;
+}
+
+/* Drop zone: before — blue line above */
+.wiki-tree-item.drag-over-before {
+  box-shadow: inset 0 2px 0 0 #667eea;
+}
+
+/* Drop zone: inside — tinted background */
+.wiki-tree-item.drag-over-inside {
+  background: rgba(102, 126, 234, 0.15) !important;
+  outline: 1.5px dashed #667eea;
+  outline-offset: -2px;
+  border-radius: 6px;
+}
+
+/* Drop zone: after — blue line below */
+.wiki-tree-item.drag-over-after {
+  box-shadow: inset 0 -2px 0 0 #667eea;
+}
+
+/* ── Wiki Image Block ─────────────────────────────────────────── */
+.wiki-image-block {
+  margin: 4px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.wiki-image-img {
+  max-width: 100%;
+  max-height: 600px;
+  border-radius: 6px;
+  display: block;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.wiki-image-caption {
+  width: 100%;
+  max-width: 480px;
+  text-align: center;
+  font-size: 12px;
+  color: #888;
+  border: none;
+  border-bottom: 1px dashed #ddd;
+  background: transparent;
+  outline: none;
+  padding: 2px 4px;
+  font-family: inherit;
+}
+
+.wiki-image-caption:focus {
+  border-bottom-color: #667eea;
+  color: #444;
+}
+
+.wiki-image-placeholder {
+  padding: 16px 24px;
+  color: #bbb;
+  font-size: 13px;
+  border: 1.5px dashed #ddd;
+  border-radius: 6px;
+}

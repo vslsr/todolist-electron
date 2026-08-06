@@ -1,0 +1,663 @@
+[
+  {
+    "id": "1783559906948pm1x",
+    "uuid": "6213e2c0-8237-415e-b74b-505f05043470",
+    "text": "UE3的MCP工具开发",
+    "status": "pending",
+    "priority": "normal",
+    "createdAt": "7月8日",
+    "children": [],
+    "collapsed": false,
+    "steps": [],
+    "stepsCollapsed": false,
+    "transferHistory": [],
+    "transferredTo": null,
+    "transferredFrom": null,
+    "dueDate": null,
+    "stack": [],
+    "stackCollapsed": false,
+    "stackOpen": false
+  },
+  {
+    "id": "1782891906560c1h1",
+    "uuid": "d9aed10d-2c77-4d4c-bbc1-7b1eb9224518",
+    "text": "AD44 Boss的Script流程建立",
+    "status": "in-progress",
+    "priority": "normal",
+    "createdAt": "7月1日",
+    "children": [
+      {
+        "id": "1782901677198fmq9",
+        "uuid": "f29590e8-0f66-4103-9b45-3d6a6365745b",
+        "text": "Boss区逻辑：团灭复活点在外面的准备区，单人复活是内部的战斗区域。",
+        "status": "pending",
+        "priority": "normal",
+        "createdAt": "7月1日",
+        "children": [],
+        "collapsed": false,
+        "steps": [],
+        "stepsCollapsed": false,
+        "transferHistory": [],
+        "transferredTo": null,
+        "transferredFrom": null,
+        "dueDate": null,
+        "stack": [],
+        "stackCollapsed": false,
+        "stackOpen": false
+      },
+      {
+        "id": "17833100904853cra",
+        "uuid": "d93e658a-2243-44e9-92d3-26d41f9a143a",
+        "text": "拆分表中各区流程部分，添加下最后BOSS准备区功能拆分",
+        "status": "in-progress",
+        "priority": "normal",
+        "createdAt": "7月6日",
+        "children": [],
+        "collapsed": false,
+        "steps": [],
+        "stepsCollapsed": false,
+        "transferHistory": [],
+        "transferredTo": null,
+        "transferredFrom": null,
+        "dueDate": "2026-07-07",
+        "stack": [],
+        "stackCollapsed": false,
+        "stackOpen": false
+      }
+    ],
+    "collapsed": true,
+    "steps": [],
+    "stepsCollapsed": false,
+    "transferHistory": [],
+    "transferredTo": null,
+    "transferredFrom": null,
+    "dueDate": null,
+    "stack": [],
+    "stackCollapsed": false,
+    "stackOpen": false
+  },
+  {
+    "id": "1780885404804yoox",
+    "text": "AD44开发任务 A区 Task1",
+    "completed": false,
+    "priority": "normal",
+    "createdAt": "6月8日",
+    "children": [
+      {
+        "id": "1781154974776zkrp",
+        "uuid": "7fe30e2c-493f-46aa-aca3-01d77e3f2569",
+        "text": "通用流程",
+        "status": "pending",
+        "priority": "normal",
+        "createdAt": "6月11日",
+        "children": [
+          {
+            "id": "1781053294825yd6k",
+            "uuid": "becf7888-d64e-4d7a-87cd-9a81d56bf46b",
+            "text": "死亡观察点的实现",
+            "status": "pending",
+            "priority": "normal",
+            "createdAt": "6月10日",
+            "children": [],
+            "collapsed": false,
+            "steps": [],
+            "stepsCollapsed": false,
+            "transferHistory": [],
+            "transferredTo": null,
+            "transferredFrom": null,
+            "dueDate": null,
+            "stack": [],
+            "stackCollapsed": false,
+            "stackOpen": false
+          },
+          {
+            "id": "1781154259648nksm",
+            "uuid": "2df439ea-97f0-445d-9ee7-51f4ed465b24",
+            "text": "Task1 出生点设置",
+            "status": "pending",
+            "priority": "normal",
+            "createdAt": "6月11日",
+            "children": [
+              {
+                "id": "1782467060250ih0k",
+                "uuid": "7e7bd1a1-b422-49b9-aed8-35589e8187cd",
+                "text": "团灭失败后，玩家会被送到出生点而不是准备区。",
+                "status": "pending",
+                "priority": "normal",
+                "createdAt": "6月26日",
+                "children": [],
+                "collapsed": false,
+                "steps": [],
+                "stepsCollapsed": false,
+                "transferHistory": [],
+                "transferredTo": null,
+                "transferredFrom": null,
+                "dueDate": null,
+                "stack": [],
+                "stackCollapsed": false,
+                "stackOpen": false
+              },
+              {
+                "id": "1782901233734pyvq",
+                "uuid": "56d3430a-7351-4fb1-8e4c-9e304a3343ad",
+                "text": "玩家进入任务的准备区开启倒计时。玩家进入任务区，结束倒计时，传送玩家到任务区域内的点。复活时，使用的是任务区域外的复活点",
+                "status": "pending",
+                "priority": "normal",
+                "createdAt": "7月1日",
+                "children": [],
+                "collapsed": false,
+                "steps": [
+                  {
+                    "id": "s1782901534597or8",
+                    "text": "1、只要有玩家进入准备区，就开始传送倒计时；2、哪怕全员都在准备区，依然正常走倒计时；3、倒计时结束后，全员传入任务区；4、如果在倒计时结束前，所有玩家都主动进入了任务区，直接开始任务，去掉倒计时和传送",
+                    "createdAt": "7月1日"
+                  }
+                ],
+                "stepsCollapsed": false,
+                "transferHistory": [],
+                "transferredTo": null,
+                "transferredFrom": null,
+                "dueDate": null,
+                "stack": [],
+                "stackCollapsed": false,
+                "stackOpen": false
+              }
+            ],
+            "collapsed": true,
+            "steps": [
+              {
+                "id": "s17812294201695jh",
+                "text": "查看一下Force和Safe的位置区别",
+                "createdAt": "6月12日"
+              },
+              {
+                "id": "s17824682044336dz",
+                "text": "关闭刚开始的出生点，启动任务区的复活点",
+                "createdAt": "6月26日"
+              }
+            ],
+            "stepsCollapsed": true,
+            "transferHistory": [],
+            "transferredTo": null,
+            "transferredFrom": null,
+            "dueDate": null,
+            "stack": [],
+            "stackCollapsed": false,
+            "stackOpen": false
+          },
+          {
+            "id": "1780973281586dw5d",
+            "text": "小地图显示的功能",
+            "status": "pending",
+            "priority": "normal",
+            "createdAt": "6月9日",
+            "children": [],
+            "collapsed": false,
+            "steps": [
+              {
+                "id": "s1781589785283fb0",
+                "text": "从其他项目中先拷贝一份小地图到AD44的包内",
+                "createdAt": "6月16日"
+              },
+              {
+                "id": "s1781659489428idk",
+                "text": "接入小地图SetMapInfo",
+                "createdAt": "6月17日"
+              },
+              {
+                "id": "s1781659503579jdi",
+                "text": "查看一下小地图的标准",
+                "createdAt": "6月17日"
+              },
+              {
+                "id": "s1781681226036j4h",
+                "text": "HUD_Map_Europe_440",
+                "createdAt": "6月17日"
+              }
+            ],
+            "stepsCollapsed": true,
+            "transferHistory": [],
+            "transferredTo": null,
+            "transferredFrom": null,
+            "uuid": "9d4c2e73-c910-4764-94ed-49e7c4d95f35",
+            "dueDate": null,
+            "stack": [],
+            "stackCollapsed": false,
+            "stackOpen": false
+          }
+        ],
+        "collapsed": true,
+        "steps": [
+          {
+            "id": "s17812288555284qw",
+            "text": "查看任务的通用流程，参考33并编写开发用例",
+            "createdAt": "6月12日"
+          }
+        ],
+        "stepsCollapsed": false,
+        "transferHistory": [],
+        "transferredTo": null,
+        "transferredFrom": null,
+        "dueDate": null,
+        "stack": [],
+        "stackCollapsed": false,
+        "stackOpen": false
+      },
+      {
+        "id": "1782467049577g0a9",
+        "uuid": "82588902-d1c6-44b1-bb02-475f7c42f3f2",
+        "text": "BUG：玩家团灭后再次进入任务区会触发读秒但不会立刻开启任务，且读秒结束后除了蒸汽打开以外无法与其他机关做任何交互。",
+        "status": "pending",
+        "priority": "normal",
+        "createdAt": "6月26日",
+        "children": [],
+        "collapsed": false,
+        "steps": [],
+        "stepsCollapsed": false,
+        "transferHistory": [],
+        "transferredTo": null,
+        "transferredFrom": null,
+        "dueDate": null,
+        "stack": [],
+        "stackCollapsed": false,
+        "stackOpen": false
+      },
+      {
+        "id": "1782467088418989z",
+        "uuid": "f901d702-4c7a-417e-960f-d4f454a84121",
+        "text": "BUG：因为前面没有布置刷怪点所以无法判断该功能是否生效。",
+        "status": "pending",
+        "priority": "normal",
+        "createdAt": "6月26日",
+        "children": [],
+        "collapsed": false,
+        "steps": [
+          {
+            "id": "s1782467103162xu9",
+            "text": "放置一个前置刷怪点",
+            "createdAt": "6月26日"
+          }
+        ],
+        "stepsCollapsed": true,
+        "transferHistory": [],
+        "transferredTo": null,
+        "transferredFrom": null,
+        "dueDate": null,
+        "stack": [],
+        "stackCollapsed": false,
+        "stackOpen": false
+      },
+      {
+        "id": "1783907785615gmh4",
+        "uuid": "edb21900-0b3c-402a-aaff-81be21b16b42",
+        "text": "BUG：在进入区域时，就刷怪了。应该是开启任务才刷怪",
+        "status": "in-progress",
+        "priority": "normal",
+        "createdAt": "7月12日",
+        "children": [],
+        "collapsed": false,
+        "steps": [],
+        "stepsCollapsed": false,
+        "stack": [],
+        "stackCollapsed": false,
+        "stackOpen": false,
+        "transferHistory": [],
+        "transferredTo": null,
+        "transferredFrom": null,
+        "dueDate": null
+      },
+      {
+        "id": "1783907809030xwgo",
+        "uuid": "66d1d19f-fff0-4553-a7e9-9607eb319c3b",
+        "text": "BUG：Task1任务，在所有玩家已经进入任务区域后，停止计时直接传送玩家。当有玩家在外部的时候，继续计时。",
+        "status": "in-progress",
+        "priority": "normal",
+        "createdAt": "7月12日",
+        "children": [],
+        "collapsed": false,
+        "steps": [],
+        "stepsCollapsed": false,
+        "stack": [],
+        "stackCollapsed": false,
+        "stackOpen": false,
+        "transferHistory": [],
+        "transferredTo": null,
+        "transferredFrom": null,
+        "dueDate": null
+      }
+    ],
+    "collapsed": true,
+    "steps": [],
+    "stepsCollapsed": false,
+    "status": "pending",
+    "transferHistory": [],
+    "transferredTo": null,
+    "transferredFrom": null,
+    "uuid": "6ce41196-0f26-41c1-81b0-2cb218a67f9e",
+    "dueDate": null,
+    "stack": [],
+    "stackCollapsed": false,
+    "stackOpen": false
+  },
+  {
+    "id": "1781486823836l1c1",
+    "uuid": "7e77ef2b-74a3-4a20-86c7-6257d6b165d6",
+    "text": "AD44 玩法开发 A区 Gameplay01",
+    "status": "pending",
+    "priority": "normal",
+    "createdAt": "6月15日",
+    "children": [
+      {
+        "id": "1783908710783jl5g",
+        "uuid": "9530cfab-9adf-4c21-b5ad-429f6b6955af",
+        "text": "BUG：联网模式下，天桥爆炸没有触发",
+        "status": "in-progress",
+        "priority": "normal",
+        "createdAt": "7月12日",
+        "children": [],
+        "collapsed": false,
+        "steps": [],
+        "stepsCollapsed": false,
+        "stack": [],
+        "stackCollapsed": false,
+        "stackOpen": false,
+        "transferHistory": [],
+        "transferredTo": null,
+        "transferredFrom": null,
+        "dueDate": null
+      },
+      {
+        "id": "1783908723702u54k",
+        "uuid": "d54b871d-790e-4a2b-bb9b-f6bf1bc17797",
+        "text": "BUG：联网模式下，固定点爆炸没有触发",
+        "status": "in-progress",
+        "priority": "normal",
+        "createdAt": "7月12日",
+        "children": [],
+        "collapsed": false,
+        "steps": [],
+        "stepsCollapsed": false,
+        "stack": [],
+        "stackCollapsed": false,
+        "stackOpen": false,
+        "transferHistory": [],
+        "transferredTo": null,
+        "transferredFrom": null,
+        "dueDate": null
+      }
+    ],
+    "collapsed": false,
+    "steps": [],
+    "stepsCollapsed": false,
+    "transferHistory": [],
+    "transferredTo": null,
+    "transferredFrom": null,
+    "dueDate": null,
+    "stack": [],
+    "stackCollapsed": false,
+    "stackOpen": false
+  },
+  {
+    "id": "1783313057662idik",
+    "uuid": "5153d577-26ed-471d-a8e7-69330edba6e6",
+    "text": "AD44开发任务 A区 Task2",
+    "status": "in-progress",
+    "priority": "normal",
+    "createdAt": "7月6日",
+    "children": [
+      {
+        "id": "1783908487791uyss",
+        "uuid": "3303b468-336d-4d15-9e2c-bb90d1dbc910",
+        "text": "检查联网模式下，Task2是否不触发，塔是否存在",
+        "status": "completed",
+        "priority": "normal",
+        "createdAt": "7月12日",
+        "children": [],
+        "collapsed": false,
+        "steps": [
+          {
+            "id": "s1783908606495ha3",
+            "text": "先联网测试一下塔是否存在，是否可以做任务",
+            "createdAt": "7月12日"
+          },
+          {
+            "id": "s1783909088248lhs",
+            "text": "可以做任务但是没有传送，检查一下kismet是否连接正确",
+            "createdAt": "7月12日"
+          }
+        ],
+        "stepsCollapsed": true,
+        "stack": [],
+        "stackCollapsed": false,
+        "stackOpen": false,
+        "transferHistory": [],
+        "transferredTo": null,
+        "transferredFrom": null,
+        "dueDate": null
+      }
+    ],
+    "collapsed": false,
+    "steps": [],
+    "stepsCollapsed": false,
+    "transferHistory": [],
+    "transferredTo": null,
+    "transferredFrom": null,
+    "dueDate": null,
+    "stack": [],
+    "stackCollapsed": false,
+    "stackOpen": false
+  },
+  {
+    "id": "17833065681620xox",
+    "uuid": "0279d20c-1384-44aa-82b3-61c925d601d3",
+    "text": "AD44开发任务 C区 Task1",
+    "status": "in-progress",
+    "priority": "normal",
+    "createdAt": "7月6日",
+    "children": [
+      {
+        "id": "178330657074714zl",
+        "uuid": "25dc9bf4-8bd3-4b2b-88ac-3057946bd31e",
+        "text": "C区 功能拆分",
+        "status": "in-progress",
+        "priority": "normal",
+        "createdAt": "7月6日",
+        "children": [],
+        "collapsed": false,
+        "steps": [],
+        "stepsCollapsed": false,
+        "transferHistory": [],
+        "transferredTo": null,
+        "transferredFrom": null,
+        "dueDate": "2026-07-07",
+        "stack": [],
+        "stackCollapsed": false,
+        "stackOpen": false
+      }
+    ],
+    "collapsed": false,
+    "steps": [],
+    "stepsCollapsed": false,
+    "transferHistory": [],
+    "transferredTo": null,
+    "transferredFrom": null,
+    "dueDate": null,
+    "stack": [],
+    "stackCollapsed": false,
+    "stackOpen": false
+  },
+  {
+    "id": "1780885445572f4zn",
+    "text": "Lyra学习",
+    "completed": false,
+    "priority": "low",
+    "createdAt": "6月8日",
+    "children": [
+      {
+        "id": "17809715367153cbc",
+        "text": "添加多个建筑和放置列表切换的功能",
+        "status": "in-progress",
+        "priority": "low",
+        "createdAt": "6月9日",
+        "children": [],
+        "collapsed": false,
+        "steps": [
+          {
+            "id": "s1780994747083ew3",
+            "text": "查看蓝图中配置建筑的方法",
+            "createdAt": "6月9日"
+          },
+          {
+            "id": "s178105423819232v",
+            "text": "建筑不显示主体的问题",
+            "createdAt": "6月10日"
+          },
+          {
+            "id": "s1781056562200ey0",
+            "text": "判断哪些需要使用GAS，哪些不需要",
+            "createdAt": "6月10日"
+          },
+          {
+            "id": "s1781071624693ued",
+            "text": "放置建筑后崩溃问题",
+            "createdAt": "6月10日"
+          },
+          {
+            "id": "s17811639122283vi",
+            "text": "接入UI",
+            "createdAt": "6月11日"
+          }
+        ],
+        "stepsCollapsed": true,
+        "transferHistory": [],
+        "transferredTo": null,
+        "transferredFrom": null,
+        "uuid": "3f500c91-845a-429f-a8d1-1087cfc392bb",
+        "dueDate": null,
+        "stack": [],
+        "stackCollapsed": false,
+        "stackOpen": false
+      },
+      {
+        "id": "17809811481041n6v",
+        "text": "UE5 远程Python执行能力MCP",
+        "status": "pending",
+        "priority": "low",
+        "createdAt": "6月9日",
+        "children": [],
+        "collapsed": false,
+        "steps": [
+          {
+            "id": "s1780984276782hyy",
+            "text": "只导出了ability_input_actions的内容",
+            "createdAt": "6月9日"
+          }
+        ],
+        "stepsCollapsed": true,
+        "transferHistory": [],
+        "transferredTo": null,
+        "transferredFrom": null,
+        "uuid": "5f2f0926-0ecf-4e2f-b20a-ba2ade04dfbe",
+        "dueDate": null,
+        "stack": [],
+        "stackCollapsed": false,
+        "stackOpen": false
+      },
+      {
+        "id": "17811700470911zu5",
+        "uuid": "b07876b5-476c-4530-8e4b-22cae3014909",
+        "text": "建造系统 Skill 实现",
+        "status": "pending",
+        "priority": "low",
+        "createdAt": "6月11日",
+        "children": [],
+        "collapsed": false,
+        "steps": [],
+        "stepsCollapsed": false,
+        "transferHistory": [],
+        "transferredTo": null,
+        "transferredFrom": null,
+        "dueDate": null,
+        "stack": [],
+        "stackCollapsed": false,
+        "stackOpen": false
+      }
+    ],
+    "collapsed": true,
+    "steps": [],
+    "stepsCollapsed": false,
+    "status": "pending",
+    "transferHistory": [],
+    "transferredTo": null,
+    "transferredFrom": null,
+    "uuid": "0d59449f-cb66-49aa-9171-dd7967504a34",
+    "dueDate": null,
+    "stack": [],
+    "stackCollapsed": false,
+    "stackOpen": false
+  },
+  {
+    "id": "17820991422435t8a",
+    "uuid": "06f21863-21e6-493f-8a43-c8a58091cbbe",
+    "text": "网页游戏项目",
+    "status": "pending",
+    "priority": "low",
+    "createdAt": "6月22日",
+    "children": [
+      {
+        "id": "1782099164435z0q5",
+        "uuid": "36c96033-9b0a-4f79-811d-d704028a0931",
+        "text": "学习单位智能体设计",
+        "status": "pending",
+        "priority": "low",
+        "createdAt": "6月22日",
+        "children": [],
+        "collapsed": false,
+        "steps": [],
+        "stepsCollapsed": false,
+        "transferHistory": [],
+        "transferredTo": null,
+        "transferredFrom": null,
+        "dueDate": null,
+        "stack": [],
+        "stackCollapsed": false,
+        "stackOpen": false
+      },
+      {
+        "id": "17820991776354hkk",
+        "uuid": "f670fb49-f0f3-4e96-b601-357397fc4e4e",
+        "text": "学习AI全局决策设计",
+        "status": "pending",
+        "priority": "low",
+        "createdAt": "6月22日",
+        "children": [],
+        "collapsed": false,
+        "steps": [
+          {
+            "id": "s1782099191659gig",
+            "text": "尝试引入AI决策树",
+            "createdAt": "6月22日"
+          }
+        ],
+        "stepsCollapsed": false,
+        "transferHistory": [],
+        "transferredTo": null,
+        "transferredFrom": null,
+        "dueDate": null,
+        "stack": [],
+        "stackCollapsed": false,
+        "stackOpen": false
+      }
+    ],
+    "collapsed": true,
+    "steps": [],
+    "stepsCollapsed": false,
+    "transferHistory": [],
+    "transferredTo": null,
+    "transferredFrom": null,
+    "dueDate": null,
+    "stack": [],
+    "stackCollapsed": false,
+    "stackOpen": false
+  }
+]

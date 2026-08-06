@@ -1,0 +1,50 @@
+{
+  "name": "arrangement-core",
+  "version": "1.0.0",
+  "description": "Parse, validate & query 'todo-music-arranger' (v2) arrangement JSON — drum/bass/harmony/melody/fx patterns + song sections. Zero dependencies, no DOM, no Tone.js.",
+  "type": "commonjs",
+  "main": "arrangement-core.js",
+  "module": "arrangement-core.mjs",
+  "types": "index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./index.d.ts",
+      "import": "./arrangement-core.mjs",
+      "require": "./arrangement-core.js",
+      "default": "./arrangement-core.js"
+    },
+    "./interactive-tone-player": {
+      "types": "./interactive-tone-player.d.ts",
+      "import": "./interactive-tone-player.mjs",
+      "require": "./interactive-tone-player.js",
+      "default": "./interactive-tone-player.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "arrangement-core.js",
+    "arrangement-core.mjs",
+    "interactive-tone-player.js",
+    "interactive-tone-player.mjs",
+    "index.d.ts",
+    "interactive-tone-player.d.ts",
+    "README.md"
+  ],
+  "scripts": {
+    "test": "node --test"
+  },
+  "keywords": [
+    "music",
+    "arrangement",
+    "sequencer",
+    "beat",
+    "daw",
+    "midi",
+    "chords",
+    "parser",
+    "validator",
+    "electron",
+    "todo-music-arranger"
+  ],
+  "license": "MIT"
+}

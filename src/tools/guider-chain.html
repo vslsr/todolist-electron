@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'" />
+  <title>引导点链生成</title>
+  <style>
+    :root {
+      --accent: #667eea;
+      --accent-soft: #eef0ff;
+      --bg: #f5f6fa;
+      --card: #ffffff;
+      --text: #2c2f3a;
+      --muted: #7d8499;
+      --border: #e2e5f0;
+      --danger: #d14343;
+      --success: #238a52;
+    }
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      font-family: "Segoe UI", "Microsoft YaHei", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .toolbar {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--border);
+      background: var(--card);
+    }
+    .toolbar h1 { margin: 0 10px 0 0; font-size: 16px; }
+    button {
+      border: 0;
+      border-radius: 7px;
+      padding: 7px 14px;
+      font-size: 13px;
+      cursor: pointer;
+    }
+    .btn-primary { background: var(--accent); color: #fff; }
+    .btn-primary:hover { filter: brightness(1.08); }
+    .btn-ghost { background: #eef0f8; color: #4a4f70; }
+    .btn-ghost:hover { background: #e2e5f3; }
+    .spacer { flex: 1; }
+    .workspace {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 340px minmax(0, 1fr);
+      min-height: 0;
+    }
+    .controls {
+      padding: 14px;
+      overflow-y: auto;
+      border-right: 1px solid var(--border);
+      background: var(--card);
+    }
+    .section { margin-bottom: 16px; }
+    .section-title {
+      margin-bottom: 9px;
+      color: #4a4f70;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: .03em;
+      text-transform: uppercase;
+    }
+    .shape-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 7px;
+    }
+    .shape-option { position: relative; }
+    .shape-option input { position: absolute; opacity: 0; pointer-events: none; }
+    .shape-option span {
+      display: flex;
+      min-height: 54px;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 3px;
+      border: 1px solid var(--border);
+      border-radius: 9px;
+      color: #555c72;
+      font-size: 12px;
+      cursor: pointer;
+    }
+    .shape-option strong { font-size: 22px; line-height: 1; }
+    .shape-option input:checked + span {
+      border-color: var(--accent);
+      background: var(--accent-soft);
+      color: var(--accent);
+      box-shadow: 0 0 0 1px var(--accent);
+    }
+    .field-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; }
+    .field { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+    .field.full { grid-column: 1 / -1; }
+    .field label { color: var(--muted); font-size: 11px; }
+    input[type="number"], select {
+      width: 100%;
+      border: 1px solid var(--border);
+      border-radius: 7px;
+      padding: 7px 8px;
+      background: #fff;
+      color: var(--text);
+      font-size: 12px;
+      outline: none;
+    }
+    input[type="number"]:focus, select:focus { border-color: var(--accent); }
+    .check-row {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      padding: 3px 0;
+      font-size: 11px;
+      color: var(--text);
+    }
+    .check-row input[type="checkbox"] {
+      flex-shrink: 0;
+      width: 14px;
+      height: 14px;
+      margin: 0;
+      accent-color: var(--accent);
+      cursor: pointer;
+    }
+    .check-row label { cursor: pointer; color: var(--muted); }
+    .hint {
+      margin: 7px 0 0;
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.55;
+    }
+    .preview-card {
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+      background: #fafbff;
+    }
+    .preview-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 6px 9px;
+      border-bottom: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 11px;
+    }
+    .legend { display: flex; gap: 10px; }
+    .legend-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; vertical-align: middle; margin-right: 3px; }
+    canvas { display: block; width: 100%; height: 220px; }
+    .output-pane { display: flex; flex-direction: column; min-width: 0; min-height: 0; }
+    .output-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 12px;
+      border-bottom: 1px solid var(--border);
+      background: var(--card);
+      color: #4a4f70;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    #output {
+      flex: 1;
+      width: 100%;
+      min-height: 0;
+      resize: none;
+      border: 0;
+      outline: 0;
+      padding: 14px;
+      background: #fbfcff;
+      color: var(--text);
+      font: 12px/1.5 Consolas, "Courier New", monospace;
+      white-space: pre;
+      overflow: auto;
+    }
+    .status {
+      padding: 7px 14px;
+      border-top: 1px solid var(--border);
+      background: var(--card);
+      color: var(--muted);
+      font-size: 12px;
+    }
+    .status.err { color: var(--danger); }
+    .status.ok  { color: var(--success); }
+  </style>
+</head>
+<body>
+  <div class="toolbar">
+    <h1>🧭 引导点链生成</h1>
+    <div class="spacer"></div>
+    <button id="generate-btn" class="btn-primary">生成 T3D</button>
+    <button id="copy-btn" class="btn-ghost">复制结果</button>
+    <button id="save-btn" class="btn-ghost">保存 .t3d</button>
+  </div>
+
+  <div class="workspace">
+    <aside class="controls">
+
+      <div class="section">
+        <div class="section-title">轮廓形状</div>
+        <div class="shape-grid">
+          <label class="shape-option">
+            <input type="radio" name="shape" value="square" checked />
+            <span><strong>□</strong>正方形</span>
+          </label>
+          <label class="shape-option">
+            <input type="radio" name="shape" value="circle" />
+            <span><strong>○</strong>圆形</span>
+          </label>
+          <label class="shape-option">
+            <input type="radio" name="shape" value="triangle" />
+            <span><strong>△</strong>三角形</span>
+          </label>
+        </div>
+        <p class="hint">引导点沿轮廓等弧长排布；逻辑链为开链，首尾不互连。</p>
+      </div>
+
+      <div class="section">
+        <div class="section-title">数量与范围</div>
+        <div class="field-grid">
+          <div class="field">
+            <label for="count">点数量 N（1–256）</label>
+            <input id="count" type="number" min="1" max="256" step="1" value="8" />
+          </div>
+          <div class="field">
+            <label for="size">半径 / 半边长</label>
+            <input id="size" type="number" min="1" step="1" value="600" />
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">中心位置</div>
+        <div class="field-grid">
+          <div class="field"><label for="center-x">中心 X</label><input id="center-x" type="number" step="1" value="0" /></div>
+          <div class="field"><label for="center-y">中心 Y</label><input id="center-y" type="number" step="1" value="0" /></div>
+          <div class="field full"><label for="center-z">高度 Z</label><input id="center-z" type="number" step="1" value="0" /></div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">命名与 ID</div>
+        <div class="field-grid">
+          <div class="field">
+            <label for="actor-start">Actor 起始序号</label>
+            <input id="actor-start" type="number" min="0" step="1" value="0" />
+          </div>
+          <div class="field">
+            <label for="guider-start">GuiderID 起始值（必须 &gt;0）</label>
+            <input id="guider-start" type="number" min="1" step="1" value="1" />
+          </div>
+        </div>
+        <p class="hint">Actor 名：TGADBaseActorGuider_&lt;序号&gt;；GuiderID 逐点递增。</p>
+      </div>
+
+      <div class="section">
+        <div class="section-title">引导距离（负数 = 不限制该边界）</div>
+        <div class="field-grid">
+          <div class="field">
+            <label for="min-guide-dist">MinGuideDist</label>
+            <input id="min-guide-dist" type="number" step="1" value="300" />
+          </div>
+          <div class="field">
+            <label for="max-guide-dist">MaxGuideDist</label>
+            <input id="max-guide-dist" type="number" step="1" value="-1" />
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">默认行为标志（批量应用）</div>
+        <div class="check-row">
+          <input type="checkbox" id="b-auto-turn-off" checked />
+          <label for="b-auto-turn-off">bAutoTurnOffWhenInMinRange（全部节点）</label>
+        </div>
+        <div class="check-row">
+          <input type="checkbox" id="b-init-guide" checked />
+          <label for="b-init-guide">bInitGuideSelf（全部节点）</label>
+        </div>
+        <div class="check-row">
+          <input type="checkbox" id="b-turn-on-next" checked />
+          <label for="b-turn-on-next">bTurnOnNextWhenInMinRange（非末点）</label>
+        </div>
+      </div>
+
+      <div class="preview-card">
+        <div class="preview-head">
+          <span class="legend">
+            <span><span class="legend-dot" style="background:#2ecc71"></span>Tail（首）</span>
+            <span><span class="legend-dot" style="background:#e74c3c"></span>Head（末）</span>
+            <span><span class="legend-dot" style="background:#667eea"></span>中间</span>
+          </span>
+          <span id="preview-label">8 个引导点</span>
+        </div>
+        <canvas id="preview"></canvas>
+      </div>
+
+    </aside>
+
+    <main class="output-pane">
+      <div class="output-head">
+        <span>TGADBaseActorGuider T3D</span>
+        <span id="output-count">0 个 Actor</span>
+      </div>
+      <textarea id="output" readonly spellcheck="false"></textarea>
+    </main>
+  </div>
+
+  <div id="status" class="status">选择形状并设置参数，然后生成可导入 Unreal Editor 的开链 T3D。</div>
+  <script src="guider-chain.js"></script>
+</body>
+</html>

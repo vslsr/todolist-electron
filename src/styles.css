@@ -54,19 +54,27 @@ body {
 
 .input-row {
   display: flex;
+  align-items: flex-start;
   gap: 8px;
 }
 
+/* textarea so a pasted multi-line list stays visible; grows with content up to ~8 lines */
 .task-input {
   flex: 1;
+  min-width: 0;
   padding: 10px 14px;
   border: 1.5px solid #e0e4ed;
   border-radius: 8px;
   font-size: 14px;
   font-family: inherit;
+  line-height: 1.4;
   background: #f8f9fc;
   transition: border-color 0.2s, box-shadow 0.2s;
   outline: none;
+  resize: none;
+  overflow-y: auto;
+  min-height: 41px;   /* one line + padding, matches the sibling button height */
+  max-height: 190px;
 }
 
 .task-input:focus {

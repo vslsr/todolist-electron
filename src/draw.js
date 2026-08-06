@@ -37,6 +37,7 @@ let drawVisible = false;
 let dsAnimId    = null;  // requestAnimationFrame handle for dot animation
 let dragId      = null;  // hierarchy-tree drag source id
 let dropMark    = null;  // { id, zone:'before'|'after'|'inside' } – current tree drop target
+let drawClipboard = null; // internal clipboard for copied shapes, subtrees, and arrows
 
 const DS_FILL = {
   triangle: '#667eea', circle: '#52a878', square: '#e8a020', node: '#667eea', empty: 'none',
@@ -293,6 +294,98 @@ function dsNew(type, cx, cy) {
   };
   if (SHAPE_HAS_TEXT(type)) Object.assign(s, { text: '', textColor: '#ffffff', textSize: 14, textAlign: 'center' });
   return s;
+}
+
+function copyDrawSelection() {
+  const selectedSet = new Set(drawSels);
+  const rootIds = drawSels.filter(id => {
+    const shape = find(id);
+    if (!shape) return false;
+    let parent = shape.parentId ? find(shape.parentId) : null;
+    while (parent) {
+      if (selectedSet.has(parent.id)) return false;
+      parent = parent.parentId ? find(parent.parentId) : null;
+    }
+    return true;
+  });
+  if (!rootIds.length) return false;
+
+  const copiedIds = new Set();
+  rootIds.forEach(id => {
+    copiedIds.add(id);
+    getDescendants(id).forEach(shape => copiedIds.add(shape.id));
+  });
+
+  const rootWorld = {};
+  rootIds.forEach(id => {
+    const shape = find(id);
+    const center = getWorldCenter(shape);
+    rootWorld[id] = { cx: center.x, cy: center.y, rotation: getWorldRotation(shape) };
+  });
+
+  drawClipboard = {
+    shapes: drawShapes.filter(shape => copiedIds.has(shape.id)).map(shape => ({ ...shape })),
+    arrows: drawArrows
+      .filter(arrow => copiedIds.has(arrow.fromId) && copiedIds.has(arrow.toId))
+      .map(arrow => ({ ...arrow })),
+    rootIds,
+    rootWorld,
+    pasteCount: 0,
+  };
+  return true;
+}
+
+function pasteDrawClipboard() {
+  if (!drawClipboard?.shapes.length) return false;
+
+  drawClipboard.pasteCount += 1;
+  const offset = drawClipboard.pasteCount * 24;
+  const reservedIds = new Set([
+    ...drawShapes.map(shape => shape.id),
+    ...drawArrows.map(arrow => arrow.id),
+  ]);
+  const freshId = prefix => {
+    let id;
+    do { id = newId(prefix); } while (reservedIds.has(id));
+    reservedIds.add(id);
+    return id;
+  };
+
+  const idMap = new Map();
+  drawClipboard.shapes.forEach(shape => idMap.set(shape.id, freshId('ds')));
+
+  const pastedShapes = drawClipboard.shapes.map(source => {
+    const shape = { ...source, id: idMap.get(source.id) };
+    if (source.parentId && idMap.has(source.parentId)) {
+      shape.parentId = idMap.get(source.parentId);
+    } else {
+      const world = drawClipboard.rootWorld[source.id] || {
+        cx: source.cx,
+        cy: source.cy,
+        rotation: source.rotation,
+      };
+      shape.parentId = null;
+      shape.cx = world.cx + offset;
+      shape.cy = world.cy + offset;
+      shape.rotation = world.rotation;
+    }
+    return shape;
+  });
+
+  const pastedArrows = drawClipboard.arrows.map(source => ({
+    ...source,
+    id: freshId('arr'),
+    fromId: idMap.get(source.fromId),
+    toId: idMap.get(source.toId),
+  }));
+
+  drawShapes.push(...pastedShapes);
+  drawArrows.push(...pastedArrows);
+  drawSels = drawClipboard.rootIds.map(id => idMap.get(id)).filter(Boolean);
+  selSyncPrimary();
+  dsRender();
+  dsSave();
+  return true;
 }
 
 function dsSave() {
@@ -1025,13 +1118,6 @@ function dsMouseUp() {
   window.removeEventListener('mouseup',   dsMouseUp);
   dsSetInteracting(false);
   if (drawAct) {
-    if (drawAct.type === 'move' && drawAct.moveIds) {
-      // Bring moved nodes to the top of their sibling order (move to end of array)
-      const set  = new Set(drawAct.moveIds);
-      const kept = drawShapes.filter(s => !set.has(s.id));
-      const tail = drawShapes.filter(s =>  set.has(s.id));
-      drawShapes = [...kept, ...tail];
-    }
     dsSave();
     drawAct = null;
     dsRender();
@@ -1416,10 +1502,17 @@ function initDrawTab() {
 
   btn.addEventListener('click', () => {
     drawVisible = !drawVisible;
+    // If opening draw, close wiki board first
+    if (drawVisible) document.dispatchEvent(new CustomEvent('draw:show'));
     board.classList.toggle('hidden',      !drawVisible);
     contentRow.classList.toggle('hidden',  drawVisible);
     btn.classList.toggle('active',         drawVisible);
     if (drawVisible) dsRender();
+  });
+
+  // When wiki tab forces draw closed
+  document.addEventListener('wiki:hideDraw', () => {
+    drawVisible = false;
   });
 }
 
@@ -1430,6 +1523,17 @@ function initDrawKeys() {
     if (!drawVisible) return;
     const ae = document.activeElement;
     if (ae && (ae.tagName === 'INPUT' || ae.tagName === 'TEXTAREA' || ae.isContentEditable)) return;
+
+    const commandKey = e.ctrlKey || e.metaKey;
+    const key = e.key.toLowerCase();
+    if (commandKey && !e.altKey && key === 'c') {
+      if (copyDrawSelection()) e.preventDefault();
+      return;
+    }
+    if (commandKey && !e.altKey && key === 'v') {
+      if (pasteDrawClipboard()) e.preventDefault();
+      return;
+    }
 
     if ((e.key === 'Delete' || e.key === 'Backspace') && drawSels.length > 0) {
       const del = new Set(drawSels);

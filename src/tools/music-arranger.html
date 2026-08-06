@@ -208,6 +208,20 @@
     .lay-tog:hover { opacity: .85; }
     .lay-tog.on { background: var(--on2); color: #14161f; border-color: var(--on2); opacity: 1; }
     .tab[data-layer="song"] .dot { background: var(--accent-on); }
+    .tab[data-layer="scenes"] .dot { background: var(--accent); }
+    .im-scene { background: var(--panel2); color: var(--text); border: 1px solid var(--line); border-radius: 7px; padding: 6px 12px; font-size: 12px; font-weight: 600; margin: 0 6px 6px 0; cursor: pointer; }
+    .im-scene.active { border-color: var(--accent); color: var(--accent-on); background: rgba(122,162,247,.12); }
+    .im-ch { display: flex; align-items: center; gap: 8px; padding: 6px 8px; border: 1px solid var(--line); border-radius: 7px; margin: 0 6px 6px 0; background: var(--panel2); font-size: 12px; }
+    .im-ch .src { color: var(--muted); font-size: 11px; }
+    .im-ch .meter { width: 54px; height: 5px; border-radius: 3px; background: var(--line); overflow: hidden; }
+    .im-ch .meter i { display: block; height: 100%; background: var(--accent); width: 0; transition: width .15s; }
+    .im-rtpc-row { display: flex; align-items: center; gap: 10px; padding: 6px 0; flex-wrap: wrap; }
+    .im-curve { background: var(--panel2); border: 1px solid var(--line); border-radius: 6px; touch-action: none; cursor: crosshair; }
+    .im-curve .grid { stroke: var(--line); stroke-width: 1; }
+    .im-curve .line { stroke: var(--accent); stroke-width: 2; fill: none; }
+    .im-curve .pt { fill: var(--accent-on); stroke: var(--accent); stroke-width: 1.5; cursor: grab; }
+    .im-curve .op { fill: var(--snare); }
+    .im-preset { background: var(--panel2); color: var(--muted); border: 1px solid var(--line); border-radius: 5px; padding: 2px 7px; font-size: 11px; cursor: pointer; }
 
     /* ── Song structure ─────────────────────────────── */
     .ck { display: inline-flex; align-items: center; gap: 4px; font-size: 12px; color: var(--text); cursor: pointer; }
@@ -272,6 +286,7 @@
     <button class="tab" data-layer="melody"><span class="dot"></span>旋律 Melody</button>
     <button class="tab" data-layer="fx"><span class="dot"></span>音效 FX</button>
     <button class="tab" data-layer="song"><span class="dot"></span>结构 Song</button>
+    <button class="tab" data-layer="scenes"><span class="dot"></span>场景 Scenes</button>
   </div>
 
   <!-- ── Pattern bar (片段 A/B/C…) ─────────────────────────────── -->
@@ -381,6 +396,23 @@
       </div>
       <div class="card" id="sec-editor"></div>
     </div>
+
+    <div class="panel" id="panel-scenes">
+      <div class="row">
+        <span class="lbl">多声道 · 场景</span>
+        <button id="im-scaffold" class="tbtn">⟳ 从当前工程生成 / 刷新声道</button>
+        <button id="im-play" class="tbtn playmode">▶ 试听场景</button>
+        <button id="im-stop" class="tbtn">■ 停止</button>
+        <button id="im-midi" class="tbtn">⬇ 导出 MIDI</button>
+        <span class="chip" id="im-scene-now">—</span>
+      </div>
+      <div class="hint">Wwise 式互动音乐:把各片段(pattern)的层拆成可开关的<b>声道</b>,用<b>场景</b>控制哪些声道在响(垂直分层),并可把声道绑定到不同 pattern 的内容(横向切段)。切换在下一小节同步生效并带淡入淡出。游戏里只需调 <code>setScene / setChannel / setRTPC</code> 即可渲染不同主题气氛。改完编曲点“刷新”重建声道。</div>
+      <div class="card"><div class="row"><span class="lbl">场景 Scenes</span></div><div id="im-scenes"></div></div>
+      <div class="card"><div class="row"><span class="lbl">声道 Channels</span><span class="chip">点开关切层 · 进度条=当前增益</span></div><div id="im-channels"></div></div>
+      <div class="card" id="im-stinger-card" style="display:none"><div class="row"><span class="lbl">瞬发 Stingers</span><span class="chip">点按=在同步点叠加一次短句</span></div><div id="im-stingers"></div></div>
+      <div class="card" id="im-rtpc-card" style="display:none"><div class="row"><span class="lbl">RTPC 参数 + 响应曲线</span><span class="chip">拖点改曲线 · 双击加/删点</span></div><div id="im-rtpc"></div></div>
+      <div class="hint" id="im-code"></div>
+    </div>
   </div>
 
   <!-- ── Status ─────────────────────────────── -->
@@ -394,6 +426,8 @@
   <div class="toast" id="toast"></div>
 
   <script src="vendor/tone.js"></script>
+  <script src="vendor/arrangement-core.js"></script>
+  <script src="vendor/interactive-tone-player.js"></script>
   <script src="music-arranger.js"></script>
 </body>
 </html>
